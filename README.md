@@ -26,6 +26,9 @@ cd Code
 python cli.py -cfg tetrode_ca1_sub.cfg
 ```
 
+### Code documentation
+Documentation is available at [GitHub Pages](https://seankmartin.github.io/SKMNeuralConnections/)
+
 ## Further usage
 If you are looking to further contribute to this project, or verify the results, then please read on.
 
