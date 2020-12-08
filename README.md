@@ -61,13 +61,3 @@ python profile_this.py ARGS
 ```
 
 Where `ARGS` are what you would pass to `cli.py`.
-
-### Reproducing the paper
-Firstly, download the images from our online figshare repository into Paper\assets.
-
-Then, run
-
-```
-cd Paper
-latexmk -pdf main.tex
-```
