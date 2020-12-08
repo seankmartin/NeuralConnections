@@ -30,7 +30,7 @@ python cli.py -cfg tetrode_ca1_sub.cfg
 Documentation is available at [GitHub Pages](https://seankmartin.github.io/SKMNeuralConnections/)
 
 ### Citation
-This software repository can be cited from Zotero. 
+This software repository can be cited from Zenodo at https://doi.org/10.5281/zenodo.4311795. 
 
 ## Further usage
 If you are looking to further contribute to this project, or verify the results, then please read on.
