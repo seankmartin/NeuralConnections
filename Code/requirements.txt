@@ -1,0 +1,11 @@
+tqdm
+mpmath
+networkx
+numpy
+matplotlib
+scipy
+skm_pyutils
+pathos
+pandas
+seaborn
+pyqt5

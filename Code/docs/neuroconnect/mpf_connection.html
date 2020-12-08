@@ -1,0 +1,940 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.7.5" />
+<title>neuroconnect.mpf_connection API documentation</title>
+<meta name="description" content="Connection stats using the mpmath package." />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>neuroconnect.mpf_connection</code></h1>
+</header>
+<section id="section-intro">
+<p>Connection stats using the mpmath package.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;Connection stats using the mpmath package.&#34;&#34;&#34;
+import mpmath
+from collections import OrderedDict
+
+from .connect_math import hypergeometric_pmf, get_dist_mean, marginal_prob
+
+
+class CombProb:
+    &#34;&#34;&#34;
+    Handle computations with brain region connectivity probabilities.
+
+    Parameters
+    ----------
+    neurons_A : int
+        The number of neurons in brain region A.
+    recorded_A : int
+        The number of neurons recorded in A.
+    connected_A : int
+        The number of neurons in A that are
+        directly connected to neurons in B.
+    neurons_B : int
+        The number of neurons in brain region B.
+    recorded_B : int
+        The number of neurons recorded in B.
+    delta_fn : function
+        A function of the number of recorded units in A
+        which are connected to neurons in B.
+        Represents the number of neurons in B which
+        receive connections from the recorded neurons in A.
+        Must return an distribution over the number of neurons,
+        represented as an ordered dictionary.
+    delta_params : dict
+        keyword arguments to pass into delta_fn
+
+    &#34;&#34;&#34;
+
+    def __init__(
+        self,
+        neurons_A,
+        recorded_A,
+        connected_A,
+        neurons_B,
+        recorded_B,
+        delta_fn,
+        cache=True,
+        subsample_rate=None,
+        approx_hypergeo=False,
+        **delta_params
+    ):
+        &#34;&#34;&#34;Please see help(CombProb) for more info.&#34;&#34;&#34;
+        self.N = mpmath.mpf(neurons_A)
+        self.n = mpmath.mpf(recorded_A)
+        self.K = mpmath.mpf(connected_A)
+        self.M = mpmath.mpf(neurons_B)
+        self.m = mpmath.mpf(recorded_B)
+        self.delta_fn = delta_fn
+        self.delta_params = delta_params
+        self.delta_params[&#34;max&#34;] = self.delta_params.get(&#34;max&#34;, self.M)
+        self.verbose = False
+        self.cache = cache
+        self.stored = OrderedDict()
+        self.each_dist = None
+        self.a_to_b_dist = None
+        if (self.delta_params[&#34;max_depth&#34;] &gt; 1) and self.delta_params.get(
+            &#34;use_mean&#34;, True
+        ):
+            self.subsample_rate = None
+        else:
+            self.subsample_rate = subsample_rate
+        self.delta_params[&#34;subsample_rate&#34;] = self.subsample_rate
+        self.approx_hypergeo = approx_hypergeo
+
+        # Use these to check marginal accuracy
+        self.plot = False
+        self.true_plot = False
+
+        if self.cache:
+            self.each_dist, self.a_to_b_dist = self.delta_fn(**delta_params)
+            self.stored = self.final_distribution()
+
+            total = mpmath.nsum(self._prob, [0, self.m], verbose=self.verbose)
+            if not mpmath.almosteq(total, 1.0, rel_eps=0.001):
+                raise RuntimeError(
+                    &#34;Total probability does not sum to 1, got {}&#34;.format(total)
+                )
+
+    def calculate_distribution_n_senders(self):
+        &#34;&#34;&#34;
+        Use the hypergeometric distribution to calculate distribution of senders.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        OrderedDict
+            The full distribution of the number of senders sampled.
+
+        &#34;&#34;&#34;
+        prob_a_senders = OrderedDict()
+        for i in range(int(self.n) + 1):
+            prob_a_senders[i] = float(hypergeometric_pmf(self.N, self.K, self.n, i))
+        return prob_a_senders
+
+    def final_distribution(self, x=None, keep_all=False):
+        &#34;&#34;&#34;
+        Calculate P(X=x) as sum P(A_B = k) * P(X=x|k).
+
+        Parameters
+        ----------
+        x : int, optional
+            If provided, calculates only that probability.
+
+        Returns
+        -------
+        OrderedDict or float
+            The full distribution or a single value, depending on x.
+
+        &#34;&#34;&#34;
+
+        def fn_to_eval(k, i):
+            return float(
+                hypergeometric_pmf(self.M, k, self.m, i, approx=self.approx_hypergeo)
+            )
+
+        non_zeros = 0
+        if self.subsample_rate is not None:
+            for k, v in self.a_to_b_dist.items():
+                if v != 0.0:
+                    non_zeros += 1
+            if non_zeros &gt; self.subsample_rate * len(list(self.a_to_b_dist.keys())):
+                sub = self.subsample_rate
+            else:
+                sub = None
+        else:
+            sub = None
+
+        estimated = marginal_prob(
+            range(int(self.m) + 1),
+            self.a_to_b_dist,
+            fn_to_eval,
+            x=x,
+            sub=sub,
+            plot=self.plot,
+            true_plot=self.true_plot,
+            keep_all=keep_all,
+        )
+        return estimated
+
+    def connection_prob(self, x):
+        &#34;&#34;&#34;
+        Calculate the probability of observing x
+        connections between brain regions A and B.
+
+        Parameters
+        ----------
+        x : int
+            The number of connections between A and B.
+
+        Returns
+        -------
+        mpmath.mpf
+            The probability of observing x connections.
+        &#34;&#34;&#34;
+        return self.final_distribution(x)
+
+    def geq_connection_prob(self, x):
+        &#34;&#34;&#34;
+        Calculate the probability of observing &gt;=x
+        connections between brain regions A and B.
+
+        Parameters
+        ----------
+        x : int
+            The min number of connections between A and B.
+
+        Returns
+        -------
+        mpmath.mpf
+            The probability of observing &gt;=x connections.
+        &#34;&#34;&#34;
+        return 1 - mpmath.nsum(self.connection_prob, [0, x - 1], verbose=self.verbose)
+
+    def expected_connections(self):
+        &#34;&#34;&#34;
+        Calculate expected number of connections between A and B.
+
+        Returns
+        -------
+        mpmath.mpf
+            The expected number of connections between A and B.
+
+        &#34;&#34;&#34;
+        return mpmath.nsum(self._weighted_val, [0, self.m], verbose=self.verbose)
+
+    def run(self, x):
+        &#34;&#34;&#34;
+        Helper function to run useful methods for given x.
+
+        Parameters
+        ----------
+        x : int
+            The number of connections between A and B.
+
+        Returns
+        -------
+        Dict
+            keys are:
+            &#34;prob&#34; - connection_prob(x)
+            &#34;prob_geq&#34; - geq_connection_prob(x)
+            &#34;expected&#34; - expected_connections()
+
+        &#34;&#34;&#34;
+        out_dict = {}
+        out_dict[&#34;prob&#34;] = self.connection_prob(x)
+        out_dict[&#34;prob_geq&#34;] = self.geq_connection_prob(x)
+        out_dict[&#34;expected&#34;] = self.expected_connections()
+        return out_dict
+
+    def set_verbose(self, vb):
+        &#34;&#34;&#34;Set whether to print more information.&#34;&#34;&#34;
+        self.verbose = vb
+
+    def get_all_prob(self):
+        &#34;&#34;&#34;Return cached probabilities to speed up operations.&#34;&#34;&#34;
+        if not self.cache:
+            raise ValueError(&#34;Set cache to true to store all probabilities&#34;)
+        return self.stored
+
+    def expected_total(self, k):
+        &#34;&#34;&#34;Return the expected total in B with k sender samples.&#34;&#34;&#34;
+        return get_dist_mean(self.each_dist[k])
+
+    def _weighted_val(self, x):
+        return mpmath.mpf(x) * self._get_val(x)
+
+    def _prob(self, x):
+        return self._get_val(x)
+
+    def _get_val(self, x):
+        if self.cache:
+            if int(x) not in self.stored:
+                res = self.connection_prob(x)
+                self.stored[int(x)] = res
+            else:
+                res = self.stored[int(x)]
+        else:
+            res = self.connection_prob(x)
+        return res
+
+
+if __name__ == &#34;__main__&#34;:
+    from connect_math import expected_unique
+
+    # def delta_fn(k, **delta_params):
+    #     max_val = delta_params.get(&#34;max&#34;, 10000)
+    #     return min(mpmath.mpf(k) * 10, mpmath.mpf(max_val))
+    # def delta_fn(k, **delta_params):
+    #     N = delta_params.get(&#34;N&#34;)
+    #     K = delta_params.get(&#34;K&#34;)
+    #     n = delta_params.get(&#34;n&#34;)
+    #     exp = 0
+    #     for i in range(n):
+    #         exp += i * hypergeometric_pmf(10, 2, k, i)
+    #     print(k, (2 * k) - exp)
+    #     return (2 * k) - exp
+
+    def delta_fn(k, **delta_params):
+        N = delta_params.get(&#34;N&#34;)
+        connections = delta_params.get(&#34;connections&#34;)
+        return expected_unique(N, k * connections)
+
+    cp = CombProb(10, 2, 10, 10, 2, delta_fn, N=10, connections=2)
+    # cp = CombProb(
+    #     10000, 10, 1000, 10000, 10, delta_fn,
+    #     N=10000, connections=100)
+    cp.set_verbose(True)
+    print(cp.run(1))
+    # print(cp.run(100))</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="neuroconnect.mpf_connection.CombProb"><code class="flex name class">
+<span>class <span class="ident">CombProb</span></span>
+<span>(</span><span>neurons_A, recorded_A, connected_A, neurons_B, recorded_B, delta_fn, cache=True, subsample_rate=None, approx_hypergeo=False, **delta_params)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Handle computations with brain region connectivity probabilities.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>neurons_A</code></strong> :&ensp;<code>int</code></dt>
+<dd>The number of neurons in brain region A.</dd>
+<dt><strong><code>recorded_A</code></strong> :&ensp;<code>int</code></dt>
+<dd>The number of neurons recorded in A.</dd>
+<dt><strong><code>connected_A</code></strong> :&ensp;<code>int</code></dt>
+<dd>The number of neurons in A that are
+directly connected to neurons in B.</dd>
+<dt><strong><code>neurons_B</code></strong> :&ensp;<code>int</code></dt>
+<dd>The number of neurons in brain region B.</dd>
+<dt><strong><code>recorded_B</code></strong> :&ensp;<code>int</code></dt>
+<dd>The number of neurons recorded in B.</dd>
+<dt><strong><code>delta_fn</code></strong> :&ensp;<code>function</code></dt>
+<dd>A function of the number of recorded units in A
+which are connected to neurons in B.
+Represents the number of neurons in B which
+receive connections from the recorded neurons in A.
+Must return an distribution over the number of neurons,
+represented as an ordered dictionary.</dd>
+<dt><strong><code>delta_params</code></strong> :&ensp;<code>dict</code></dt>
+<dd>keyword arguments to pass into delta_fn</dd>
+</dl>
+<p>Please see help(CombProb) for more info.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class CombProb:
+    &#34;&#34;&#34;
+    Handle computations with brain region connectivity probabilities.
+
+    Parameters
+    ----------
+    neurons_A : int
+        The number of neurons in brain region A.
+    recorded_A : int
+        The number of neurons recorded in A.
+    connected_A : int
+        The number of neurons in A that are
+        directly connected to neurons in B.
+    neurons_B : int
+        The number of neurons in brain region B.
+    recorded_B : int
+        The number of neurons recorded in B.
+    delta_fn : function
+        A function of the number of recorded units in A
+        which are connected to neurons in B.
+        Represents the number of neurons in B which
+        receive connections from the recorded neurons in A.
+        Must return an distribution over the number of neurons,
+        represented as an ordered dictionary.
+    delta_params : dict
+        keyword arguments to pass into delta_fn
+
+    &#34;&#34;&#34;
+
+    def __init__(
+        self,
+        neurons_A,
+        recorded_A,
+        connected_A,
+        neurons_B,
+        recorded_B,
+        delta_fn,
+        cache=True,
+        subsample_rate=None,
+        approx_hypergeo=False,
+        **delta_params
+    ):
+        &#34;&#34;&#34;Please see help(CombProb) for more info.&#34;&#34;&#34;
+        self.N = mpmath.mpf(neurons_A)
+        self.n = mpmath.mpf(recorded_A)
+        self.K = mpmath.mpf(connected_A)
+        self.M = mpmath.mpf(neurons_B)
+        self.m = mpmath.mpf(recorded_B)
+        self.delta_fn = delta_fn
+        self.delta_params = delta_params
+        self.delta_params[&#34;max&#34;] = self.delta_params.get(&#34;max&#34;, self.M)
+        self.verbose = False
+        self.cache = cache
+        self.stored = OrderedDict()
+        self.each_dist = None
+        self.a_to_b_dist = None
+        if (self.delta_params[&#34;max_depth&#34;] &gt; 1) and self.delta_params.get(
+            &#34;use_mean&#34;, True
+        ):
+            self.subsample_rate = None
+        else:
+            self.subsample_rate = subsample_rate
+        self.delta_params[&#34;subsample_rate&#34;] = self.subsample_rate
+        self.approx_hypergeo = approx_hypergeo
+
+        # Use these to check marginal accuracy
+        self.plot = False
+        self.true_plot = False
+
+        if self.cache:
+            self.each_dist, self.a_to_b_dist = self.delta_fn(**delta_params)
+            self.stored = self.final_distribution()
+
+            total = mpmath.nsum(self._prob, [0, self.m], verbose=self.verbose)
+            if not mpmath.almosteq(total, 1.0, rel_eps=0.001):
+                raise RuntimeError(
+                    &#34;Total probability does not sum to 1, got {}&#34;.format(total)
+                )
+
+    def calculate_distribution_n_senders(self):
+        &#34;&#34;&#34;
+        Use the hypergeometric distribution to calculate distribution of senders.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        OrderedDict
+            The full distribution of the number of senders sampled.
+
+        &#34;&#34;&#34;
+        prob_a_senders = OrderedDict()
+        for i in range(int(self.n) + 1):
+            prob_a_senders[i] = float(hypergeometric_pmf(self.N, self.K, self.n, i))
+        return prob_a_senders
+
+    def final_distribution(self, x=None, keep_all=False):
+        &#34;&#34;&#34;
+        Calculate P(X=x) as sum P(A_B = k) * P(X=x|k).
+
+        Parameters
+        ----------
+        x : int, optional
+            If provided, calculates only that probability.
+
+        Returns
+        -------
+        OrderedDict or float
+            The full distribution or a single value, depending on x.
+
+        &#34;&#34;&#34;
+
+        def fn_to_eval(k, i):
+            return float(
+                hypergeometric_pmf(self.M, k, self.m, i, approx=self.approx_hypergeo)
+            )
+
+        non_zeros = 0
+        if self.subsample_rate is not None:
+            for k, v in self.a_to_b_dist.items():
+                if v != 0.0:
+                    non_zeros += 1
+            if non_zeros &gt; self.subsample_rate * len(list(self.a_to_b_dist.keys())):
+                sub = self.subsample_rate
+            else:
+                sub = None
+        else:
+            sub = None
+
+        estimated = marginal_prob(
+            range(int(self.m) + 1),
+            self.a_to_b_dist,
+            fn_to_eval,
+            x=x,
+            sub=sub,
+            plot=self.plot,
+            true_plot=self.true_plot,
+            keep_all=keep_all,
+        )
+        return estimated
+
+    def connection_prob(self, x):
+        &#34;&#34;&#34;
+        Calculate the probability of observing x
+        connections between brain regions A and B.
+
+        Parameters
+        ----------
+        x : int
+            The number of connections between A and B.
+
+        Returns
+        -------
+        mpmath.mpf
+            The probability of observing x connections.
+        &#34;&#34;&#34;
+        return self.final_distribution(x)
+
+    def geq_connection_prob(self, x):
+        &#34;&#34;&#34;
+        Calculate the probability of observing &gt;=x
+        connections between brain regions A and B.
+
+        Parameters
+        ----------
+        x : int
+            The min number of connections between A and B.
+
+        Returns
+        -------
+        mpmath.mpf
+            The probability of observing &gt;=x connections.
+        &#34;&#34;&#34;
+        return 1 - mpmath.nsum(self.connection_prob, [0, x - 1], verbose=self.verbose)
+
+    def expected_connections(self):
+        &#34;&#34;&#34;
+        Calculate expected number of connections between A and B.
+
+        Returns
+        -------
+        mpmath.mpf
+            The expected number of connections between A and B.
+
+        &#34;&#34;&#34;
+        return mpmath.nsum(self._weighted_val, [0, self.m], verbose=self.verbose)
+
+    def run(self, x):
+        &#34;&#34;&#34;
+        Helper function to run useful methods for given x.
+
+        Parameters
+        ----------
+        x : int
+            The number of connections between A and B.
+
+        Returns
+        -------
+        Dict
+            keys are:
+            &#34;prob&#34; - connection_prob(x)
+            &#34;prob_geq&#34; - geq_connection_prob(x)
+            &#34;expected&#34; - expected_connections()
+
+        &#34;&#34;&#34;
+        out_dict = {}
+        out_dict[&#34;prob&#34;] = self.connection_prob(x)
+        out_dict[&#34;prob_geq&#34;] = self.geq_connection_prob(x)
+        out_dict[&#34;expected&#34;] = self.expected_connections()
+        return out_dict
+
+    def set_verbose(self, vb):
+        &#34;&#34;&#34;Set whether to print more information.&#34;&#34;&#34;
+        self.verbose = vb
+
+    def get_all_prob(self):
+        &#34;&#34;&#34;Return cached probabilities to speed up operations.&#34;&#34;&#34;
+        if not self.cache:
+            raise ValueError(&#34;Set cache to true to store all probabilities&#34;)
+        return self.stored
+
+    def expected_total(self, k):
+        &#34;&#34;&#34;Return the expected total in B with k sender samples.&#34;&#34;&#34;
+        return get_dist_mean(self.each_dist[k])
+
+    def _weighted_val(self, x):
+        return mpmath.mpf(x) * self._get_val(x)
+
+    def _prob(self, x):
+        return self._get_val(x)
+
+    def _get_val(self, x):
+        if self.cache:
+            if int(x) not in self.stored:
+                res = self.connection_prob(x)
+                self.stored[int(x)] = res
+            else:
+                res = self.stored[int(x)]
+        else:
+            res = self.connection_prob(x)
+        return res</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="neuroconnect.mpf_connection.CombProb.calculate_distribution_n_senders"><code class="name flex">
+<span>def <span class="ident">calculate_distribution_n_senders</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Use the hypergeometric distribution to calculate distribution of senders.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>None</code></strong></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>OrderedDict</code></dt>
+<dd>The full distribution of the number of senders sampled.</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def calculate_distribution_n_senders(self):
+    &#34;&#34;&#34;
+    Use the hypergeometric distribution to calculate distribution of senders.
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    OrderedDict
+        The full distribution of the number of senders sampled.
+
+    &#34;&#34;&#34;
+    prob_a_senders = OrderedDict()
+    for i in range(int(self.n) + 1):
+        prob_a_senders[i] = float(hypergeometric_pmf(self.N, self.K, self.n, i))
+    return prob_a_senders</code></pre>
+</details>
+</dd>
+<dt id="neuroconnect.mpf_connection.CombProb.connection_prob"><code class="name flex">
+<span>def <span class="ident">connection_prob</span></span>(<span>self, x)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Calculate the probability of observing x
+connections between brain regions A and B.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>x</code></strong> :&ensp;<code>int</code></dt>
+<dd>The number of connections between A and B.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>mpmath.mpf</code></dt>
+<dd>The probability of observing x connections.</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def connection_prob(self, x):
+    &#34;&#34;&#34;
+    Calculate the probability of observing x
+    connections between brain regions A and B.
+
+    Parameters
+    ----------
+    x : int
+        The number of connections between A and B.
+
+    Returns
+    -------
+    mpmath.mpf
+        The probability of observing x connections.
+    &#34;&#34;&#34;
+    return self.final_distribution(x)</code></pre>
+</details>
+</dd>
+<dt id="neuroconnect.mpf_connection.CombProb.expected_connections"><code class="name flex">
+<span>def <span class="ident">expected_connections</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Calculate expected number of connections between A and B.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>mpmath.mpf</code></dt>
+<dd>The expected number of connections between A and B.</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def expected_connections(self):
+    &#34;&#34;&#34;
+    Calculate expected number of connections between A and B.
+
+    Returns
+    -------
+    mpmath.mpf
+        The expected number of connections between A and B.
+
+    &#34;&#34;&#34;
+    return mpmath.nsum(self._weighted_val, [0, self.m], verbose=self.verbose)</code></pre>
+</details>
+</dd>
+<dt id="neuroconnect.mpf_connection.CombProb.expected_total"><code class="name flex">
+<span>def <span class="ident">expected_total</span></span>(<span>self, k)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Return the expected total in B with k sender samples.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def expected_total(self, k):
+    &#34;&#34;&#34;Return the expected total in B with k sender samples.&#34;&#34;&#34;
+    return get_dist_mean(self.each_dist[k])</code></pre>
+</details>
+</dd>
+<dt id="neuroconnect.mpf_connection.CombProb.final_distribution"><code class="name flex">
+<span>def <span class="ident">final_distribution</span></span>(<span>self, x=None, keep_all=False)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Calculate P(X=x) as sum P(A_B = k) * P(X=x|k).</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>x</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>If provided, calculates only that probability.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>OrderedDict</code> or <code>float</code></dt>
+<dd>The full distribution or a single value, depending on x.</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def final_distribution(self, x=None, keep_all=False):
+    &#34;&#34;&#34;
+    Calculate P(X=x) as sum P(A_B = k) * P(X=x|k).
+
+    Parameters
+    ----------
+    x : int, optional
+        If provided, calculates only that probability.
+
+    Returns
+    -------
+    OrderedDict or float
+        The full distribution or a single value, depending on x.
+
+    &#34;&#34;&#34;
+
+    def fn_to_eval(k, i):
+        return float(
+            hypergeometric_pmf(self.M, k, self.m, i, approx=self.approx_hypergeo)
+        )
+
+    non_zeros = 0
+    if self.subsample_rate is not None:
+        for k, v in self.a_to_b_dist.items():
+            if v != 0.0:
+                non_zeros += 1
+        if non_zeros &gt; self.subsample_rate * len(list(self.a_to_b_dist.keys())):
+            sub = self.subsample_rate
+        else:
+            sub = None
+    else:
+        sub = None
+
+    estimated = marginal_prob(
+        range(int(self.m) + 1),
+        self.a_to_b_dist,
+        fn_to_eval,
+        x=x,
+        sub=sub,
+        plot=self.plot,
+        true_plot=self.true_plot,
+        keep_all=keep_all,
+    )
+    return estimated</code></pre>
+</details>
+</dd>
+<dt id="neuroconnect.mpf_connection.CombProb.geq_connection_prob"><code class="name flex">
+<span>def <span class="ident">geq_connection_prob</span></span>(<span>self, x)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Calculate the probability of observing &gt;=x
+connections between brain regions A and B.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>x</code></strong> :&ensp;<code>int</code></dt>
+<dd>The min number of connections between A and B.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>mpmath.mpf</code></dt>
+<dd>The probability of observing &gt;=x connections.</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def geq_connection_prob(self, x):
+    &#34;&#34;&#34;
+    Calculate the probability of observing &gt;=x
+    connections between brain regions A and B.
+
+    Parameters
+    ----------
+    x : int
+        The min number of connections between A and B.
+
+    Returns
+    -------
+    mpmath.mpf
+        The probability of observing &gt;=x connections.
+    &#34;&#34;&#34;
+    return 1 - mpmath.nsum(self.connection_prob, [0, x - 1], verbose=self.verbose)</code></pre>
+</details>
+</dd>
+<dt id="neuroconnect.mpf_connection.CombProb.get_all_prob"><code class="name flex">
+<span>def <span class="ident">get_all_prob</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Return cached probabilities to speed up operations.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_all_prob(self):
+    &#34;&#34;&#34;Return cached probabilities to speed up operations.&#34;&#34;&#34;
+    if not self.cache:
+        raise ValueError(&#34;Set cache to true to store all probabilities&#34;)
+    return self.stored</code></pre>
+</details>
+</dd>
+<dt id="neuroconnect.mpf_connection.CombProb.run"><code class="name flex">
+<span>def <span class="ident">run</span></span>(<span>self, x)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Helper function to run useful methods for given x.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>x</code></strong> :&ensp;<code>int</code></dt>
+<dd>The number of connections between A and B.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Dict</code></dt>
+<dd>keys are:
+"prob" - connection_prob(x)
+"prob_geq" - geq_connection_prob(x)
+"expected" - expected_connections()</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def run(self, x):
+    &#34;&#34;&#34;
+    Helper function to run useful methods for given x.
+
+    Parameters
+    ----------
+    x : int
+        The number of connections between A and B.
+
+    Returns
+    -------
+    Dict
+        keys are:
+        &#34;prob&#34; - connection_prob(x)
+        &#34;prob_geq&#34; - geq_connection_prob(x)
+        &#34;expected&#34; - expected_connections()
+
+    &#34;&#34;&#34;
+    out_dict = {}
+    out_dict[&#34;prob&#34;] = self.connection_prob(x)
+    out_dict[&#34;prob_geq&#34;] = self.geq_connection_prob(x)
+    out_dict[&#34;expected&#34;] = self.expected_connections()
+    return out_dict</code></pre>
+</details>
+</dd>
+<dt id="neuroconnect.mpf_connection.CombProb.set_verbose"><code class="name flex">
+<span>def <span class="ident">set_verbose</span></span>(<span>self, vb)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Set whether to print more information.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_verbose(self, vb):
+    &#34;&#34;&#34;Set whether to print more information.&#34;&#34;&#34;
+    self.verbose = vb</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="neuroconnect" href="index.html">neuroconnect</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="neuroconnect.mpf_connection.CombProb" href="#neuroconnect.mpf_connection.CombProb">CombProb</a></code></h4>
+<ul class="">
+<li><code><a title="neuroconnect.mpf_connection.CombProb.calculate_distribution_n_senders" href="#neuroconnect.mpf_connection.CombProb.calculate_distribution_n_senders">calculate_distribution_n_senders</a></code></li>
+<li><code><a title="neuroconnect.mpf_connection.CombProb.connection_prob" href="#neuroconnect.mpf_connection.CombProb.connection_prob">connection_prob</a></code></li>
+<li><code><a title="neuroconnect.mpf_connection.CombProb.expected_connections" href="#neuroconnect.mpf_connection.CombProb.expected_connections">expected_connections</a></code></li>
+<li><code><a title="neuroconnect.mpf_connection.CombProb.expected_total" href="#neuroconnect.mpf_connection.CombProb.expected_total">expected_total</a></code></li>
+<li><code><a title="neuroconnect.mpf_connection.CombProb.final_distribution" href="#neuroconnect.mpf_connection.CombProb.final_distribution">final_distribution</a></code></li>
+<li><code><a title="neuroconnect.mpf_connection.CombProb.geq_connection_prob" href="#neuroconnect.mpf_connection.CombProb.geq_connection_prob">geq_connection_prob</a></code></li>
+<li><code><a title="neuroconnect.mpf_connection.CombProb.get_all_prob" href="#neuroconnect.mpf_connection.CombProb.get_all_prob">get_all_prob</a></code></li>
+<li><code><a title="neuroconnect.mpf_connection.CombProb.run" href="#neuroconnect.mpf_connection.CombProb.run">run</a></code></li>
+<li><code><a title="neuroconnect.mpf_connection.CombProb.set_verbose" href="#neuroconnect.mpf_connection.CombProb.set_verbose">set_verbose</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.5</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

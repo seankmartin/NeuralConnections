@@ -1,0 +1,37 @@
+# Code
+*.pyc
+*.png
+*.db*
+*.npz
+*.npy
+*.graphml
+/Code/results/*
+
+# Paper
+*.pdf
+*.gz
+*.bak
+*.sav
+*.log
+*.aux
+*.lof
+*.lot
+*.xml
+*.toc
+*.tdo
+*-blx.bib
+*.bbl
+*.blg
+*latexmk
+*.fls
+*.out
+*.png
+*.jpg
+*.ini
+*.docx
+*.nav
+*.snm
+*.vrb
+*.bcf
+*.fff
+*.vscode*

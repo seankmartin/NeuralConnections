@@ -1,0 +1,1088 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.7.5" />
+<title>neuroconnect.experiment API documentation</title>
+<meta name="description" content="Defining a full experiment of simulating recording neurons." />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>neuroconnect.experiment</code></h1>
+</header>
+<section id="section-intro">
+<p>Defining a full experiment of simulating recording neurons.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;Defining a full experiment of simulating recording neurons.&#34;&#34;&#34;
+
+import os
+from time import time
+from datetime import datetime
+
+import numpy as np
+import matplotlib.pyplot as plt
+from mpmath import mpf
+import tqdm
+
+from .mpf_connection import CombProb
+from .simple_graph import (
+    create_graph,
+    vis_graph,
+    find_connected,
+    find_connected_limited,
+    to_matrix,
+    matrix_vis,
+    reverse,
+)
+from .nx_graph import (
+    nx_create_graph,
+    nx_vis_graph,
+    nx_find_connected,
+    nx_find_connected_limited,
+    nx_vis_force,
+    export_gml,
+)
+from .monte_carlo import (
+    monte_carlo,
+    list_to_df,
+    summarise_monte_carlo,
+    get_distribution,
+)
+from .connect_math import create_uniform
+
+
+def do_full_experiment(
+    region_sizes,
+    connection_strategy,
+    connectivity_params,
+    num_sampled,
+    do_mpf=False,
+    do_graph=False,
+    do_nx=False,
+    do_vis_graph=False,
+    do_only_none=False,
+    num_iters=1000,
+    num_cpus=1,
+    max_depth=3,
+    do_fixed=-1,
+    gen_graph_each_iter=False,
+    do_mat_vis=False,
+    save_every=1,
+    quiet=False,
+    clt_start=30,
+    subsample_rate=0.01,
+    approx_hypergeo=False,
+    use_mean=True,
+):
+    &#34;&#34;&#34;
+    Run mpf, simple graphs, and networkx graphs.
+
+    Run a combination of mpf probability, and simple graphs or networkx graphs with
+    Monte Carlo simulations.
+    &#34;&#34;&#34;
+
+    results = {}
+    overall_start_time = time()
+    if do_mpf:
+        result = mpf_control(
+            region_sizes,
+            connection_strategy,
+            connectivity_params,
+            num_sampled,
+            do_only_none,
+            max_depth,
+            clt_start,
+            verbose=(do_fixed != -1),
+            subsample_rate=subsample_rate,
+            approx_hypergeo=approx_hypergeo,
+            use_mean=use_mean,
+        )
+        results[&#34;mpf&#34;] = result
+
+    if do_graph:
+        do_nx_vis = do_nx
+
+        if do_fixed != -1:
+            for i in range(num_sampled[0] + 1):
+                result = graph_control(
+                    region_sizes,
+                    connection_strategy,
+                    connectivity_params,
+                    num_sampled,
+                    num_iters,
+                    do_vis_graph,
+                    do_nx_vis,
+                    num_cpus=num_cpus,
+                    max_depth=max_depth,
+                    fixed_samples=i,
+                    gen_graph_each_iter=gen_graph_each_iter,
+                    do_mat_vis=False,
+                    save_every=1,
+                    quiet=True,
+                )
+                results[&#34;g_{}&#34;.format(i)] = result
+        else:
+            result = graph_control(
+                region_sizes,
+                connection_strategy,
+                connectivity_params,
+                num_sampled,
+                num_iters,
+                do_vis_graph,
+                do_nx_vis,
+                num_cpus=num_cpus,
+                max_depth=max_depth,
+                fixed_samples=-1,
+                do_mat_vis=do_mat_vis,
+                gen_graph_each_iter=gen_graph_each_iter,
+                save_every=save_every,
+                quiet=quiet,
+            )
+            results[&#34;graph&#34;] = result
+
+    if do_nx:
+        do_nx_vis = (not do_graph) and do_vis_graph
+        result = nx_control(
+            region_sizes,
+            connection_strategy,
+            connectivity_params,
+            num_sampled,
+            num_iters,
+            do_nx_vis,
+            False,
+            num_cpus=num_cpus,
+            max_depth=max_depth,
+        )
+        results[&#34;nx&#34;] = result
+    elif do_vis_graph:
+        nx_control(
+            region_sizes,
+            connection_strategy,
+            connectivity_params,
+            num_sampled,
+            num_iters,
+            False,
+            True,
+        )
+
+    if (not do_mpf) and (not do_graph) and (not do_nx) and (not do_vis_graph):
+        compare_simple_nx(
+            region_sizes,
+            connection_strategy,
+            connectivity_params,
+            num_sampled,
+            num_iters,
+            max_depth=max_depth,
+        )
+
+    if not quiet:
+        print(
+            &#34;Completed everything in {:.2f} seconds&#34;.format(time() - overall_start_time)
+        )
+    return results
+
+
+def mpf_control(
+    region_sizes,
+    connection_strategy,
+    connectivity_params,
+    num_sampled,
+    do_only_none,
+    max_depth,
+    clt_start,
+    verbose=False,
+    subsample_rate=0.01,
+    approx_hypergeo=False,
+    use_mean=True,
+):
+    &#34;&#34;&#34;Create an mpf CombProb object and perform stats calculations.&#34;&#34;&#34;
+    start_time = time()
+    if len(region_sizes) != 2:
+        raise ValueError(&#34;MPF currently only supports 2 regions&#34;)
+
+    if (connection_strategy.__name__ == &#34;RecurrentConnectivity&#34;) or (
+        connection_strategy.__name__ == &#34;MeanRecurrentConnectivity&#34;
+        or (connection_strategy.__name__ == &#34;UniqueConnectivity&#34;)
+    ):
+        unif_out = create_uniform(
+            connectivity_params[0][&#34;min_forward&#34;], connectivity_params[0][&#34;max_forward&#34;]
+        )
+        unif_re = create_uniform(
+            connectivity_params[1][&#34;min_forward&#34;], connectivity_params[1][&#34;max_forward&#34;]
+        )
+        a, b = (
+            int(round(region_sizes[0] * connectivity_params[0][&#34;min_inter&#34;])),
+            int(round(region_sizes[0] * connectivity_params[0][&#34;max_inter&#34;])),
+        )
+        inter_a = create_uniform(a, b)
+        a, b = (
+            int(round(region_sizes[1] * connectivity_params[1][&#34;min_inter&#34;])),
+            int(round(region_sizes[1] * connectivity_params[1][&#34;max_inter&#34;])),
+        )
+        inter_b = create_uniform(a, b)
+        delta_params = {
+            &#34;out_connections_dist&#34;: unif_out,
+            &#34;recurrent_connections_dist&#34;: unif_re,
+            &#34;num_senders&#34;: connectivity_params[0][&#34;num_senders&#34;],
+            &#34;num_recurrent&#34;: connectivity_params[1][&#34;num_senders&#34;],
+            &#34;num_start&#34;: region_sizes[0],
+            &#34;total_samples&#34;: num_sampled[0],
+            &#34;start_inter_dist&#34;: inter_a,
+            &#34;end_inter_dist&#34;: inter_b,
+            &#34;static_verbose&#34;: verbose,
+            &#34;max_depth&#34;: max_depth,
+            &#34;init_delta&#34;: True,
+            &#34;clt_start&#34;: clt_start,
+            &#34;use_mean&#34;: use_mean,
+        }
+
+    if connection_strategy.__name__ == &#34;MeanRecurrentConnectivity&#34;:
+        subsample_rate = None
+    if (max_depth &gt; 1) and use_mean:
+        subsample_rate = None
+
+    connection_prob = CombProb(
+        region_sizes[0],
+        num_sampled[0],
+        connectivity_params[0][&#34;num_senders&#34;],
+        region_sizes[1],
+        num_sampled[1],
+        connection_strategy.static_expected_connections,
+        subsample_rate=subsample_rate,
+        approx_hypergeo=approx_hypergeo,
+        N=region_sizes[1],
+        verbose=verbose,
+        **delta_params
+    )
+    if do_only_none:
+        result = {&#34;zero&#34;: connection_prob.connection_prob(0)}
+    else:
+        result = {
+            &#34;expected&#34;: connection_prob.expected_connections(),
+            &#34;total&#34;: connection_prob.get_all_prob(),
+            &#34;each_expected&#34;: {
+                k: connection_prob.expected_total(k) for k in range(num_sampled[0] + 1)
+            },
+        }
+    return result
+
+
+def graph_control(
+    region_sizes,
+    connection_strategy,
+    connectivity_params,
+    num_sampled,
+    num_iters,
+    do_vis_graph,
+    do_nx_vis,
+    num_cpus=1,
+    max_depth=5,
+    fixed_samples=-1,
+    do_mat_vis=False,
+    gen_graph_each_iter=False,
+    save_every=1,
+    quiet=False,
+):
+    &#34;&#34;&#34;
+    Create a simple graph and perform monte carlo.
+
+    fixed_samples denotes to pick a fixed number of N
+    neurons in region A that send forward connections to B,
+    and consider all neurons in B to be target neurons.
+    &#34;&#34;&#34;
+    source_vert_list = [i for i in range(region_sizes[0])]
+    target_vert_list = [i for i in range(region_sizes[-1])]
+
+    if not gen_graph_each_iter:
+        g_graph, g_connected = create_graph(
+            region_sizes, connection_strategy, connectivity_params
+        )
+        g_reverse_graph = reverse(g_graph)
+    else:
+        g_graph, g_connected, g_reverse_graph = (None, None, None)
+
+    def random_var_gen(iter_val):
+        if gen_graph_each_iter:
+            graph, connected = create_graph(
+                region_sizes, connection_strategy, connectivity_params
+            )
+        else:
+            graph, connected = g_graph, g_connected
+
+        if fixed_samples != -1:
+            sources = np.append(
+                np.random.choice(connected, fixed_samples, replace=False),
+                np.random.choice(
+                    np.delete(source_vert_list, connected),
+                    num_sampled[0] - fixed_samples,
+                    replace=False,
+                ),
+            )
+            targets = np.sum(np.array(region_sizes[:-1])) + np.array(target_vert_list)
+
+        else:
+            sources = np.random.choice(source_vert_list, num_sampled[0], replace=False)
+            targets = np.sum(np.array(region_sizes[:-1])) + np.random.choice(
+                target_vert_list, num_sampled[-1], replace=False
+            )
+        return graph, sources, targets
+
+    def fn_to_eval(graph, sources, targets):
+        if gen_graph_each_iter:
+            reverse_graph = None
+        else:
+            reverse_graph = g_reverse_graph
+
+        reachable = find_connected_limited(
+            graph, sources, targets, max_depth=max_depth, reverse_graph=reverse_graph
+        )
+        # reachable = find_connected(graph, sources, targets)
+        return (len(reachable),)
+
+    result = monte_carlo(
+        fn_to_eval,
+        random_var_gen,
+        num_iters,
+        num_cpus=num_cpus,
+        headers=[&#34;Connections&#34;,],
+        save_name=&#34;graph_mc.csv&#34;,
+        save_every=save_every,
+        progress=not quiet,
+    )
+    df = list_to_df(result, [&#34;Connections&#34;,],)
+    result = summarise_monte_carlo(
+        df, to_plot=[&#34;Connections&#34;,], plt_outfile=&#34;graph_dist.png&#34;,
+    )
+    distrib = get_distribution(df, &#34;Connections&#34;, num_iters)
+
+    if do_vis_graph:
+        print(&#34;Starting graph visualisation&#34;)
+        graph, sources, targets = random_var_gen(0)
+        reachable = find_connected(graph, sources, targets)
+        fig = vis_graph(graph, region_sizes, sources, targets, reachable=reachable)
+        fig.savefig(&#34;graph.png&#34;)
+
+        if do_nx_vis:
+            graph = nx_create_graph(graph)
+            reachable = nx_find_connected(graph, sources, targets)
+            nx_vis_graph(graph, region_sizes, sources, targets, reachable=reachable)
+
+    if do_mat_vis:
+        print(&#34;Starting matrix visualisation&#34;)
+        graph, _, _ = random_var_gen(0)
+        AB, BA, AA, BB = to_matrix(graph, region_sizes[0], region_sizes[-1])
+        matrix_vis(AB, BA, AA, BB, k_size=150, name=&#34;graph_mat_vis.pdf&#34;)
+
+    return {&#34;full_results&#34;: df, &#34;summary_stats&#34;: result, &#34;dist&#34;: distrib}
+
+
+def nx_control(
+    region_sizes,
+    connection_strategy,
+    connectivity_params,
+    num_sampled,
+    num_iters,
+    do_vis_graph,
+    new_vis,
+    num_cpus=1,
+    max_depth=5,
+):
+    &#34;&#34;&#34;Create a networkx graph and perform monte carlo.&#34;&#34;&#34;
+    source_vert_list = [i for i in range(region_sizes[0])]
+    target_vert_list = [i for i in range(region_sizes[-1])]
+
+    def random_var_gen(iter_val):
+        graph, _ = create_graph(region_sizes, connection_strategy, connectivity_params)
+        graph = nx_create_graph(graph)
+        sources = np.random.choice(source_vert_list, num_sampled[0], replace=False)
+        targets = np.sum(np.array(region_sizes[:-1])) + np.random.choice(
+            target_vert_list, num_sampled[-1], replace=False
+        )
+        return graph, sources, targets
+
+    def fn_to_eval(graph, sources, targets):
+        reachable = nx_find_connected_limited(
+            graph, sources, targets, max_depth=max_depth
+        )
+        return (len(reachable),)
+
+    if new_vis:
+        graph, sources, targets = random_var_gen(0)
+        export_gml(graph)
+        here = os.path.dirname(os.path.realpath(__file__))
+        os.makedirs(os.path.join(here, &#34;..&#34;, &#34;figures&#34;), exist_ok=True)
+        now = datetime.now().strftime(&#34;%Y-%m-%d__%H-%M-%S&#34;)
+        name = os.path.join(here, &#34;..&#34;, &#34;figures&#34;, &#34;nx_simple_{}.png&#34;.format(now))
+        nx_vis_force(
+            graph, source_vert_list, target_vert_list, sources, targets, name=name
+        )
+
+        return
+
+    result = monte_carlo(fn_to_eval, random_var_gen, num_iters, num_cpus=num_cpus)
+    df = list_to_df(result, [&#34;Connections&#34;,],)
+    result = summarise_monte_carlo(
+        df, to_plot=[&#34;Connections&#34;,], plt_outfile=&#34;nx_graph_dist.png&#34;,
+    )
+
+    if do_vis_graph:
+        plt.clf()
+        graph, sources, targets = random_var_gen(0)
+        reachable = nx_find_connected(graph, sources, targets)
+        nx_vis_graph(graph, region_sizes, sources, targets, reachable=reachable)
+
+    return {&#34;full_results&#34;: df, &#34;summary_stats&#34;: result}
+
+
+def compare_simple_nx(
+    region_sizes,
+    connection_strategy,
+    connectivity_params,
+    num_sampled,
+    num_iters,
+    max_depth=5,
+):
+    &#34;&#34;&#34;
+    Compare the results from networkx and the simple graph.
+
+    Note
+    ----
+    In a small number of cases the results differ, but simple
+    graph has been verified to be correct by hand.
+
+    &#34;&#34;&#34;
+    source_vert_list = [i for i in range(region_sizes[0])]
+    target_vert_list = [i for i in range(region_sizes[-1])]
+
+    def random_var_gen(iter_val):
+        graph, _ = create_graph(region_sizes, connection_strategy, connectivity_params)
+        nx_graph = nx_create_graph(graph)
+        sources = np.random.choice(source_vert_list, num_sampled[0], replace=False)
+        targets = np.sum(np.array(region_sizes[:-1])) + np.random.choice(
+            target_vert_list, num_sampled[-1], replace=False
+        )
+        return graph, nx_graph, sources, targets
+
+    def fn_to_eval(graph, nx_graph, sources, targets):
+        reachable = nx_find_connected_limited(
+            nx_graph, sources, targets, max_depth=max_depth
+        )
+        reachable2 = find_connected_limited(
+            graph, sources, targets, max_depth=max_depth
+        )
+        return (reachable, reachable2)
+
+    results = []
+    print(&#34;Checking if networkx is same as simple graph (netx, simple)&#34;)
+    good = True
+    for i in tqdm.tqdm(range(num_iters)):
+        args = random_var_gen(i)
+        result = fn_to_eval(*args)
+        results.append(result)
+        if result[0] != result[1]:
+            good = False
+
+            print(&#34;Unequal results {}&#34;.format(result))
+            if region_sizes[0] &lt;= 100:
+                print(&#34;Plotting situation&#34;)
+                fig = vis_graph(
+                    args[0], region_sizes, args[2], args[3], reachable=result[0]
+                )
+                fig.savefig(&#34;graph_test.png&#34;)
+                nx_vis_force(
+                    args[1],
+                    [i for i in range(region_sizes[0])],
+                    [
+                        np.sum(np.array(region_sizes[:-1])) + i
+                        for i in range(region_sizes[1])
+                    ],
+                    args[2],
+                    args[3],
+                    name=&#34;nx_graph_test.png&#34;,
+                    labels=True,
+                )
+
+                print(&#34;Source {}, target {}&#34;.format(list(args[2]), list(args[3])))
+                print(&#34;Simple&#34;)
+                for i in range(len(args[0])):
+                    print(&#34;{}: {}&#34;.format(i, list(args[0][i])))
+                print(&#34;Nx {}&#34;.format(args[1].edges))
+                return results
+
+    if good:
+        print(&#34;All good, matching results.&#34;)
+
+    return results</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="neuroconnect.experiment.compare_simple_nx"><code class="name flex">
+<span>def <span class="ident">compare_simple_nx</span></span>(<span>region_sizes, connection_strategy, connectivity_params, num_sampled, num_iters, max_depth=5)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Compare the results from networkx and the simple graph.</p>
+<h2 id="note">Note</h2>
+<p>In a small number of cases the results differ, but simple
+graph has been verified to be correct by hand.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def compare_simple_nx(
+    region_sizes,
+    connection_strategy,
+    connectivity_params,
+    num_sampled,
+    num_iters,
+    max_depth=5,
+):
+    &#34;&#34;&#34;
+    Compare the results from networkx and the simple graph.
+
+    Note
+    ----
+    In a small number of cases the results differ, but simple
+    graph has been verified to be correct by hand.
+
+    &#34;&#34;&#34;
+    source_vert_list = [i for i in range(region_sizes[0])]
+    target_vert_list = [i for i in range(region_sizes[-1])]
+
+    def random_var_gen(iter_val):
+        graph, _ = create_graph(region_sizes, connection_strategy, connectivity_params)
+        nx_graph = nx_create_graph(graph)
+        sources = np.random.choice(source_vert_list, num_sampled[0], replace=False)
+        targets = np.sum(np.array(region_sizes[:-1])) + np.random.choice(
+            target_vert_list, num_sampled[-1], replace=False
+        )
+        return graph, nx_graph, sources, targets
+
+    def fn_to_eval(graph, nx_graph, sources, targets):
+        reachable = nx_find_connected_limited(
+            nx_graph, sources, targets, max_depth=max_depth
+        )
+        reachable2 = find_connected_limited(
+            graph, sources, targets, max_depth=max_depth
+        )
+        return (reachable, reachable2)
+
+    results = []
+    print(&#34;Checking if networkx is same as simple graph (netx, simple)&#34;)
+    good = True
+    for i in tqdm.tqdm(range(num_iters)):
+        args = random_var_gen(i)
+        result = fn_to_eval(*args)
+        results.append(result)
+        if result[0] != result[1]:
+            good = False
+
+            print(&#34;Unequal results {}&#34;.format(result))
+            if region_sizes[0] &lt;= 100:
+                print(&#34;Plotting situation&#34;)
+                fig = vis_graph(
+                    args[0], region_sizes, args[2], args[3], reachable=result[0]
+                )
+                fig.savefig(&#34;graph_test.png&#34;)
+                nx_vis_force(
+                    args[1],
+                    [i for i in range(region_sizes[0])],
+                    [
+                        np.sum(np.array(region_sizes[:-1])) + i
+                        for i in range(region_sizes[1])
+                    ],
+                    args[2],
+                    args[3],
+                    name=&#34;nx_graph_test.png&#34;,
+                    labels=True,
+                )
+
+                print(&#34;Source {}, target {}&#34;.format(list(args[2]), list(args[3])))
+                print(&#34;Simple&#34;)
+                for i in range(len(args[0])):
+                    print(&#34;{}: {}&#34;.format(i, list(args[0][i])))
+                print(&#34;Nx {}&#34;.format(args[1].edges))
+                return results
+
+    if good:
+        print(&#34;All good, matching results.&#34;)
+
+    return results</code></pre>
+</details>
+</dd>
+<dt id="neuroconnect.experiment.do_full_experiment"><code class="name flex">
+<span>def <span class="ident">do_full_experiment</span></span>(<span>region_sizes, connection_strategy, connectivity_params, num_sampled, do_mpf=False, do_graph=False, do_nx=False, do_vis_graph=False, do_only_none=False, num_iters=1000, num_cpus=1, max_depth=3, do_fixed=-1, gen_graph_each_iter=False, do_mat_vis=False, save_every=1, quiet=False, clt_start=30, subsample_rate=0.01, approx_hypergeo=False, use_mean=True)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Run mpf, simple graphs, and networkx graphs.</p>
+<p>Run a combination of mpf probability, and simple graphs or networkx graphs with
+Monte Carlo simulations.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def do_full_experiment(
+    region_sizes,
+    connection_strategy,
+    connectivity_params,
+    num_sampled,
+    do_mpf=False,
+    do_graph=False,
+    do_nx=False,
+    do_vis_graph=False,
+    do_only_none=False,
+    num_iters=1000,
+    num_cpus=1,
+    max_depth=3,
+    do_fixed=-1,
+    gen_graph_each_iter=False,
+    do_mat_vis=False,
+    save_every=1,
+    quiet=False,
+    clt_start=30,
+    subsample_rate=0.01,
+    approx_hypergeo=False,
+    use_mean=True,
+):
+    &#34;&#34;&#34;
+    Run mpf, simple graphs, and networkx graphs.
+
+    Run a combination of mpf probability, and simple graphs or networkx graphs with
+    Monte Carlo simulations.
+    &#34;&#34;&#34;
+
+    results = {}
+    overall_start_time = time()
+    if do_mpf:
+        result = mpf_control(
+            region_sizes,
+            connection_strategy,
+            connectivity_params,
+            num_sampled,
+            do_only_none,
+            max_depth,
+            clt_start,
+            verbose=(do_fixed != -1),
+            subsample_rate=subsample_rate,
+            approx_hypergeo=approx_hypergeo,
+            use_mean=use_mean,
+        )
+        results[&#34;mpf&#34;] = result
+
+    if do_graph:
+        do_nx_vis = do_nx
+
+        if do_fixed != -1:
+            for i in range(num_sampled[0] + 1):
+                result = graph_control(
+                    region_sizes,
+                    connection_strategy,
+                    connectivity_params,
+                    num_sampled,
+                    num_iters,
+                    do_vis_graph,
+                    do_nx_vis,
+                    num_cpus=num_cpus,
+                    max_depth=max_depth,
+                    fixed_samples=i,
+                    gen_graph_each_iter=gen_graph_each_iter,
+                    do_mat_vis=False,
+                    save_every=1,
+                    quiet=True,
+                )
+                results[&#34;g_{}&#34;.format(i)] = result
+        else:
+            result = graph_control(
+                region_sizes,
+                connection_strategy,
+                connectivity_params,
+                num_sampled,
+                num_iters,
+                do_vis_graph,
+                do_nx_vis,
+                num_cpus=num_cpus,
+                max_depth=max_depth,
+                fixed_samples=-1,
+                do_mat_vis=do_mat_vis,
+                gen_graph_each_iter=gen_graph_each_iter,
+                save_every=save_every,
+                quiet=quiet,
+            )
+            results[&#34;graph&#34;] = result
+
+    if do_nx:
+        do_nx_vis = (not do_graph) and do_vis_graph
+        result = nx_control(
+            region_sizes,
+            connection_strategy,
+            connectivity_params,
+            num_sampled,
+            num_iters,
+            do_nx_vis,
+            False,
+            num_cpus=num_cpus,
+            max_depth=max_depth,
+        )
+        results[&#34;nx&#34;] = result
+    elif do_vis_graph:
+        nx_control(
+            region_sizes,
+            connection_strategy,
+            connectivity_params,
+            num_sampled,
+            num_iters,
+            False,
+            True,
+        )
+
+    if (not do_mpf) and (not do_graph) and (not do_nx) and (not do_vis_graph):
+        compare_simple_nx(
+            region_sizes,
+            connection_strategy,
+            connectivity_params,
+            num_sampled,
+            num_iters,
+            max_depth=max_depth,
+        )
+
+    if not quiet:
+        print(
+            &#34;Completed everything in {:.2f} seconds&#34;.format(time() - overall_start_time)
+        )
+    return results</code></pre>
+</details>
+</dd>
+<dt id="neuroconnect.experiment.graph_control"><code class="name flex">
+<span>def <span class="ident">graph_control</span></span>(<span>region_sizes, connection_strategy, connectivity_params, num_sampled, num_iters, do_vis_graph, do_nx_vis, num_cpus=1, max_depth=5, fixed_samples=-1, do_mat_vis=False, gen_graph_each_iter=False, save_every=1, quiet=False)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Create a simple graph and perform monte carlo.</p>
+<p>fixed_samples denotes to pick a fixed number of N
+neurons in region A that send forward connections to B,
+and consider all neurons in B to be target neurons.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def graph_control(
+    region_sizes,
+    connection_strategy,
+    connectivity_params,
+    num_sampled,
+    num_iters,
+    do_vis_graph,
+    do_nx_vis,
+    num_cpus=1,
+    max_depth=5,
+    fixed_samples=-1,
+    do_mat_vis=False,
+    gen_graph_each_iter=False,
+    save_every=1,
+    quiet=False,
+):
+    &#34;&#34;&#34;
+    Create a simple graph and perform monte carlo.
+
+    fixed_samples denotes to pick a fixed number of N
+    neurons in region A that send forward connections to B,
+    and consider all neurons in B to be target neurons.
+    &#34;&#34;&#34;
+    source_vert_list = [i for i in range(region_sizes[0])]
+    target_vert_list = [i for i in range(region_sizes[-1])]
+
+    if not gen_graph_each_iter:
+        g_graph, g_connected = create_graph(
+            region_sizes, connection_strategy, connectivity_params
+        )
+        g_reverse_graph = reverse(g_graph)
+    else:
+        g_graph, g_connected, g_reverse_graph = (None, None, None)
+
+    def random_var_gen(iter_val):
+        if gen_graph_each_iter:
+            graph, connected = create_graph(
+                region_sizes, connection_strategy, connectivity_params
+            )
+        else:
+            graph, connected = g_graph, g_connected
+
+        if fixed_samples != -1:
+            sources = np.append(
+                np.random.choice(connected, fixed_samples, replace=False),
+                np.random.choice(
+                    np.delete(source_vert_list, connected),
+                    num_sampled[0] - fixed_samples,
+                    replace=False,
+                ),
+            )
+            targets = np.sum(np.array(region_sizes[:-1])) + np.array(target_vert_list)
+
+        else:
+            sources = np.random.choice(source_vert_list, num_sampled[0], replace=False)
+            targets = np.sum(np.array(region_sizes[:-1])) + np.random.choice(
+                target_vert_list, num_sampled[-1], replace=False
+            )
+        return graph, sources, targets
+
+    def fn_to_eval(graph, sources, targets):
+        if gen_graph_each_iter:
+            reverse_graph = None
+        else:
+            reverse_graph = g_reverse_graph
+
+        reachable = find_connected_limited(
+            graph, sources, targets, max_depth=max_depth, reverse_graph=reverse_graph
+        )
+        # reachable = find_connected(graph, sources, targets)
+        return (len(reachable),)
+
+    result = monte_carlo(
+        fn_to_eval,
+        random_var_gen,
+        num_iters,
+        num_cpus=num_cpus,
+        headers=[&#34;Connections&#34;,],
+        save_name=&#34;graph_mc.csv&#34;,
+        save_every=save_every,
+        progress=not quiet,
+    )
+    df = list_to_df(result, [&#34;Connections&#34;,],)
+    result = summarise_monte_carlo(
+        df, to_plot=[&#34;Connections&#34;,], plt_outfile=&#34;graph_dist.png&#34;,
+    )
+    distrib = get_distribution(df, &#34;Connections&#34;, num_iters)
+
+    if do_vis_graph:
+        print(&#34;Starting graph visualisation&#34;)
+        graph, sources, targets = random_var_gen(0)
+        reachable = find_connected(graph, sources, targets)
+        fig = vis_graph(graph, region_sizes, sources, targets, reachable=reachable)
+        fig.savefig(&#34;graph.png&#34;)
+
+        if do_nx_vis:
+            graph = nx_create_graph(graph)
+            reachable = nx_find_connected(graph, sources, targets)
+            nx_vis_graph(graph, region_sizes, sources, targets, reachable=reachable)
+
+    if do_mat_vis:
+        print(&#34;Starting matrix visualisation&#34;)
+        graph, _, _ = random_var_gen(0)
+        AB, BA, AA, BB = to_matrix(graph, region_sizes[0], region_sizes[-1])
+        matrix_vis(AB, BA, AA, BB, k_size=150, name=&#34;graph_mat_vis.pdf&#34;)
+
+    return {&#34;full_results&#34;: df, &#34;summary_stats&#34;: result, &#34;dist&#34;: distrib}</code></pre>
+</details>
+</dd>
+<dt id="neuroconnect.experiment.mpf_control"><code class="name flex">
+<span>def <span class="ident">mpf_control</span></span>(<span>region_sizes, connection_strategy, connectivity_params, num_sampled, do_only_none, max_depth, clt_start, verbose=False, subsample_rate=0.01, approx_hypergeo=False, use_mean=True)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Create an mpf CombProb object and perform stats calculations.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def mpf_control(
+    region_sizes,
+    connection_strategy,
+    connectivity_params,
+    num_sampled,
+    do_only_none,
+    max_depth,
+    clt_start,
+    verbose=False,
+    subsample_rate=0.01,
+    approx_hypergeo=False,
+    use_mean=True,
+):
+    &#34;&#34;&#34;Create an mpf CombProb object and perform stats calculations.&#34;&#34;&#34;
+    start_time = time()
+    if len(region_sizes) != 2:
+        raise ValueError(&#34;MPF currently only supports 2 regions&#34;)
+
+    if (connection_strategy.__name__ == &#34;RecurrentConnectivity&#34;) or (
+        connection_strategy.__name__ == &#34;MeanRecurrentConnectivity&#34;
+        or (connection_strategy.__name__ == &#34;UniqueConnectivity&#34;)
+    ):
+        unif_out = create_uniform(
+            connectivity_params[0][&#34;min_forward&#34;], connectivity_params[0][&#34;max_forward&#34;]
+        )
+        unif_re = create_uniform(
+            connectivity_params[1][&#34;min_forward&#34;], connectivity_params[1][&#34;max_forward&#34;]
+        )
+        a, b = (
+            int(round(region_sizes[0] * connectivity_params[0][&#34;min_inter&#34;])),
+            int(round(region_sizes[0] * connectivity_params[0][&#34;max_inter&#34;])),
+        )
+        inter_a = create_uniform(a, b)
+        a, b = (
+            int(round(region_sizes[1] * connectivity_params[1][&#34;min_inter&#34;])),
+            int(round(region_sizes[1] * connectivity_params[1][&#34;max_inter&#34;])),
+        )
+        inter_b = create_uniform(a, b)
+        delta_params = {
+            &#34;out_connections_dist&#34;: unif_out,
+            &#34;recurrent_connections_dist&#34;: unif_re,
+            &#34;num_senders&#34;: connectivity_params[0][&#34;num_senders&#34;],
+            &#34;num_recurrent&#34;: connectivity_params[1][&#34;num_senders&#34;],
+            &#34;num_start&#34;: region_sizes[0],
+            &#34;total_samples&#34;: num_sampled[0],
+            &#34;start_inter_dist&#34;: inter_a,
+            &#34;end_inter_dist&#34;: inter_b,
+            &#34;static_verbose&#34;: verbose,
+            &#34;max_depth&#34;: max_depth,
+            &#34;init_delta&#34;: True,
+            &#34;clt_start&#34;: clt_start,
+            &#34;use_mean&#34;: use_mean,
+        }
+
+    if connection_strategy.__name__ == &#34;MeanRecurrentConnectivity&#34;:
+        subsample_rate = None
+    if (max_depth &gt; 1) and use_mean:
+        subsample_rate = None
+
+    connection_prob = CombProb(
+        region_sizes[0],
+        num_sampled[0],
+        connectivity_params[0][&#34;num_senders&#34;],
+        region_sizes[1],
+        num_sampled[1],
+        connection_strategy.static_expected_connections,
+        subsample_rate=subsample_rate,
+        approx_hypergeo=approx_hypergeo,
+        N=region_sizes[1],
+        verbose=verbose,
+        **delta_params
+    )
+    if do_only_none:
+        result = {&#34;zero&#34;: connection_prob.connection_prob(0)}
+    else:
+        result = {
+            &#34;expected&#34;: connection_prob.expected_connections(),
+            &#34;total&#34;: connection_prob.get_all_prob(),
+            &#34;each_expected&#34;: {
+                k: connection_prob.expected_total(k) for k in range(num_sampled[0] + 1)
+            },
+        }
+    return result</code></pre>
+</details>
+</dd>
+<dt id="neuroconnect.experiment.nx_control"><code class="name flex">
+<span>def <span class="ident">nx_control</span></span>(<span>region_sizes, connection_strategy, connectivity_params, num_sampled, num_iters, do_vis_graph, new_vis, num_cpus=1, max_depth=5)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Create a networkx graph and perform monte carlo.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def nx_control(
+    region_sizes,
+    connection_strategy,
+    connectivity_params,
+    num_sampled,
+    num_iters,
+    do_vis_graph,
+    new_vis,
+    num_cpus=1,
+    max_depth=5,
+):
+    &#34;&#34;&#34;Create a networkx graph and perform monte carlo.&#34;&#34;&#34;
+    source_vert_list = [i for i in range(region_sizes[0])]
+    target_vert_list = [i for i in range(region_sizes[-1])]
+
+    def random_var_gen(iter_val):
+        graph, _ = create_graph(region_sizes, connection_strategy, connectivity_params)
+        graph = nx_create_graph(graph)
+        sources = np.random.choice(source_vert_list, num_sampled[0], replace=False)
+        targets = np.sum(np.array(region_sizes[:-1])) + np.random.choice(
+            target_vert_list, num_sampled[-1], replace=False
+        )
+        return graph, sources, targets
+
+    def fn_to_eval(graph, sources, targets):
+        reachable = nx_find_connected_limited(
+            graph, sources, targets, max_depth=max_depth
+        )
+        return (len(reachable),)
+
+    if new_vis:
+        graph, sources, targets = random_var_gen(0)
+        export_gml(graph)
+        here = os.path.dirname(os.path.realpath(__file__))
+        os.makedirs(os.path.join(here, &#34;..&#34;, &#34;figures&#34;), exist_ok=True)
+        now = datetime.now().strftime(&#34;%Y-%m-%d__%H-%M-%S&#34;)
+        name = os.path.join(here, &#34;..&#34;, &#34;figures&#34;, &#34;nx_simple_{}.png&#34;.format(now))
+        nx_vis_force(
+            graph, source_vert_list, target_vert_list, sources, targets, name=name
+        )
+
+        return
+
+    result = monte_carlo(fn_to_eval, random_var_gen, num_iters, num_cpus=num_cpus)
+    df = list_to_df(result, [&#34;Connections&#34;,],)
+    result = summarise_monte_carlo(
+        df, to_plot=[&#34;Connections&#34;,], plt_outfile=&#34;nx_graph_dist.png&#34;,
+    )
+
+    if do_vis_graph:
+        plt.clf()
+        graph, sources, targets = random_var_gen(0)
+        reachable = nx_find_connected(graph, sources, targets)
+        nx_vis_graph(graph, region_sizes, sources, targets, reachable=reachable)
+
+    return {&#34;full_results&#34;: df, &#34;summary_stats&#34;: result}</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="neuroconnect" href="index.html">neuroconnect</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="neuroconnect.experiment.compare_simple_nx" href="#neuroconnect.experiment.compare_simple_nx">compare_simple_nx</a></code></li>
+<li><code><a title="neuroconnect.experiment.do_full_experiment" href="#neuroconnect.experiment.do_full_experiment">do_full_experiment</a></code></li>
+<li><code><a title="neuroconnect.experiment.graph_control" href="#neuroconnect.experiment.graph_control">graph_control</a></code></li>
+<li><code><a title="neuroconnect.experiment.mpf_control" href="#neuroconnect.experiment.mpf_control">mpf_control</a></code></li>
+<li><code><a title="neuroconnect.experiment.nx_control" href="#neuroconnect.experiment.nx_control">nx_control</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.5</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>
