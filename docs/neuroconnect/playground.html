@@ -1,0 +1,1103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.7.5" />
+<title>neuroconnect.playground API documentation</title>
+<meta name="description" content="Experimenting with assorted code in this package." />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>neuroconnect.playground</code></h1>
+</header>
+<section id="section-intro">
+<p>Experimenting with assorted code in this package.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;Experimenting with assorted code in this package.&#34;&#34;&#34;
+
+import os
+from collections import OrderedDict
+
+import numpy as np
+import matplotlib.pyplot as plt
+import mpmath
+import seaborn as sns
+import pandas as pd
+
+
+def test_hyper_eg(total, bad, draws):
+    &#34;&#34;&#34;Demonstrates that expected overlap between two sets is formula.&#34;&#34;&#34;
+    from connect_math import (
+        hypergeometric_pmf,
+        expected_non_overlapping,
+        expected_overlapping,
+    )
+
+    exp = 0
+    for k in range(draws + 1):
+        res = hypergeometric_pmf(total, total - bad, draws, k)
+        exp = exp + (k * res)
+
+    other = expected_non_overlapping(total, bad, draws)
+    other2 = expected_overlapping(total, bad, draws)
+    return (exp, other, other2)
+
+
+def test_unique(total, draws, n_senders):
+    &#34;&#34;&#34;Test the calculation of expected unique.&#34;&#34;&#34;
+    from .connect_math import expected_unique
+    from .monte_carlo import monte_carlo
+
+    total_a = np.array([i for i in range(total)])
+
+    def gen_random(i):
+        random = np.random.choice(total_a, draws)
+        return (random,)
+
+    def check_random(random):
+        unique = np.unique(random)
+        return (len(unique),)
+
+    result = monte_carlo(check_random, gen_random, 50000)
+    avg = 0
+    for val in result:
+        avg += val[0] / 50000
+    ab = expected_unique(total, draws)
+
+    print(&#34;Stats&#34;, ab, &#34;MC&#34;, avg)
+
+    senders = np.random.choice(total, size=(n_senders, draws), replace=True)
+    connections = {}
+    for i in range(n_senders):
+        num_choices = np.random.randint(1, draws + 1, dtype=np.int32)
+        forward_connection = senders[i, :num_choices]
+        connections[i] = forward_connection
+
+    avg = 0
+    for k, v in connections.items():
+        avg += len(np.unique(v)) / n_senders
+
+    connections = 0
+    for val in range(1, 301):
+        connections += expected_unique(1000, val) / draws
+    print(&#34;Stats&#34;, connections, &#34;MC&#34;, avg)
+
+
+def test_uniform(
+    n_dists,
+    min_val,
+    max_val,
+    n_dists2=20,
+    n_iters=100000,
+    N=1000,
+    plot=True,
+    n_senders=200,
+):
+    &#34;&#34;&#34;Test the distribution of uniform distribution sums and functions of this.&#34;&#34;&#34;
+    # NOTE: of course, sum of uniform dists approaches normal dist
+    # However, taking a function of the sum of uniform dists not necessarily
+
+    from .connect_math import (
+        nfold_conv,
+        create_uniform,
+        get_dist_mean,
+        expected_unique,
+        apply_fn_to_dist,
+        alt_way,
+    )
+    from .monte_carlo import get_distribution
+    from .mpf_connection import CombProb
+
+    alt_full, alt_final = alt_way(N, n_dists, n_senders, min_val, max_val)
+    uni = create_uniform(min_val, max_val)
+    dists = [uni,] * n_dists
+    dist = nfold_conv(dists)
+
+    print(&#34;Expected value: {}&#34;.format(get_dist_mean(dist)))
+
+    def fn_to_apply(k):
+        return float(expected_unique(N, k))
+
+    fn_dist = apply_fn_to_dist(dist, fn_to_apply)
+
+    print(&#34;Expected value fn: {}&#34;.format(get_dist_mean(fn_dist)))
+    print(&#34;Old expected value dist: {}&#34;.format(expected_unique(N, get_dist_mean(dist))))
+    print(
+        &#34;Old expected value: {}&#34;.format(
+            expected_unique(N, n_dists * (max_val + min_val) / 2)
+        )
+    )
+
+    randoms = np.random.randint(min_val, max_val + 1, size=(n_iters, n_dists))
+    good = np.array([i for i in range(n_senders)])
+    choices = np.array([i for i in range(N)])
+    random_vals = np.random.choice(
+        choices, size=(n_iters, n_dists, max_val), replace=True
+    )
+    values = []
+    for i in range(n_iters):
+        arrs = []
+        for j in range(n_dists):
+            arrs.append(random_vals[i, j, : randoms[i, j]])
+
+        to_use = np.concatenate(arrs)
+        drawn = np.random.choice(choices, size=(n_dists2,), replace=False)
+
+        values.append(
+            [len(np.unique(to_use)), len(to_use), len(np.intersect1d(drawn, to_use))]
+        )
+
+    df = pd.DataFrame(values, columns=[&#34;Unique&#34;, &#34;Samples&#34;, &#34;Overlap&#34;])
+    old_dist = get_distribution(df, &#34;Samples&#34;, n_iters)
+
+    values = []
+    for i in range(n_iters):
+        arrs = []
+        # Can remove this to just test delta - n_dists_use = n_dists
+        send_drawn = np.random.choice(choices, size=(n_dists,), replace=False)
+        n_dists_use = len(np.intersect1d(send_drawn, good))
+        if n_dists_use == 0:
+            values.append([0, 0, 0])
+            continue
+
+        for j in range(n_dists_use):
+            arrs.append(random_vals[i, j, : randoms[i, j]])
+
+        to_use = np.concatenate(arrs)
+        drawn = np.random.choice(choices, size=(n_dists2,), replace=False)
+
+        values.append(
+            [len(np.unique(to_use)), len(to_use), len(np.intersect1d(drawn, to_use))]
+        )
+    df = pd.DataFrame(values, columns=[&#34;Unique&#34;, &#34;Samples&#34;, &#34;Overlap&#34;])
+    est_dist = get_distribution(df, &#34;Overlap&#34;, n_iters)
+    new_dist = get_distribution(df, &#34;Unique&#34;, n_iters)
+
+    new_fn_dist = OrderedDict()
+    for k in new_dist.keys():
+        new_fn_dist[k] = fn_dist.get(k, 0)
+
+    if plot:
+        from .plot import plot_distribution
+
+        plot_distribution(dist, &#34;uniform_test.png&#34;)
+        plot_distribution(new_fn_dist, &#34;uniform_fn_test.png&#34;)
+        plot_distribution(old_dist, &#34;uniform_norm_test.png&#34;)
+        plot_distribution(new_dist, &#34;uniform_sim_test.png&#34;)
+        plot_distribution(est_dist, &#34;uniform_fin_test.png&#34;)
+        plot_distribution(alt_full, &#34;uniform_to_test.png&#34;)
+        plot_distribution(alt_final, &#34;uniform_fin_alt.png&#34;)
+
+        fig, ax = plt.subplots()
+        dists = (est_dist, stats, alt_final)
+        names = (&#34;Simulated&#34;, &#34;Old stats&#34;, &#34;New stats&#34;)
+        colors = (&#34;b&#34;, &#34;r&#34;, &#34;g&#34;)
+        for i, (dist, name) in enumerate(zip(dists, names)):
+            x = list(dist.keys())
+            y = list(dist.values())
+            ax.plot(x, y, c=colors[i], label=name)
+        plt.legend()
+        here = os.path.dirname(os.path.realpath(__file__))
+        os.makedirs(os.path.join(here, &#34;..&#34;, &#34;figures&#34;), exist_ok=True)
+        fig.savefig(os.path.join(here, &#34;..&#34;, &#34;figures&#34;, &#34;un_all.png&#34;))
+        plt.close(&#34;all&#34;)
+
+    print(get_dist_mean(dist), get_dist_mean(old_dist))
+    print(
+        get_dist_mean(fn_dist), expected_unique(N, n_dists * (max_val + min_val) / 2),
+    )
+    print(get_dist_mean(est_dist), get_dist_mean(stats), get_dist_mean(alt_final))
+    print(get_dist_mean(new_dist), get_dist_mean(alt_full))
+
+    return dist
+
+
+def test_sample_graph():
+    &#34;&#34;&#34;Test calculations of paths for a small known graph.&#34;&#34;&#34;
+    from .simple_graph import vis_graph, find_connected_limited
+    from .nx_graph import nx_create_graph, nx_vis_force, nx_find_connected_limited
+
+    graph = [[] for _ in range(12)]
+
+    graph[0] = [3]
+    graph[1] = [8]
+    graph[2] = [1]
+    graph[3] = [6]
+    graph[4] = [8]
+    graph[5] = [9]
+    graph[6] = [5]
+    graph[7] = [8]
+    graph[8] = [7]
+    graph[9] = [11]
+    graph[10] = [11]
+    graph[11] = [10]
+
+    nx_graph = nx_create_graph(graph)
+
+    start = [0, 1, 2, 3, 4, 5]
+    end = [6, 7, 8, 9, 10, 11]
+
+    here = os.path.dirname(os.path.abspath(__file__))
+    os.makedirs(os.path.join(here, &#34;..&#34;, &#34;figures&#34;), exist_ok=True)
+    # nx_vis_force(nx_graph, start, end, [], [], &#34;hand_nx.png&#34;, True)
+    fig = vis_graph(graph, [6, 6], start, end)
+    fig.savefig(os.path.join(here, &#34;..&#34;, &#34;figures&#34;, &#34;hand_simple.png&#34;))
+
+    for depth in range(4):
+        simple = find_connected_limited(graph, start, end, depth)
+        nx = nx_find_connected_limited(nx_graph, start, end, depth)
+        print(depth, simple, nx)
+
+    new_start = [0, 2]
+
+    for depth in range(7):
+        simple = find_connected_limited(graph, new_start, end, depth)
+        nx = nx_find_connected_limited(nx_graph, new_start, end, depth)
+        print(depth, simple, nx)
+
+
+def sample_graph_exp():
+    &#34;&#34;&#34;Test calculations of paths for a small known graph.&#34;&#34;&#34;
+    from .simple_graph import vis_graph, find_connected_limited
+    from .nx_graph import nx_create_graph, nx_vis_force, nx_find_connected_limited
+    from .monte_carlo import (
+        monte_carlo,
+        list_to_df,
+        summarise_monte_carlo,
+        get_distribution,
+    )
+
+    graph = [[] for _ in range(14)]
+
+    graph[0] = [7]
+    graph[1] = [3]
+    graph[2] = []
+    graph[3] = [9]
+    graph[4] = [12, 5]
+    graph[5] = [4]
+    graph[6] = [13]
+    graph[7] = []
+    graph[8] = []
+    graph[9] = []
+    graph[10] = [8, 9]
+    graph[11] = []
+    graph[12] = []
+    graph[13] = [4]
+
+    connected = [0, 3, 4, 6]
+    fixed_samples = 2
+    num_sampled = 3
+
+    start = [0, 1, 2, 3, 4, 5, 6]
+    source_vert_list = np.array(start)
+    end = [7, 8, 9, 10, 11, 12, 13]
+    targets = np.array(end)
+
+    here = os.path.dirname(os.path.abspath(__file__))
+    os.makedirs(os.path.join(here, &#34;..&#34;, &#34;figures&#34;), exist_ok=True)
+    fig = vis_graph(graph, [7, 7], start, end)
+    fig.savefig(os.path.join(here, &#34;..&#34;, &#34;figures&#34;, &#34;hand_simple_2.png&#34;))
+
+    # def random_var_gen():
+    #     sources = np.append(
+    #         np.random.choice(connected, fixed_samples, replace=False),
+    #         np.random.choice(
+    #             np.delete(source_vert_list, connected),
+    #             num_sampled - fixed_samples,
+    #             replace=False,
+    #         ),
+    #     )
+
+    #     return (sources,)
+
+    # def fn_to_eval(sources):
+    #     reachable = find_connected_limited(graph, sources, targets, max_depth=1)
+    #     # reachable = find_connected(graph, sources, targets)
+    #     return (len(reachable),)
+
+    def random_var_gen(iter_val):
+        sources = np.random.choice(source_vert_list, num_sampled, replace=False)
+        targets_t = np.random.choice(targets, num_sampled, replace=False)
+
+        return (sources, targets_t)
+
+    def fn_to_eval(sources, targets_t):
+        reachable = find_connected_limited(graph, sources, targets_t, max_depth=3)
+        return (len(reachable),)
+
+    result = monte_carlo(fn_to_eval, random_var_gen, 10000, num_cpus=1)
+    df = list_to_df(result, [&#34;Connections&#34;,],)
+    result = summarise_monte_carlo(
+        df, to_plot=[&#34;Connections&#34;,], plt_outfile=&#34;graph_dist.png&#34;, plot=False,
+    )
+    distrib = get_distribution(df, &#34;Connections&#34;, 10000)
+
+    fig, ax = plt.subplots(figsize=(6, 8))
+    x = np.array(list(distrib.keys()), dtype=float)
+    y = np.array(list(distrib.values()), dtype=float)
+
+    ax.plot(x, y, &#34;ko&#34;, ms=2.5)
+    y_vals_min = [0 for _ in x]
+    y_vals_max = y
+    colors = [&#34;k&#34; for _ in x]
+    ax.vlines(x, y_vals_min, y_vals_max, colors=colors)
+    sns.despine()
+    plt.xlabel(&#34;Number of recorded connections&#34;)
+    plt.ylabel(&#34;Probability of occurrence&#34;)
+    fig.savefig(os.path.join(here, &#34;..&#34;, &#34;figures&#34;, &#34;pdf_small_3.pdf&#34;), dpi=400)
+
+    return {&#34;distrib&#34;: distrib, &#34;summary&#34;: result, &#34;full&#34;: df}
+
+
+def plot_expected(input_file):
+    &#34;&#34;&#34;The change in value of expected is exponential.&#34;&#34;&#34;
+    x, y = [], []
+    y2 = []
+    with open(input_file, &#34;r&#34;) as f:
+        contents = f.read().split(&#34;,&#34;)
+        for line in contents:
+            num, mp = line.split(&#34;:&#34;)
+            num = int(num)
+            mp = float(mp[6:-2])
+            x.append(num)
+            y.append(mp)
+            y2.append(234 + (1 - np.exp(-0.3 * num)) * 766)
+
+    plt.plot(x, y, c=&#34;k&#34;)
+    plt.plot(x, y2, c=&#34;b&#34;)
+    plt.savefig(&#34;test.png&#34;)
+
+
+def check_subsample():
+    &#34;&#34;&#34;Check the accuracy of subsampling distributions.&#34;&#34;&#34;
+    from .connect_math import create_normal, get_uniform_moments
+    import matplotlib.pyplot as plt
+    from time import time
+
+    min_val, max_val = 100, 3000
+    mean, var = get_uniform_moments(min_val, max_val)
+    mult = 100
+
+    st = time()
+    normal_1 = create_normal(
+        range((max_val * mult) + 1), mean * mult, var * mult, sub=None
+    )
+    print(&#34;took {:.2f} seconds&#34;.format(time() - st))
+
+    st = time()
+    normal_2 = create_normal(
+        range((max_val * mult) + 1), mean * mult, var * mult, sub=0.01
+    )
+    print(&#34;took {:.2f} seconds&#34;.format(time() - st))
+
+    fig, ax = plt.subplots()
+
+    x, y = (list(normal_1.keys()), list(normal_1.values()))
+    ax.plot(x, y, &#34;r&#34;, label=&#34;full&#34;)
+    x, y = (list(normal_2.keys()), list(normal_2.values()))
+    ax.plot(x, y, &#34;b&#34;, linestyle=&#34;--&#34;, label=&#34;sample&#34;)
+
+    plt.show()
+
+
+def test_conv_speed(min_val, max_val, clt_start1, clt_start2, max_samples):
+    &#34;&#34;&#34;Test the speed of the convolution operation (hint - it is slow).&#34;&#34;&#34;
+    from time import time
+
+    from .connect_math import (
+        create_uniform,
+        convolution,
+        create_normal,
+        get_dist_mean,
+        get_dist_var,
+    )
+
+    dist = create_uniform(min_val, max_val)
+    start_mean, start_var = get_dist_mean(dist), get_dist_var(dist)
+    start_max_val = max(list(dist.keys()))
+    cache = OrderedDict()
+    cache[0] = OrderedDict()
+    cache[0][0] = 1.0
+
+    start1 = time()
+    for i in range(1, max_samples + 1):
+        if i &lt; clt_start1:
+            cache[i] = convolution(dist, cache[i - 1])
+        else:
+            cache[i] = create_normal(
+                range((start_max_val * i) + 1), start_mean * i, start_var * i
+            )
+
+    end1 = time()
+
+    cache = OrderedDict()
+    cache[0] = OrderedDict()
+    cache[0][0] = 1.0
+    start2 = time()
+
+    for i in range(1, max_samples + 1):
+        if i &lt; clt_start2:
+            cache[i] = convolution(dist, cache[i - 1])
+        else:
+            cache[i] = create_normal(
+                range((start_max_val * i) + 1), start_mean * i, start_var * i
+            )
+
+    end2 = time()
+
+    print(
+        &#34;Completed {} samples in {:.2f} and {:.2f} seconds with {}, and {}&#34;.format(
+            max_samples, end1 - start1, end2 - start2, clt_start1, clt_start2
+        )
+    )
+
+
+if __name__ == &#34;__main__&#34;:
+    # Hypergeometric again right?
+    arr = [
+        405389,
+        375280,
+        390413,
+        404149,
+        377923,
+        439143,
+        431692,
+        383157,
+        372278,
+        388033,
+        394696,
+        355324,
+        376727,
+        347152,
+        388628,
+        361182,
+        400800,
+        353701,
+        449542,
+        424401,
+        417760,
+        448637,
+        429387,
+        355282,
+        415545,
+        453806,
+        356367,
+        398820,
+        377551,
+        420042,
+        437768,
+        419263,
+        419257,
+        405574,
+        445007,
+        362068,
+        368380,
+        350797,
+        359602,
+        392117,
+        366477,
+        428624,
+        384986,
+        372038,
+        439853,
+        348657,
+        442893,
+    ]
+
+    print(len(arr))
+
+    print(test_hyper_eg(1000, 50, 10))
+    print(test_hyper_eg(1000, 100, 100))
+
+    if os.path.isfile(&#34;/home/sean/Repos/privateCode/ConnectionsCode/exp.txt&#34;):
+        plot_expected(&#34;/home/sean/Repos/privateCode/ConnectionsCode/exp.txt&#34;)
+
+    p0 = mpmath.mpf(56 / 90)
+    p1 = mpmath.mpf(32 / 90)
+    p2 = mpmath.mpf(2 / 90)
+
+    exp1 = np.array([p0, p1, p2])
+
+    iters = 10000
+    vals = [i for i in range(10)]
+
+    a = np.array([0, 0, 0])
+    for i in range(iters):
+        total_overlaps = 0
+        list_1 = np.random.choice(vals, size=2, replace=False)
+        list_2 = np.random.choice(vals, size=2, replace=False)
+        for l in list_1:
+            if l in list_2:
+                total_overlaps += 1
+        a[total_overlaps] += 1
+
+    exp2 = a / iters
+
+    print(exp1, exp2)
+
+    print(np.sum(exp1 * np.array([4, 3, 2])))
+    print(np.sum(exp2 * np.array([4, 3, 2])))
+
+    def C(n, r):
+        return mpmath.binomial(n, r)
+
+    print(C(4, 2))
+    print(C(3.5, 2))</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="neuroconnect.playground.check_subsample"><code class="name flex">
+<span>def <span class="ident">check_subsample</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Check the accuracy of subsampling distributions.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def check_subsample():
+    &#34;&#34;&#34;Check the accuracy of subsampling distributions.&#34;&#34;&#34;
+    from .connect_math import create_normal, get_uniform_moments
+    import matplotlib.pyplot as plt
+    from time import time
+
+    min_val, max_val = 100, 3000
+    mean, var = get_uniform_moments(min_val, max_val)
+    mult = 100
+
+    st = time()
+    normal_1 = create_normal(
+        range((max_val * mult) + 1), mean * mult, var * mult, sub=None
+    )
+    print(&#34;took {:.2f} seconds&#34;.format(time() - st))
+
+    st = time()
+    normal_2 = create_normal(
+        range((max_val * mult) + 1), mean * mult, var * mult, sub=0.01
+    )
+    print(&#34;took {:.2f} seconds&#34;.format(time() - st))
+
+    fig, ax = plt.subplots()
+
+    x, y = (list(normal_1.keys()), list(normal_1.values()))
+    ax.plot(x, y, &#34;r&#34;, label=&#34;full&#34;)
+    x, y = (list(normal_2.keys()), list(normal_2.values()))
+    ax.plot(x, y, &#34;b&#34;, linestyle=&#34;--&#34;, label=&#34;sample&#34;)
+
+    plt.show()</code></pre>
+</details>
+</dd>
+<dt id="neuroconnect.playground.plot_expected"><code class="name flex">
+<span>def <span class="ident">plot_expected</span></span>(<span>input_file)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>The change in value of expected is exponential.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def plot_expected(input_file):
+    &#34;&#34;&#34;The change in value of expected is exponential.&#34;&#34;&#34;
+    x, y = [], []
+    y2 = []
+    with open(input_file, &#34;r&#34;) as f:
+        contents = f.read().split(&#34;,&#34;)
+        for line in contents:
+            num, mp = line.split(&#34;:&#34;)
+            num = int(num)
+            mp = float(mp[6:-2])
+            x.append(num)
+            y.append(mp)
+            y2.append(234 + (1 - np.exp(-0.3 * num)) * 766)
+
+    plt.plot(x, y, c=&#34;k&#34;)
+    plt.plot(x, y2, c=&#34;b&#34;)
+    plt.savefig(&#34;test.png&#34;)</code></pre>
+</details>
+</dd>
+<dt id="neuroconnect.playground.sample_graph_exp"><code class="name flex">
+<span>def <span class="ident">sample_graph_exp</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Test calculations of paths for a small known graph.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def sample_graph_exp():
+    &#34;&#34;&#34;Test calculations of paths for a small known graph.&#34;&#34;&#34;
+    from .simple_graph import vis_graph, find_connected_limited
+    from .nx_graph import nx_create_graph, nx_vis_force, nx_find_connected_limited
+    from .monte_carlo import (
+        monte_carlo,
+        list_to_df,
+        summarise_monte_carlo,
+        get_distribution,
+    )
+
+    graph = [[] for _ in range(14)]
+
+    graph[0] = [7]
+    graph[1] = [3]
+    graph[2] = []
+    graph[3] = [9]
+    graph[4] = [12, 5]
+    graph[5] = [4]
+    graph[6] = [13]
+    graph[7] = []
+    graph[8] = []
+    graph[9] = []
+    graph[10] = [8, 9]
+    graph[11] = []
+    graph[12] = []
+    graph[13] = [4]
+
+    connected = [0, 3, 4, 6]
+    fixed_samples = 2
+    num_sampled = 3
+
+    start = [0, 1, 2, 3, 4, 5, 6]
+    source_vert_list = np.array(start)
+    end = [7, 8, 9, 10, 11, 12, 13]
+    targets = np.array(end)
+
+    here = os.path.dirname(os.path.abspath(__file__))
+    os.makedirs(os.path.join(here, &#34;..&#34;, &#34;figures&#34;), exist_ok=True)
+    fig = vis_graph(graph, [7, 7], start, end)
+    fig.savefig(os.path.join(here, &#34;..&#34;, &#34;figures&#34;, &#34;hand_simple_2.png&#34;))
+
+    # def random_var_gen():
+    #     sources = np.append(
+    #         np.random.choice(connected, fixed_samples, replace=False),
+    #         np.random.choice(
+    #             np.delete(source_vert_list, connected),
+    #             num_sampled - fixed_samples,
+    #             replace=False,
+    #         ),
+    #     )
+
+    #     return (sources,)
+
+    # def fn_to_eval(sources):
+    #     reachable = find_connected_limited(graph, sources, targets, max_depth=1)
+    #     # reachable = find_connected(graph, sources, targets)
+    #     return (len(reachable),)
+
+    def random_var_gen(iter_val):
+        sources = np.random.choice(source_vert_list, num_sampled, replace=False)
+        targets_t = np.random.choice(targets, num_sampled, replace=False)
+
+        return (sources, targets_t)
+
+    def fn_to_eval(sources, targets_t):
+        reachable = find_connected_limited(graph, sources, targets_t, max_depth=3)
+        return (len(reachable),)
+
+    result = monte_carlo(fn_to_eval, random_var_gen, 10000, num_cpus=1)
+    df = list_to_df(result, [&#34;Connections&#34;,],)
+    result = summarise_monte_carlo(
+        df, to_plot=[&#34;Connections&#34;,], plt_outfile=&#34;graph_dist.png&#34;, plot=False,
+    )
+    distrib = get_distribution(df, &#34;Connections&#34;, 10000)
+
+    fig, ax = plt.subplots(figsize=(6, 8))
+    x = np.array(list(distrib.keys()), dtype=float)
+    y = np.array(list(distrib.values()), dtype=float)
+
+    ax.plot(x, y, &#34;ko&#34;, ms=2.5)
+    y_vals_min = [0 for _ in x]
+    y_vals_max = y
+    colors = [&#34;k&#34; for _ in x]
+    ax.vlines(x, y_vals_min, y_vals_max, colors=colors)
+    sns.despine()
+    plt.xlabel(&#34;Number of recorded connections&#34;)
+    plt.ylabel(&#34;Probability of occurrence&#34;)
+    fig.savefig(os.path.join(here, &#34;..&#34;, &#34;figures&#34;, &#34;pdf_small_3.pdf&#34;), dpi=400)
+
+    return {&#34;distrib&#34;: distrib, &#34;summary&#34;: result, &#34;full&#34;: df}</code></pre>
+</details>
+</dd>
+<dt id="neuroconnect.playground.test_conv_speed"><code class="name flex">
+<span>def <span class="ident">test_conv_speed</span></span>(<span>min_val, max_val, clt_start1, clt_start2, max_samples)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Test the speed of the convolution operation (hint - it is slow).</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_conv_speed(min_val, max_val, clt_start1, clt_start2, max_samples):
+    &#34;&#34;&#34;Test the speed of the convolution operation (hint - it is slow).&#34;&#34;&#34;
+    from time import time
+
+    from .connect_math import (
+        create_uniform,
+        convolution,
+        create_normal,
+        get_dist_mean,
+        get_dist_var,
+    )
+
+    dist = create_uniform(min_val, max_val)
+    start_mean, start_var = get_dist_mean(dist), get_dist_var(dist)
+    start_max_val = max(list(dist.keys()))
+    cache = OrderedDict()
+    cache[0] = OrderedDict()
+    cache[0][0] = 1.0
+
+    start1 = time()
+    for i in range(1, max_samples + 1):
+        if i &lt; clt_start1:
+            cache[i] = convolution(dist, cache[i - 1])
+        else:
+            cache[i] = create_normal(
+                range((start_max_val * i) + 1), start_mean * i, start_var * i
+            )
+
+    end1 = time()
+
+    cache = OrderedDict()
+    cache[0] = OrderedDict()
+    cache[0][0] = 1.0
+    start2 = time()
+
+    for i in range(1, max_samples + 1):
+        if i &lt; clt_start2:
+            cache[i] = convolution(dist, cache[i - 1])
+        else:
+            cache[i] = create_normal(
+                range((start_max_val * i) + 1), start_mean * i, start_var * i
+            )
+
+    end2 = time()
+
+    print(
+        &#34;Completed {} samples in {:.2f} and {:.2f} seconds with {}, and {}&#34;.format(
+            max_samples, end1 - start1, end2 - start2, clt_start1, clt_start2
+        )
+    )</code></pre>
+</details>
+</dd>
+<dt id="neuroconnect.playground.test_hyper_eg"><code class="name flex">
+<span>def <span class="ident">test_hyper_eg</span></span>(<span>total, bad, draws)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Demonstrates that expected overlap between two sets is formula.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_hyper_eg(total, bad, draws):
+    &#34;&#34;&#34;Demonstrates that expected overlap between two sets is formula.&#34;&#34;&#34;
+    from connect_math import (
+        hypergeometric_pmf,
+        expected_non_overlapping,
+        expected_overlapping,
+    )
+
+    exp = 0
+    for k in range(draws + 1):
+        res = hypergeometric_pmf(total, total - bad, draws, k)
+        exp = exp + (k * res)
+
+    other = expected_non_overlapping(total, bad, draws)
+    other2 = expected_overlapping(total, bad, draws)
+    return (exp, other, other2)</code></pre>
+</details>
+</dd>
+<dt id="neuroconnect.playground.test_sample_graph"><code class="name flex">
+<span>def <span class="ident">test_sample_graph</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Test calculations of paths for a small known graph.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_sample_graph():
+    &#34;&#34;&#34;Test calculations of paths for a small known graph.&#34;&#34;&#34;
+    from .simple_graph import vis_graph, find_connected_limited
+    from .nx_graph import nx_create_graph, nx_vis_force, nx_find_connected_limited
+
+    graph = [[] for _ in range(12)]
+
+    graph[0] = [3]
+    graph[1] = [8]
+    graph[2] = [1]
+    graph[3] = [6]
+    graph[4] = [8]
+    graph[5] = [9]
+    graph[6] = [5]
+    graph[7] = [8]
+    graph[8] = [7]
+    graph[9] = [11]
+    graph[10] = [11]
+    graph[11] = [10]
+
+    nx_graph = nx_create_graph(graph)
+
+    start = [0, 1, 2, 3, 4, 5]
+    end = [6, 7, 8, 9, 10, 11]
+
+    here = os.path.dirname(os.path.abspath(__file__))
+    os.makedirs(os.path.join(here, &#34;..&#34;, &#34;figures&#34;), exist_ok=True)
+    # nx_vis_force(nx_graph, start, end, [], [], &#34;hand_nx.png&#34;, True)
+    fig = vis_graph(graph, [6, 6], start, end)
+    fig.savefig(os.path.join(here, &#34;..&#34;, &#34;figures&#34;, &#34;hand_simple.png&#34;))
+
+    for depth in range(4):
+        simple = find_connected_limited(graph, start, end, depth)
+        nx = nx_find_connected_limited(nx_graph, start, end, depth)
+        print(depth, simple, nx)
+
+    new_start = [0, 2]
+
+    for depth in range(7):
+        simple = find_connected_limited(graph, new_start, end, depth)
+        nx = nx_find_connected_limited(nx_graph, new_start, end, depth)
+        print(depth, simple, nx)</code></pre>
+</details>
+</dd>
+<dt id="neuroconnect.playground.test_uniform"><code class="name flex">
+<span>def <span class="ident">test_uniform</span></span>(<span>n_dists, min_val, max_val, n_dists2=20, n_iters=100000, N=1000, plot=True, n_senders=200)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Test the distribution of uniform distribution sums and functions of this.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_uniform(
+    n_dists,
+    min_val,
+    max_val,
+    n_dists2=20,
+    n_iters=100000,
+    N=1000,
+    plot=True,
+    n_senders=200,
+):
+    &#34;&#34;&#34;Test the distribution of uniform distribution sums and functions of this.&#34;&#34;&#34;
+    # NOTE: of course, sum of uniform dists approaches normal dist
+    # However, taking a function of the sum of uniform dists not necessarily
+
+    from .connect_math import (
+        nfold_conv,
+        create_uniform,
+        get_dist_mean,
+        expected_unique,
+        apply_fn_to_dist,
+        alt_way,
+    )
+    from .monte_carlo import get_distribution
+    from .mpf_connection import CombProb
+
+    alt_full, alt_final = alt_way(N, n_dists, n_senders, min_val, max_val)
+    uni = create_uniform(min_val, max_val)
+    dists = [uni,] * n_dists
+    dist = nfold_conv(dists)
+
+    print(&#34;Expected value: {}&#34;.format(get_dist_mean(dist)))
+
+    def fn_to_apply(k):
+        return float(expected_unique(N, k))
+
+    fn_dist = apply_fn_to_dist(dist, fn_to_apply)
+
+    print(&#34;Expected value fn: {}&#34;.format(get_dist_mean(fn_dist)))
+    print(&#34;Old expected value dist: {}&#34;.format(expected_unique(N, get_dist_mean(dist))))
+    print(
+        &#34;Old expected value: {}&#34;.format(
+            expected_unique(N, n_dists * (max_val + min_val) / 2)
+        )
+    )
+
+    randoms = np.random.randint(min_val, max_val + 1, size=(n_iters, n_dists))
+    good = np.array([i for i in range(n_senders)])
+    choices = np.array([i for i in range(N)])
+    random_vals = np.random.choice(
+        choices, size=(n_iters, n_dists, max_val), replace=True
+    )
+    values = []
+    for i in range(n_iters):
+        arrs = []
+        for j in range(n_dists):
+            arrs.append(random_vals[i, j, : randoms[i, j]])
+
+        to_use = np.concatenate(arrs)
+        drawn = np.random.choice(choices, size=(n_dists2,), replace=False)
+
+        values.append(
+            [len(np.unique(to_use)), len(to_use), len(np.intersect1d(drawn, to_use))]
+        )
+
+    df = pd.DataFrame(values, columns=[&#34;Unique&#34;, &#34;Samples&#34;, &#34;Overlap&#34;])
+    old_dist = get_distribution(df, &#34;Samples&#34;, n_iters)
+
+    values = []
+    for i in range(n_iters):
+        arrs = []
+        # Can remove this to just test delta - n_dists_use = n_dists
+        send_drawn = np.random.choice(choices, size=(n_dists,), replace=False)
+        n_dists_use = len(np.intersect1d(send_drawn, good))
+        if n_dists_use == 0:
+            values.append([0, 0, 0])
+            continue
+
+        for j in range(n_dists_use):
+            arrs.append(random_vals[i, j, : randoms[i, j]])
+
+        to_use = np.concatenate(arrs)
+        drawn = np.random.choice(choices, size=(n_dists2,), replace=False)
+
+        values.append(
+            [len(np.unique(to_use)), len(to_use), len(np.intersect1d(drawn, to_use))]
+        )
+    df = pd.DataFrame(values, columns=[&#34;Unique&#34;, &#34;Samples&#34;, &#34;Overlap&#34;])
+    est_dist = get_distribution(df, &#34;Overlap&#34;, n_iters)
+    new_dist = get_distribution(df, &#34;Unique&#34;, n_iters)
+
+    new_fn_dist = OrderedDict()
+    for k in new_dist.keys():
+        new_fn_dist[k] = fn_dist.get(k, 0)
+
+    if plot:
+        from .plot import plot_distribution
+
+        plot_distribution(dist, &#34;uniform_test.png&#34;)
+        plot_distribution(new_fn_dist, &#34;uniform_fn_test.png&#34;)
+        plot_distribution(old_dist, &#34;uniform_norm_test.png&#34;)
+        plot_distribution(new_dist, &#34;uniform_sim_test.png&#34;)
+        plot_distribution(est_dist, &#34;uniform_fin_test.png&#34;)
+        plot_distribution(alt_full, &#34;uniform_to_test.png&#34;)
+        plot_distribution(alt_final, &#34;uniform_fin_alt.png&#34;)
+
+        fig, ax = plt.subplots()
+        dists = (est_dist, stats, alt_final)
+        names = (&#34;Simulated&#34;, &#34;Old stats&#34;, &#34;New stats&#34;)
+        colors = (&#34;b&#34;, &#34;r&#34;, &#34;g&#34;)
+        for i, (dist, name) in enumerate(zip(dists, names)):
+            x = list(dist.keys())
+            y = list(dist.values())
+            ax.plot(x, y, c=colors[i], label=name)
+        plt.legend()
+        here = os.path.dirname(os.path.realpath(__file__))
+        os.makedirs(os.path.join(here, &#34;..&#34;, &#34;figures&#34;), exist_ok=True)
+        fig.savefig(os.path.join(here, &#34;..&#34;, &#34;figures&#34;, &#34;un_all.png&#34;))
+        plt.close(&#34;all&#34;)
+
+    print(get_dist_mean(dist), get_dist_mean(old_dist))
+    print(
+        get_dist_mean(fn_dist), expected_unique(N, n_dists * (max_val + min_val) / 2),
+    )
+    print(get_dist_mean(est_dist), get_dist_mean(stats), get_dist_mean(alt_final))
+    print(get_dist_mean(new_dist), get_dist_mean(alt_full))
+
+    return dist</code></pre>
+</details>
+</dd>
+<dt id="neuroconnect.playground.test_unique"><code class="name flex">
+<span>def <span class="ident">test_unique</span></span>(<span>total, draws, n_senders)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Test the calculation of expected unique.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_unique(total, draws, n_senders):
+    &#34;&#34;&#34;Test the calculation of expected unique.&#34;&#34;&#34;
+    from .connect_math import expected_unique
+    from .monte_carlo import monte_carlo
+
+    total_a = np.array([i for i in range(total)])
+
+    def gen_random(i):
+        random = np.random.choice(total_a, draws)
+        return (random,)
+
+    def check_random(random):
+        unique = np.unique(random)
+        return (len(unique),)
+
+    result = monte_carlo(check_random, gen_random, 50000)
+    avg = 0
+    for val in result:
+        avg += val[0] / 50000
+    ab = expected_unique(total, draws)
+
+    print(&#34;Stats&#34;, ab, &#34;MC&#34;, avg)
+
+    senders = np.random.choice(total, size=(n_senders, draws), replace=True)
+    connections = {}
+    for i in range(n_senders):
+        num_choices = np.random.randint(1, draws + 1, dtype=np.int32)
+        forward_connection = senders[i, :num_choices]
+        connections[i] = forward_connection
+
+    avg = 0
+    for k, v in connections.items():
+        avg += len(np.unique(v)) / n_senders
+
+    connections = 0
+    for val in range(1, 301):
+        connections += expected_unique(1000, val) / draws
+    print(&#34;Stats&#34;, connections, &#34;MC&#34;, avg)</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="neuroconnect" href="index.html">neuroconnect</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="two-column">
+<li><code><a title="neuroconnect.playground.check_subsample" href="#neuroconnect.playground.check_subsample">check_subsample</a></code></li>
+<li><code><a title="neuroconnect.playground.plot_expected" href="#neuroconnect.playground.plot_expected">plot_expected</a></code></li>
+<li><code><a title="neuroconnect.playground.sample_graph_exp" href="#neuroconnect.playground.sample_graph_exp">sample_graph_exp</a></code></li>
+<li><code><a title="neuroconnect.playground.test_conv_speed" href="#neuroconnect.playground.test_conv_speed">test_conv_speed</a></code></li>
+<li><code><a title="neuroconnect.playground.test_hyper_eg" href="#neuroconnect.playground.test_hyper_eg">test_hyper_eg</a></code></li>
+<li><code><a title="neuroconnect.playground.test_sample_graph" href="#neuroconnect.playground.test_sample_graph">test_sample_graph</a></code></li>
+<li><code><a title="neuroconnect.playground.test_uniform" href="#neuroconnect.playground.test_uniform">test_uniform</a></code></li>
+<li><code><a title="neuroconnect.playground.test_unique" href="#neuroconnect.playground.test_unique">test_unique</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.5</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

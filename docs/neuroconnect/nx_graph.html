@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.7.5" />
+<title>neuroconnect.nx_graph API documentation</title>
+<meta name="description" content="Defining graphs using the networkx package." />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>neuroconnect.nx_graph</code></h1>
+</header>
+<section id="section-intro">
+<p>Defining graphs using the networkx package.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;Defining graphs using the networkx package.&#34;&#34;&#34;
+import os
+
+import networkx
+import numpy as np
+import matplotlib.pyplot as plt
+
+from .plot_graph import get_positions, get_colours, get_colours_extend
+
+
+def nx_create_graph(graph):
+    &#34;&#34;&#34;Covert a graph from the simple_graph package into networkx format.&#34;&#34;&#34;
+    G = networkx.DiGraph()
+    G.add_nodes_from(range(0, len(graph)))
+    for i, edge_list in enumerate(graph):
+        if len(edge_list) != 0:
+            to_add = [(i, e) for e in edge_list]
+            G.add_edges_from(to_add)
+    return G
+
+
+def nx_vis_graph(
+    nx_graph, region_sizes, start_set, end_set, reachable=None, name=&#34;nx_graph.png&#34;
+):
+    &#34;&#34;&#34;Visualise the graph with positions in regions linearly spaced.&#34;&#34;&#34;
+    pos = get_positions(region_sizes, as_dict=True)
+    c = get_colours(nx_graph.number_of_nodes(), start_set, end_set, reachable)
+    plt.clf()
+    networkx.draw_networkx(nx_graph, with_labels=False, node_color=c, pos=pos)
+    plt.savefig(name)
+
+
+def nx_vis_force(
+    nx_graph, start_set, end_set, sources, targets, name=&#34;nx_simple.png&#34;, labels=False,
+):
+    &#34;&#34;&#34;Simple force based visual representation of the networkx graph.&#34;&#34;&#34;
+    options = {
+        &#34;node_size&#34;: 50,
+        &#34;linewidths&#34;: 0,
+        &#34;width&#34;: 0.1,
+    }
+    c = get_colours_extend(
+        nx_graph.number_of_nodes(), start_set, end_set, sources, targets, None
+    )
+    plt.clf()
+    networkx.draw(nx_graph, node_color=c, with_labels=labels, **options)
+    plt.savefig(name, dpi=400)
+
+
+def nx_graph_stats(G):
+    &#34;&#34;&#34;Print simple stats about the graph G.&#34;&#34;&#34;
+    print(&#34;Total number of nodes: &#34;, int(G.number_of_nodes()))
+    print(&#34;Total number of edges: &#34;, int(G.number_of_edges()))
+    print(&#34;Total number of self-loops: &#34;, int(G.number_of_selfloops()))
+    print(&#34;List of all nodes with self-loops: &#34;, list(G.nodes_with_selfloops()))
+    print(
+        &#34;List of all nodes we can go to in a single step from node 2: &#34;,
+        list(G.successors(2)),
+    )
+
+
+def nx_find_connected(graph, start_set, end_set, cutoff=np.inf):
+    &#34;&#34;&#34;Return the nodes in end_set connected to start_set.&#34;&#34;&#34;
+    reachable = []
+    for end in end_set:
+        if nx_is_reachable(graph, end, start_set):
+            reachable.append(end)
+            if len(reachable) &gt;= cutoff:
+                break
+    return reachable
+
+
+def nx_is_reachable(graph, end, start_set):
+    &#34;&#34;&#34;Return if there is path from start_set to end in graph.&#34;&#34;&#34;
+    for start in start_set:
+        result = networkx.algorithms.shortest_paths.generic.has_path(graph, start, end)
+        if result:
+            return True
+    return False
+
+
+def nx_find_connected_limited(graph, start_set, end_set, max_depth=3):
+    &#34;&#34;&#34;Return the neurons in end_set reachable from start_set with limited depth.&#34;&#34;&#34;
+    reverse_graph = graph.reverse()
+    reachable = []
+    for e in end_set:
+
+        preorder_nodes = list(
+            (
+                networkx.algorithms.traversal.depth_first_search.dfs_preorder_nodes(
+                    reverse_graph, source=e, depth_limit=max_depth
+                )
+            )
+        )
+
+        for s in start_set:
+            if s in preorder_nodes:
+                reachable.append(e)
+                break
+
+    return reachable
+
+
+def export_gml(graph, name=&#34;nx_gml.graphml&#34;):
+    &#34;&#34;&#34;Export the networkx graph to gml format for Gephi visualisation.&#34;&#34;&#34;
+    here = os.path.dirname(os.path.realpath(__file__))
+    path = os.path.join(here, &#34;..&#34;, &#34;resources&#34;, name)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    networkx.write_graphml(graph, path)
+    return</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="neuroconnect.nx_graph.export_gml"><code class="name flex">
+<span>def <span class="ident">export_gml</span></span>(<span>graph, name='nx_gml.graphml')</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Export the networkx graph to gml format for Gephi visualisation.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def export_gml(graph, name=&#34;nx_gml.graphml&#34;):
+    &#34;&#34;&#34;Export the networkx graph to gml format for Gephi visualisation.&#34;&#34;&#34;
+    here = os.path.dirname(os.path.realpath(__file__))
+    path = os.path.join(here, &#34;..&#34;, &#34;resources&#34;, name)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    networkx.write_graphml(graph, path)
+    return</code></pre>
+</details>
+</dd>
+<dt id="neuroconnect.nx_graph.nx_create_graph"><code class="name flex">
+<span>def <span class="ident">nx_create_graph</span></span>(<span>graph)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Covert a graph from the simple_graph package into networkx format.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def nx_create_graph(graph):
+    &#34;&#34;&#34;Covert a graph from the simple_graph package into networkx format.&#34;&#34;&#34;
+    G = networkx.DiGraph()
+    G.add_nodes_from(range(0, len(graph)))
+    for i, edge_list in enumerate(graph):
+        if len(edge_list) != 0:
+            to_add = [(i, e) for e in edge_list]
+            G.add_edges_from(to_add)
+    return G</code></pre>
+</details>
+</dd>
+<dt id="neuroconnect.nx_graph.nx_find_connected"><code class="name flex">
+<span>def <span class="ident">nx_find_connected</span></span>(<span>graph, start_set, end_set, cutoff=inf)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Return the nodes in end_set connected to start_set.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def nx_find_connected(graph, start_set, end_set, cutoff=np.inf):
+    &#34;&#34;&#34;Return the nodes in end_set connected to start_set.&#34;&#34;&#34;
+    reachable = []
+    for end in end_set:
+        if nx_is_reachable(graph, end, start_set):
+            reachable.append(end)
+            if len(reachable) &gt;= cutoff:
+                break
+    return reachable</code></pre>
+</details>
+</dd>
+<dt id="neuroconnect.nx_graph.nx_find_connected_limited"><code class="name flex">
+<span>def <span class="ident">nx_find_connected_limited</span></span>(<span>graph, start_set, end_set, max_depth=3)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Return the neurons in end_set reachable from start_set with limited depth.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def nx_find_connected_limited(graph, start_set, end_set, max_depth=3):
+    &#34;&#34;&#34;Return the neurons in end_set reachable from start_set with limited depth.&#34;&#34;&#34;
+    reverse_graph = graph.reverse()
+    reachable = []
+    for e in end_set:
+
+        preorder_nodes = list(
+            (
+                networkx.algorithms.traversal.depth_first_search.dfs_preorder_nodes(
+                    reverse_graph, source=e, depth_limit=max_depth
+                )
+            )
+        )
+
+        for s in start_set:
+            if s in preorder_nodes:
+                reachable.append(e)
+                break
+
+    return reachable</code></pre>
+</details>
+</dd>
+<dt id="neuroconnect.nx_graph.nx_graph_stats"><code class="name flex">
+<span>def <span class="ident">nx_graph_stats</span></span>(<span>G)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Print simple stats about the graph G.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def nx_graph_stats(G):
+    &#34;&#34;&#34;Print simple stats about the graph G.&#34;&#34;&#34;
+    print(&#34;Total number of nodes: &#34;, int(G.number_of_nodes()))
+    print(&#34;Total number of edges: &#34;, int(G.number_of_edges()))
+    print(&#34;Total number of self-loops: &#34;, int(G.number_of_selfloops()))
+    print(&#34;List of all nodes with self-loops: &#34;, list(G.nodes_with_selfloops()))
+    print(
+        &#34;List of all nodes we can go to in a single step from node 2: &#34;,
+        list(G.successors(2)),
+    )</code></pre>
+</details>
+</dd>
+<dt id="neuroconnect.nx_graph.nx_is_reachable"><code class="name flex">
+<span>def <span class="ident">nx_is_reachable</span></span>(<span>graph, end, start_set)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Return if there is path from start_set to end in graph.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def nx_is_reachable(graph, end, start_set):
+    &#34;&#34;&#34;Return if there is path from start_set to end in graph.&#34;&#34;&#34;
+    for start in start_set:
+        result = networkx.algorithms.shortest_paths.generic.has_path(graph, start, end)
+        if result:
+            return True
+    return False</code></pre>
+</details>
+</dd>
+<dt id="neuroconnect.nx_graph.nx_vis_force"><code class="name flex">
+<span>def <span class="ident">nx_vis_force</span></span>(<span>nx_graph, start_set, end_set, sources, targets, name='nx_simple.png', labels=False)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Simple force based visual representation of the networkx graph.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def nx_vis_force(
+    nx_graph, start_set, end_set, sources, targets, name=&#34;nx_simple.png&#34;, labels=False,
+):
+    &#34;&#34;&#34;Simple force based visual representation of the networkx graph.&#34;&#34;&#34;
+    options = {
+        &#34;node_size&#34;: 50,
+        &#34;linewidths&#34;: 0,
+        &#34;width&#34;: 0.1,
+    }
+    c = get_colours_extend(
+        nx_graph.number_of_nodes(), start_set, end_set, sources, targets, None
+    )
+    plt.clf()
+    networkx.draw(nx_graph, node_color=c, with_labels=labels, **options)
+    plt.savefig(name, dpi=400)</code></pre>
+</details>
+</dd>
+<dt id="neuroconnect.nx_graph.nx_vis_graph"><code class="name flex">
+<span>def <span class="ident">nx_vis_graph</span></span>(<span>nx_graph, region_sizes, start_set, end_set, reachable=None, name='nx_graph.png')</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Visualise the graph with positions in regions linearly spaced.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def nx_vis_graph(
+    nx_graph, region_sizes, start_set, end_set, reachable=None, name=&#34;nx_graph.png&#34;
+):
+    &#34;&#34;&#34;Visualise the graph with positions in regions linearly spaced.&#34;&#34;&#34;
+    pos = get_positions(region_sizes, as_dict=True)
+    c = get_colours(nx_graph.number_of_nodes(), start_set, end_set, reachable)
+    plt.clf()
+    networkx.draw_networkx(nx_graph, with_labels=False, node_color=c, pos=pos)
+    plt.savefig(name)</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="neuroconnect" href="index.html">neuroconnect</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="neuroconnect.nx_graph.export_gml" href="#neuroconnect.nx_graph.export_gml">export_gml</a></code></li>
+<li><code><a title="neuroconnect.nx_graph.nx_create_graph" href="#neuroconnect.nx_graph.nx_create_graph">nx_create_graph</a></code></li>
+<li><code><a title="neuroconnect.nx_graph.nx_find_connected" href="#neuroconnect.nx_graph.nx_find_connected">nx_find_connected</a></code></li>
+<li><code><a title="neuroconnect.nx_graph.nx_find_connected_limited" href="#neuroconnect.nx_graph.nx_find_connected_limited">nx_find_connected_limited</a></code></li>
+<li><code><a title="neuroconnect.nx_graph.nx_graph_stats" href="#neuroconnect.nx_graph.nx_graph_stats">nx_graph_stats</a></code></li>
+<li><code><a title="neuroconnect.nx_graph.nx_is_reachable" href="#neuroconnect.nx_graph.nx_is_reachable">nx_is_reachable</a></code></li>
+<li><code><a title="neuroconnect.nx_graph.nx_vis_force" href="#neuroconnect.nx_graph.nx_vis_force">nx_vis_force</a></code></li>
+<li><code><a title="neuroconnect.nx_graph.nx_vis_graph" href="#neuroconnect.nx_graph.nx_vis_graph">nx_vis_graph</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.5</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>
