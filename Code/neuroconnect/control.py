@@ -89,7 +89,9 @@ def run(own_parsed=None):
         return
 
     if parsed.final:
-        pprint(compound_main())
+        result = compound_main()
+        if result is not None:
+            pprint(result)
         return
 
     cfg_path = parsed.cfg

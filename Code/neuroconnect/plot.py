@@ -211,11 +211,15 @@ def plot_exp_accuracy(df, out_name, prop=False, split=True):
     save(fig, out_name)
 
 
-def plot_exp_comp(df1, df2, out_name, prop=False):
+def plot_exp_comp(dfs, names, out_name, prop=False):
     """Plot the accuracy of the expected value."""
-    df1["Connectivity"] = ["High - 90% to 2%" for i in range(len(df1))]
-    df2["Connectivity"] = ["Low - 70% to 1%" for i in range(len(df2))]
-    df = df1.append(df2)
+    df = None
+    for df_i, name_i in zip(dfs, names):
+        df_i["Connectivity"] = [name_i for _ in range(len(df_i))]
+        if df is None:
+            df = df_i
+        else:
+            df = df.append(df_i)
     if prop:
         y_name = "Expected proportion connected"
     else:

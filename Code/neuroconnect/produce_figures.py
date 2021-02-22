@@ -231,33 +231,36 @@ def do_examples(do_exp=True, do_pmf=True, do_types=True):
         store_npix_results()
         plot_pmf(load_df("npix_man.csv"), "npix_pmf.pdf")
     if do_types:
+        kwargs = {
+            "num_iters": 1000,
+            "do_graph": False,
+            "use_mean": False,
+            "num_graphs": 0,
+            "sr": 0.01,
+            "clt_start": 10,
+            "fin_depth": 1,
+        }
         connections_dependent_on_samples(
-            parse_cfg("ca1_sub_high.cfg"),
-            "hc_high",
-            num_iters=1000,
-            do_graph=False,
-            use_mean=False,
-            num_graphs=0,
-            sr=0.01,
-            clt_start=10,
-            fin_depth=1,
+            parse_cfg("ca1_sub_high.cfg"), "hc_high", **kwargs
         )
         connections_dependent_on_samples(
-            parse_cfg("ca1_sub_low.cfg"),
-            "hc_low",
-            num_iters=1000,
-            do_graph=False,
-            use_mean=False,
-            num_graphs=0,
-            sr=0.01,
-            clt_start=10,
-            fin_depth=1,
+            parse_cfg("ca1_sub_low.cfg"), "hc_low", **kwargs
         )
-        plot_exp_comp(
+        connections_dependent_on_samples(
+            parse_cfg("ca1_sub_low_con.cfg"), "hc_low_con", **kwargs
+        )
+        df_list = [
             load_df("connection_samples_hc_high.csv"),
             load_df("connection_samples_hc_low.csv"),
-            "samples_hc_both.pdf",
-            prop=True,
+            load_df("connection_samples_hc_low_con.csv"),
+        ]
+        df_names = [
+            "High - 90% to 2%",
+            "Low - 70% to 1%",
+            "Low - less pyr."
+        ]
+        plot_exp_comp(
+            df_list, df_names, "samples_hc_both.pdf", prop=True,
         )
         store_sub_results()
         plot_pmf_comp(
