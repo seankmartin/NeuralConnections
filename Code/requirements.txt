@@ -9,3 +9,4 @@ pathos
 pandas
 seaborn
 pyqt5
+dictances

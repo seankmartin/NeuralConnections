@@ -190,6 +190,26 @@ def do_accuracy(
         # )
         # plot_region_vals(load_df("region_exp_fig.csv"), "region_acc.pdf")
 
+        cfg_names = [
+            "tetrode_ca3_ca1.cfg",
+            "USE STORED MOUSE",
+            "recurrent_fig1.cfg",
+            "d3.cfg",
+            "v_small.cfg",
+        ]
+        r_names = [
+            "Tetrode CA3 CA1",
+            "MOp to SSp-ll",
+            "Figure 1 E",
+            "Max distance 3",
+            "Figure 1 A",
+        ]
+        depths = [1, 1, 1, 3, 1]
+        distance_dependent_on_regions(
+            cfg_names, r_names, depths, "fig", num_iters=20000,
+        )
+        plot_region_sim(load_df("region_bhatt_fig.csv"), "region_acc_bhatt.pdf")
+
         print("WARNING: this uses stored results, check correct")
         store_region_results()
         plot_region_vals(load_df("exp_man.csv"), "region_acc_man.pdf")
@@ -254,11 +274,7 @@ def do_examples(do_exp=True, do_pmf=True, do_types=True):
             load_df("connection_samples_hc_low.csv"),
             load_df("connection_samples_hc_low_con.csv"),
         ]
-        df_names = [
-            "High - 90% to 2%",
-            "Low - 70% to 1%",
-            "Low - less pyr."
-        ]
+        df_names = ["High - 90% to 2%", "Low - 70% to 1%", "Low - less pyr."]
         plot_exp_comp(
             df_list, df_names, "samples_hc_both.pdf", prop=True,
         )

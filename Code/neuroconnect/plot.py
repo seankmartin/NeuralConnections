@@ -255,6 +255,20 @@ def plot_region_vals(df, out_name, x_name="Connectivity", scale=(10, 4)):
     save(fig=None, out_name=out_name)
 
 
+def plot_region_sim(df, out_name, x_name="Connectivity", scale=(10, 4)):
+    """Plot region specific values from the dataframe."""
+    fig, ax = plt.subplots(figsize=scale)
+    set_p()
+
+    sns.barplot(
+        x=x_name, y="Bhattacharyya distance", data=df, ax=ax,
+    )
+    plt.xlabel(x_name, fontsize=LABELSIZE)
+    plt.ylabel("Bhattacharyya distance", fontsize=LABELSIZE)
+    despine()
+    save(fig=None, out_name=out_name)
+
+
 def plot_distribution(dist, out_name):
     """Plot the pmf given by the distribution."""
     fig, ax = plt.subplots()

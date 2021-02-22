@@ -14,7 +14,9 @@ from .connectivity_patterns import get_by_name
 from .matrix import main as mouse_main
 from .mpf_connection import CombProb
 from .connect_math import create_uniform
+from .stored_results import store_mouse_result
 from skm_pyutils.py_config import print_cfg
+from dictances.bhattacharyya import bhattacharyya
 
 here = os.path.dirname(os.path.realpath(__file__))
 
@@ -470,6 +472,87 @@ def connections_dependent_on_regions(
     os.makedirs(os.path.join(here, "..", "results"), exist_ok=True)
     df.to_csv(
         os.path.join(here, "..", "results", "region_exp_{}.csv".format(out_name)),
+        index=False,
+    )
+
+    return df
+
+
+def distance_dependent_on_regions(
+    cfg_names, r_names, depths, out_name, num_iters=20000,
+):
+    """Return connection expectation for different regions or connectivity."""
+    vals = []
+    cols = [
+        "Bhattacharyya distance",
+        "Connectivity",
+    ]
+
+    for cfg_name, r_name, max_depth in zip(cfg_names, r_names, depths):
+        if cfg_name == "USE STORED MOUSE":
+            dist = store_mouse_result()
+            vals.append([dist, r_name])
+            continue
+        here = os.path.dirname(os.path.realpath(__file__))
+        config_path = os.path.join(here, "..", "configs", cfg_name)
+        config = ConfigParser()
+        config.read(config_path)
+
+        region_sizes = json.loads(config.get("default", "region_sizes"))
+        num_samples = json.loads(config.get("default", "num_samples"))
+        connectivity_pattern = config.get("default", "connectivity_pattern")
+        connectivity_pattern = get_by_name(connectivity_pattern)
+        connectivity_param_names = json.loads(
+            config.get("default", "connectivity_param_names")
+        )
+
+        connectivity_param_vals = []
+        for name in connectivity_param_names:
+            cfg_val = config.get("default", name, fallback=None)
+            if cfg_val is not None:
+                val = json.loads(cfg_val)
+            else:
+                val = [0 for _ in range(len(region_sizes))]
+            connectivity_param_vals.append(val)
+
+        connectivity_params = []
+        for i in range(len(region_sizes)):
+            d = {}
+            for k, v in zip(connectivity_param_names, connectivity_param_vals):
+                d[k] = v[i]
+            connectivity_params.append(d)
+
+        do_mpf = True
+        do_graph = True
+        do_nx = False
+        do_vis_graph = False
+
+        result = do_full_experiment(
+            region_sizes,
+            connectivity_pattern,
+            connectivity_params,
+            num_samples,
+            do_mpf,
+            do_graph,
+            do_nx,
+            do_vis_graph,
+            num_iters=num_iters,
+            max_depth=max_depth,
+            gen_graph_each_iter=False,
+        )
+
+        dist_estimate = result["mpf"]["total"]
+        dist_actual = result["graph"]["dist"]
+        distance = bhattacharyya(dist_estimate, dist_actual)
+        print(dist_estimate, dist_actual)
+        print(distance)
+        print("-------------")
+        vals.append([distance, r_name])
+
+    df = pd.DataFrame(vals, columns=cols)
+    os.makedirs(os.path.join(here, "..", "results"), exist_ok=True)
+    df.to_csv(
+        os.path.join(here, "..", "results", "region_bhatt_{}.csv".format(out_name)),
         index=False,
     )
 
