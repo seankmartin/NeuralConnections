@@ -107,42 +107,38 @@ def store_npix_results():
 
 
 def store_sub_results():
-    args = SimpleNamespace(
-        max_depth=1,
-        num_cpus=1,
-        cfg="ca1_sub_high.cfg",
-        clt_start=30,
-        subsample_rate=0,
-        approx_hypergeo=False,
-    )
-    cfg = parse_cfg("ca1_sub_high.cfg")
-    cfg["default"]["num_samples"] = "[20, 20]"
-    result = ctrl_main(cfg, args)
-    df = df_from_dict(
-        result["mpf"]["total"],
-        cols=["Number of sampled connected neurons", "Probability"],
-    )
-    df.to_csv(
-        os.path.join(here, "..", "results", "tetrode_sub_high.csv"), index=False,
-    )
-    args = SimpleNamespace(
-        max_depth=1,
-        num_cpus=1,
-        cfg="ca1_sub_high.cfg",
-        clt_start=30,
-        subsample_rate=0,
-        approx_hypergeo=False,
-    )
-    cfg = parse_cfg("ca1_sub_low.cfg")
-    cfg["default"]["num_samples"] = "[20, 20]"
-    result = ctrl_main(cfg, args)
-    df = df_from_dict(
-        result["mpf"]["total"],
-        cols=["Number of sampled connected neurons", "Probability"],
-    )
-    df.to_csv(
-        os.path.join(here, "..", "results", "tetrode_sub_low.csv"), index=False,
-    )
+    configs = [
+        "ca1_sub_high.cfg",
+        "ca1_sub_high_out.cfg",
+        "ca1_sub_low.cfg",
+        "ca1_sub_low_con.cfg",
+    ]
+    out_names = [
+        "tetrode_sub_high.csv",
+        "tetrode_sub_out.csv",
+        "tetrode_sub_low.csv",
+        "tetrode_sub_con.csv",
+    ]
+
+    for cfg_name, name in zip(configs, out_names):
+        args = SimpleNamespace(
+            max_depth=1,
+            num_cpus=1,
+            cfg=cfg_name,
+            clt_start=30,
+            subsample_rate=0,
+            approx_hypergeo=False,
+        )
+        cfg = parse_cfg(cfg_name)
+        cfg["default"]["num_samples"] = "[20, 20]"
+        result = ctrl_main(cfg, args)
+        df = df_from_dict(
+            result["mpf"]["total"],
+            cols=["Number of sampled connected neurons", "Probability"],
+        )
+        df.to_csv(
+            os.path.join(here, "..", "results", name), index=False,
+        )
 
 
 def store_mouse_result():
