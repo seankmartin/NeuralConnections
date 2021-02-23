@@ -544,9 +544,6 @@ def distance_dependent_on_regions(
         dist_estimate = result["mpf"]["total"]
         dist_actual = result["graph"]["dist"]
         distance = bhattacharyya(dist_estimate, dist_actual)
-        print(dist_estimate, dist_actual)
-        print(distance)
-        print("-------------")
         vals.append([distance, r_name])
 
     df = pd.DataFrame(vals, columns=cols)
