@@ -12,6 +12,7 @@ from .compound import (
     proportion,
     pmf_accuracy,
     connections_dependent_on_regions,
+    distance_dependent_on_regions,
     mouse_region_exp,
     out_exp,
     explain_calc,
@@ -23,6 +24,7 @@ from .plot import (
     plot_pmf_accuracy,
     plot_samples_v_prop,
     plot_region_vals,
+    plot_region_sim,
     plot_dist_explain,
     plot_pmf,
     plot_exp_comp,
@@ -264,6 +266,9 @@ def do_examples(do_exp=True, do_pmf=True, do_types=True):
             parse_cfg("ca1_sub_high.cfg"), "hc_high", **kwargs
         )
         connections_dependent_on_samples(
+            parse_cfg("ca1_sub_high_out.cfg"), "hc_high_out", **kwargs
+        )
+        connections_dependent_on_samples(
             parse_cfg("ca1_sub_low.cfg"), "hc_low", **kwargs
         )
         connections_dependent_on_samples(
@@ -271,19 +276,27 @@ def do_examples(do_exp=True, do_pmf=True, do_types=True):
         )
         df_list = [
             load_df("connection_samples_hc_high.csv"),
+            load_df("Connection_samples_hc_high_out.csv"),
             load_df("connection_samples_hc_low.csv"),
             load_df("connection_samples_hc_low_con.csv"),
         ]
-        df_names = ["High - 90% to 2%", "Low - 70% to 1%", "Low - less pyr."]
+        df_names = [
+            "High - 90% to 2%",
+            "High - 40% to 5%",
+            "Low - 70% to 1%",
+            "Low - less pyr.",
+        ]
         plot_exp_comp(
             df_list, df_names, "samples_hc_both.pdf", prop=True,
         )
         store_sub_results()
-        plot_pmf_comp(
+        dfs = [
             load_df("tetrode_sub_high.csv"),
+            load_df("tetrode_sub_out.csv"),
             load_df("tetrode_sub_low.csv"),
-            "ca1_sub_tet_comp.pdf",
-        )
+            load_df("tetrode_sub_con.csv"),
+        ]
+        plot_pmf_comp(dfs, df_names, "ca1_sub_tet_comp.pdf")
 
 
 def do_explain(do_vis=True, do_pmf=True, do_dist=True):

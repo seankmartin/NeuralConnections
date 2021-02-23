@@ -168,11 +168,15 @@ def plot_pmf_accuracy(df, out_name):
     save(fig, out_name)
 
 
-def plot_pmf_comp(df1, df2, out_name):
+def plot_pmf_comp(dfs, names, out_name):
     """Plot the rate of convergence of the dataframe."""
-    df1["Connectivity"] = ["High - 90% to 2%" for i in range(len(df1))]
-    df2["Connectivity"] = ["Low - 70% to 1%" for i in range(len(df2))]
-    df = df1.append(df2)
+    df = None
+    for df_i, name_i in zip(dfs, names):
+        df_i["Connectivity"] = [name_i for _ in range(len(df_i))]
+        if df is None:
+            df = df_i
+        else:
+            df = df.append(df_i)
     fig, ax = plt.subplots()
     set_p()
     sns.lineplot(
@@ -185,28 +189,6 @@ def plot_pmf_comp(df1, df2, out_name):
     ax.xaxis.set_major_locator(MaxNLocator(nbins=11, integer=True, min_n_ticks=10))
     plt.xlabel("Number of sampled connected neurons", fontsize=LABELSIZE)
     plt.ylabel("Probability", fontsize=LABELSIZE)
-    despine()
-    save(fig, out_name)
-
-
-def plot_exp_accuracy(df, out_name, prop=False, split=True):
-    """Plot the accuracy of the expected value."""
-    if prop:
-        y_name = "Expected proportion connected"
-    else:
-        y_name = "Expected connected"
-    if split:
-        hue = "Max distance"
-    else:
-        hue = "Calculation"
-    fig, ax = plt.subplots()
-    set_p()
-    sns.lineplot(
-        x="Number of samples", y=y_name, data=df, style="Calculation", hue=hue, ax=ax,
-    )
-    ax.xaxis.set_major_locator(MaxNLocator(nbins=11, integer=True, min_n_ticks=10))
-    plt.xlabel("Number of samples", fontsize=LABELSIZE)
-    plt.ylabel(y_name, fontsize=LABELSIZE)
     despine()
     save(fig, out_name)
 
@@ -233,6 +215,28 @@ def plot_exp_comp(dfs, names, out_name, prop=False):
         style="Connectivity",
         hue="Connectivity",
         ax=ax,
+    )
+    ax.xaxis.set_major_locator(MaxNLocator(nbins=11, integer=True, min_n_ticks=10))
+    plt.xlabel("Number of samples", fontsize=LABELSIZE)
+    plt.ylabel(y_name, fontsize=LABELSIZE)
+    despine()
+    save(fig, out_name)
+
+
+def plot_exp_accuracy(df, out_name, prop=False, split=True):
+    """Plot the accuracy of the expected value."""
+    if prop:
+        y_name = "Expected proportion connected"
+    else:
+        y_name = "Expected connected"
+    if split:
+        hue = "Max distance"
+    else:
+        hue = "Calculation"
+    fig, ax = plt.subplots()
+    set_p()
+    sns.lineplot(
+        x="Number of samples", y=y_name, data=df, style="Calculation", hue=hue, ax=ax,
     )
     ax.xaxis.set_major_locator(MaxNLocator(nbins=11, integer=True, min_n_ticks=10))
     plt.xlabel("Number of samples", fontsize=LABELSIZE)
