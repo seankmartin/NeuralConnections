@@ -82,7 +82,7 @@ def hypergeometric_pmf(N, K, n, k, approx=False):
     return left * right / btm
 
 
-def expected_unique(N, k):
+def expected_unique(N, k, do_round=True):
     &#34;&#34;&#34;
     Calculates the expected number of unique values when drawing k from N.
 
@@ -104,7 +104,10 @@ def expected_unique(N, k):
     n = mpmath.mpf(N)
     p = mpmath.mpf(k)
     temp = mpmath.power((n - 1) / n, p)
-    return max(int(round(n * (1 - temp))), 0)
+    if do_round:
+        return max(int(round(n * (1 - temp))), 0)
+    else:
+        return max(float(n * (1 - temp)), 0)
 
 
 def expected_overlapping(total, good, draws):
@@ -1010,7 +1013,7 @@ to_eval should be the x-axis in the final distribution</p>
 </details>
 </dd>
 <dt id="neuroconnect.connect_math.expected_unique"><code class="name flex">
-<span>def <span class="ident">expected_unique</span></span>(<span>N, k)</span>
+<span>def <span class="ident">expected_unique</span></span>(<span>N, k, do_round=True)</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Calculates the expected number of unique values when drawing k from N.</p>
@@ -1031,7 +1034,7 @@ to_eval should be the x-axis in the final distribution</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def expected_unique(N, k):
+<pre><code class="python">def expected_unique(N, k, do_round=True):
     &#34;&#34;&#34;
     Calculates the expected number of unique values when drawing k from N.
 
@@ -1053,7 +1056,10 @@ to_eval should be the x-axis in the final distribution</p>
     n = mpmath.mpf(N)
     p = mpmath.mpf(k)
     temp = mpmath.power((n - 1) / n, p)
-    return max(int(round(n * (1 - temp))), 0)</code></pre>
+    if do_round:
+        return max(int(round(n * (1 - temp))), 0)
+    else:
+        return max(float(n * (1 - temp)), 0)</code></pre>
 </details>
 </dd>
 <dt id="neuroconnect.connect_math.get_dist_ci"><code class="name flex">

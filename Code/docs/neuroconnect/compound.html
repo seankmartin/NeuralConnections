@@ -41,7 +41,9 @@ from .connectivity_patterns import get_by_name
 from .matrix import main as mouse_main
 from .mpf_connection import CombProb
 from .connect_math import create_uniform
+from .stored_results import store_mouse_result
 from skm_pyutils.py_config import print_cfg
+from dictances.bhattacharyya import bhattacharyya
 
 here = os.path.dirname(os.path.realpath(__file__))
 
@@ -497,6 +499,84 @@ def connections_dependent_on_regions(
     os.makedirs(os.path.join(here, &#34;..&#34;, &#34;results&#34;), exist_ok=True)
     df.to_csv(
         os.path.join(here, &#34;..&#34;, &#34;results&#34;, &#34;region_exp_{}.csv&#34;.format(out_name)),
+        index=False,
+    )
+
+    return df
+
+
+def distance_dependent_on_regions(
+    cfg_names, r_names, depths, out_name, num_iters=20000,
+):
+    &#34;&#34;&#34;Return connection expectation for different regions or connectivity.&#34;&#34;&#34;
+    vals = []
+    cols = [
+        &#34;Bhattacharyya distance&#34;,
+        &#34;Connectivity&#34;,
+    ]
+
+    for cfg_name, r_name, max_depth in zip(cfg_names, r_names, depths):
+        if cfg_name == &#34;USE STORED MOUSE&#34;:
+            dist = store_mouse_result()
+            vals.append([dist, r_name])
+            continue
+        here = os.path.dirname(os.path.realpath(__file__))
+        config_path = os.path.join(here, &#34;..&#34;, &#34;configs&#34;, cfg_name)
+        config = ConfigParser()
+        config.read(config_path)
+
+        region_sizes = json.loads(config.get(&#34;default&#34;, &#34;region_sizes&#34;))
+        num_samples = json.loads(config.get(&#34;default&#34;, &#34;num_samples&#34;))
+        connectivity_pattern = config.get(&#34;default&#34;, &#34;connectivity_pattern&#34;)
+        connectivity_pattern = get_by_name(connectivity_pattern)
+        connectivity_param_names = json.loads(
+            config.get(&#34;default&#34;, &#34;connectivity_param_names&#34;)
+        )
+
+        connectivity_param_vals = []
+        for name in connectivity_param_names:
+            cfg_val = config.get(&#34;default&#34;, name, fallback=None)
+            if cfg_val is not None:
+                val = json.loads(cfg_val)
+            else:
+                val = [0 for _ in range(len(region_sizes))]
+            connectivity_param_vals.append(val)
+
+        connectivity_params = []
+        for i in range(len(region_sizes)):
+            d = {}
+            for k, v in zip(connectivity_param_names, connectivity_param_vals):
+                d[k] = v[i]
+            connectivity_params.append(d)
+
+        do_mpf = True
+        do_graph = True
+        do_nx = False
+        do_vis_graph = False
+
+        result = do_full_experiment(
+            region_sizes,
+            connectivity_pattern,
+            connectivity_params,
+            num_samples,
+            do_mpf,
+            do_graph,
+            do_nx,
+            do_vis_graph,
+            num_iters=num_iters,
+            max_depth=max_depth,
+            gen_graph_each_iter=False,
+        )
+
+        dist_estimate = result[&#34;mpf&#34;][&#34;total&#34;]
+        dist_actual = result[&#34;graph&#34;][&#34;dist&#34;]
+        distance = bhattacharyya(dist_estimate, dist_actual)
+        vals.append([distance, r_name])
+
+    df = pd.DataFrame(vals, columns=cols)
+    os.makedirs(os.path.join(here, &#34;..&#34;, &#34;results&#34;), exist_ok=True)
+    df.to_csv(
+        os.path.join(here, &#34;..&#34;, &#34;results&#34;, &#34;region_bhatt_{}.csv&#34;.format(out_name)),
         index=False,
     )
 
@@ -999,6 +1079,93 @@ def main(cfg_name):
         vals.append([k, v])
 
     df = pd.DataFrame(vals, columns=cols)
+
+    return df</code></pre>
+</details>
+</dd>
+<dt id="neuroconnect.compound.distance_dependent_on_regions"><code class="name flex">
+<span>def <span class="ident">distance_dependent_on_regions</span></span>(<span>cfg_names, r_names, depths, out_name, num_iters=20000)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Return connection expectation for different regions or connectivity.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def distance_dependent_on_regions(
+    cfg_names, r_names, depths, out_name, num_iters=20000,
+):
+    &#34;&#34;&#34;Return connection expectation for different regions or connectivity.&#34;&#34;&#34;
+    vals = []
+    cols = [
+        &#34;Bhattacharyya distance&#34;,
+        &#34;Connectivity&#34;,
+    ]
+
+    for cfg_name, r_name, max_depth in zip(cfg_names, r_names, depths):
+        if cfg_name == &#34;USE STORED MOUSE&#34;:
+            dist = store_mouse_result()
+            vals.append([dist, r_name])
+            continue
+        here = os.path.dirname(os.path.realpath(__file__))
+        config_path = os.path.join(here, &#34;..&#34;, &#34;configs&#34;, cfg_name)
+        config = ConfigParser()
+        config.read(config_path)
+
+        region_sizes = json.loads(config.get(&#34;default&#34;, &#34;region_sizes&#34;))
+        num_samples = json.loads(config.get(&#34;default&#34;, &#34;num_samples&#34;))
+        connectivity_pattern = config.get(&#34;default&#34;, &#34;connectivity_pattern&#34;)
+        connectivity_pattern = get_by_name(connectivity_pattern)
+        connectivity_param_names = json.loads(
+            config.get(&#34;default&#34;, &#34;connectivity_param_names&#34;)
+        )
+
+        connectivity_param_vals = []
+        for name in connectivity_param_names:
+            cfg_val = config.get(&#34;default&#34;, name, fallback=None)
+            if cfg_val is not None:
+                val = json.loads(cfg_val)
+            else:
+                val = [0 for _ in range(len(region_sizes))]
+            connectivity_param_vals.append(val)
+
+        connectivity_params = []
+        for i in range(len(region_sizes)):
+            d = {}
+            for k, v in zip(connectivity_param_names, connectivity_param_vals):
+                d[k] = v[i]
+            connectivity_params.append(d)
+
+        do_mpf = True
+        do_graph = True
+        do_nx = False
+        do_vis_graph = False
+
+        result = do_full_experiment(
+            region_sizes,
+            connectivity_pattern,
+            connectivity_params,
+            num_samples,
+            do_mpf,
+            do_graph,
+            do_nx,
+            do_vis_graph,
+            num_iters=num_iters,
+            max_depth=max_depth,
+            gen_graph_each_iter=False,
+        )
+
+        dist_estimate = result[&#34;mpf&#34;][&#34;total&#34;]
+        dist_actual = result[&#34;graph&#34;][&#34;dist&#34;]
+        distance = bhattacharyya(dist_estimate, dist_actual)
+        vals.append([distance, r_name])
+
+    df = pd.DataFrame(vals, columns=cols)
+    os.makedirs(os.path.join(here, &#34;..&#34;, &#34;results&#34;), exist_ok=True)
+    df.to_csv(
+        os.path.join(here, &#34;..&#34;, &#34;results&#34;, &#34;region_bhatt_{}.csv&#34;.format(out_name)),
+        index=False,
+    )
 
     return df</code></pre>
 </details>
@@ -1551,6 +1718,7 @@ def main(cfg_name):
 <li><code><a title="neuroconnect.compound.connections_dependent_on_regions" href="#neuroconnect.compound.connections_dependent_on_regions">connections_dependent_on_regions</a></code></li>
 <li><code><a title="neuroconnect.compound.connections_dependent_on_samples" href="#neuroconnect.compound.connections_dependent_on_samples">connections_dependent_on_samples</a></code></li>
 <li><code><a title="neuroconnect.compound.df_from_dict" href="#neuroconnect.compound.df_from_dict">df_from_dict</a></code></li>
+<li><code><a title="neuroconnect.compound.distance_dependent_on_regions" href="#neuroconnect.compound.distance_dependent_on_regions">distance_dependent_on_regions</a></code></li>
 <li><code><a title="neuroconnect.compound.explain_calc" href="#neuroconnect.compound.explain_calc">explain_calc</a></code></li>
 <li><code><a title="neuroconnect.compound.main" href="#neuroconnect.compound.main">main</a></code></li>
 <li><code><a title="neuroconnect.compound.mouse_region_exp" href="#neuroconnect.compound.mouse_region_exp">mouse_region_exp</a></code></li>

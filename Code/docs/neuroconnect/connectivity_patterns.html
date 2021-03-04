@@ -397,7 +397,10 @@ class RecurrentConnectivity(ConnectionStrategy):
                 # This tends towards normal distribution by CLT in most cases
 
                 def fn_to_apply(k):
-                    return int(round(expected_unique(num_end, k)))
+                    # Ideally, here would use float if large var dist, and int otherwise.
+                    # Not a huge difference though
+                    # return expected_unique(num_end, k, do_round=False)
+                    return expected_unique(num_end, k, do_round=True)
 
                 ab_dist = random_draw_dist(
                     total_samples,
@@ -2012,7 +2015,10 @@ but the number of connections varies as multiple synapses can be formed.</p></se
                 # This tends towards normal distribution by CLT in most cases
 
                 def fn_to_apply(k):
-                    return int(round(expected_unique(num_end, k)))
+                    # Ideally, here would use float if large var dist, and int otherwise.
+                    # Not a huge difference though
+                    # return expected_unique(num_end, k, do_round=False)
+                    return expected_unique(num_end, k, do_round=True)
 
                 ab_dist = random_draw_dist(
                     total_samples,
@@ -2440,7 +2446,10 @@ def static_expected_connections(**kwargs):
             # This tends towards normal distribution by CLT in most cases
 
             def fn_to_apply(k):
-                return int(round(expected_unique(num_end, k)))
+                # Ideally, here would use float if large var dist, and int otherwise.
+                # Not a huge difference though
+                # return expected_unique(num_end, k, do_round=False)
+                return expected_unique(num_end, k, do_round=True)
 
             ab_dist = random_draw_dist(
                 total_samples,

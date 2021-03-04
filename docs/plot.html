@@ -195,11 +195,15 @@ def plot_pmf_accuracy(df, out_name):
     save(fig, out_name)
 
 
-def plot_pmf_comp(df1, df2, out_name):
+def plot_pmf_comp(dfs, names, out_name):
     &#34;&#34;&#34;Plot the rate of convergence of the dataframe.&#34;&#34;&#34;
-    df1[&#34;Connectivity&#34;] = [&#34;High - 90% to 2%&#34; for i in range(len(df1))]
-    df2[&#34;Connectivity&#34;] = [&#34;Low - 70% to 1%&#34; for i in range(len(df2))]
-    df = df1.append(df2)
+    df = None
+    for df_i, name_i in zip(dfs, names):
+        df_i[&#34;Connectivity&#34;] = [name_i for _ in range(len(df_i))]
+        if df is None:
+            df = df_i
+        else:
+            df = df.append(df_i)
     fig, ax = plt.subplots()
     set_p()
     sns.lineplot(
@@ -212,6 +216,36 @@ def plot_pmf_comp(df1, df2, out_name):
     ax.xaxis.set_major_locator(MaxNLocator(nbins=11, integer=True, min_n_ticks=10))
     plt.xlabel(&#34;Number of sampled connected neurons&#34;, fontsize=LABELSIZE)
     plt.ylabel(&#34;Probability&#34;, fontsize=LABELSIZE)
+    despine()
+    save(fig, out_name)
+
+
+def plot_exp_comp(dfs, names, out_name, prop=False):
+    &#34;&#34;&#34;Plot the accuracy of the expected value.&#34;&#34;&#34;
+    df = None
+    for df_i, name_i in zip(dfs, names):
+        df_i[&#34;Connectivity&#34;] = [name_i for _ in range(len(df_i))]
+        if df is None:
+            df = df_i
+        else:
+            df = df.append(df_i)
+    if prop:
+        y_name = &#34;Expected proportion connected&#34;
+    else:
+        y_name = &#34;Expected connected&#34;
+    fig, ax = plt.subplots()
+    set_p()
+    sns.lineplot(
+        x=&#34;Number of samples&#34;,
+        y=y_name,
+        data=df,
+        style=&#34;Connectivity&#34;,
+        hue=&#34;Connectivity&#34;,
+        ax=ax,
+    )
+    ax.xaxis.set_major_locator(MaxNLocator(nbins=11, integer=True, min_n_ticks=10))
+    plt.xlabel(&#34;Number of samples&#34;, fontsize=LABELSIZE)
+    plt.ylabel(y_name, fontsize=LABELSIZE)
     despine()
     save(fig, out_name)
 
@@ -238,32 +272,6 @@ def plot_exp_accuracy(df, out_name, prop=False, split=True):
     save(fig, out_name)
 
 
-def plot_exp_comp(df1, df2, out_name, prop=False):
-    &#34;&#34;&#34;Plot the accuracy of the expected value.&#34;&#34;&#34;
-    df1[&#34;Connectivity&#34;] = [&#34;High - 90% to 2%&#34; for i in range(len(df1))]
-    df2[&#34;Connectivity&#34;] = [&#34;Low - 70% to 1%&#34; for i in range(len(df2))]
-    df = df1.append(df2)
-    if prop:
-        y_name = &#34;Expected proportion connected&#34;
-    else:
-        y_name = &#34;Expected connected&#34;
-    fig, ax = plt.subplots()
-    set_p()
-    sns.lineplot(
-        x=&#34;Number of samples&#34;,
-        y=y_name,
-        data=df,
-        style=&#34;Connectivity&#34;,
-        hue=&#34;Connectivity&#34;,
-        ax=ax,
-    )
-    ax.xaxis.set_major_locator(MaxNLocator(nbins=11, integer=True, min_n_ticks=10))
-    plt.xlabel(&#34;Number of samples&#34;, fontsize=LABELSIZE)
-    plt.ylabel(y_name, fontsize=LABELSIZE)
-    despine()
-    save(fig, out_name)
-
-
 def plot_region_vals(df, out_name, x_name=&#34;Connectivity&#34;, scale=(10, 4)):
     &#34;&#34;&#34;Plot region specific values from the dataframe.&#34;&#34;&#34;
     fig, ax = plt.subplots(figsize=scale)
@@ -274,6 +282,20 @@ def plot_region_vals(df, out_name, x_name=&#34;Connectivity&#34;, scale=(10, 4))
     )
     plt.xlabel(x_name, fontsize=LABELSIZE)
     plt.ylabel(&#34;Expected proportion connected&#34;, fontsize=LABELSIZE)
+    despine()
+    save(fig=None, out_name=out_name)
+
+
+def plot_region_sim(df, out_name, x_name=&#34;Connectivity&#34;, scale=(10, 4)):
+    &#34;&#34;&#34;Plot region specific values from the dataframe.&#34;&#34;&#34;
+    fig, ax = plt.subplots(figsize=scale)
+    set_p()
+
+    sns.barplot(
+        x=x_name, y=&#34;Bhattacharyya distance&#34;, data=df, ax=ax,
+    )
+    plt.xlabel(x_name, fontsize=LABELSIZE)
+    plt.ylabel(&#34;Bhattacharyya distance&#34;, fontsize=LABELSIZE)
     despine()
     save(fig=None, out_name=out_name)
 
@@ -696,7 +718,7 @@ if __name__ == &#34;__main__&#34;:
 </details>
 </dd>
 <dt id="neuroconnect.plot.plot_exp_comp"><code class="name flex">
-<span>def <span class="ident">plot_exp_comp</span></span>(<span>df1, df2, out_name, prop=False)</span>
+<span>def <span class="ident">plot_exp_comp</span></span>(<span>dfs, names, out_name, prop=False)</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Plot the accuracy of the expected value.</p></section>
@@ -704,11 +726,15 @@ if __name__ == &#34;__main__&#34;:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def plot_exp_comp(df1, df2, out_name, prop=False):
+<pre><code class="python">def plot_exp_comp(dfs, names, out_name, prop=False):
     &#34;&#34;&#34;Plot the accuracy of the expected value.&#34;&#34;&#34;
-    df1[&#34;Connectivity&#34;] = [&#34;High - 90% to 2%&#34; for i in range(len(df1))]
-    df2[&#34;Connectivity&#34;] = [&#34;Low - 70% to 1%&#34; for i in range(len(df2))]
-    df = df1.append(df2)
+    df = None
+    for df_i, name_i in zip(dfs, names):
+        df_i[&#34;Connectivity&#34;] = [name_i for _ in range(len(df_i))]
+        if df is None:
+            df = df_i
+        else:
+            df = df.append(df_i)
     if prop:
         y_name = &#34;Expected proportion connected&#34;
     else:
@@ -824,7 +850,7 @@ if __name__ == &#34;__main__&#34;:
 </details>
 </dd>
 <dt id="neuroconnect.plot.plot_pmf_comp"><code class="name flex">
-<span>def <span class="ident">plot_pmf_comp</span></span>(<span>df1, df2, out_name)</span>
+<span>def <span class="ident">plot_pmf_comp</span></span>(<span>dfs, names, out_name)</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Plot the rate of convergence of the dataframe.</p></section>
@@ -832,11 +858,15 @@ if __name__ == &#34;__main__&#34;:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def plot_pmf_comp(df1, df2, out_name):
+<pre><code class="python">def plot_pmf_comp(dfs, names, out_name):
     &#34;&#34;&#34;Plot the rate of convergence of the dataframe.&#34;&#34;&#34;
-    df1[&#34;Connectivity&#34;] = [&#34;High - 90% to 2%&#34; for i in range(len(df1))]
-    df2[&#34;Connectivity&#34;] = [&#34;Low - 70% to 1%&#34; for i in range(len(df2))]
-    df = df1.append(df2)
+    df = None
+    for df_i, name_i in zip(dfs, names):
+        df_i[&#34;Connectivity&#34;] = [name_i for _ in range(len(df_i))]
+        if df is None:
+            df = df_i
+        else:
+            df = df.append(df_i)
     fig, ax = plt.subplots()
     set_p()
     sns.lineplot(
@@ -851,6 +881,29 @@ if __name__ == &#34;__main__&#34;:
     plt.ylabel(&#34;Probability&#34;, fontsize=LABELSIZE)
     despine()
     save(fig, out_name)</code></pre>
+</details>
+</dd>
+<dt id="neuroconnect.plot.plot_region_sim"><code class="name flex">
+<span>def <span class="ident">plot_region_sim</span></span>(<span>df, out_name, x_name='Connectivity', scale=(10, 4))</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Plot region specific values from the dataframe.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def plot_region_sim(df, out_name, x_name=&#34;Connectivity&#34;, scale=(10, 4)):
+    &#34;&#34;&#34;Plot region specific values from the dataframe.&#34;&#34;&#34;
+    fig, ax = plt.subplots(figsize=scale)
+    set_p()
+
+    sns.barplot(
+        x=x_name, y=&#34;Bhattacharyya distance&#34;, data=df, ax=ax,
+    )
+    plt.xlabel(x_name, fontsize=LABELSIZE)
+    plt.ylabel(&#34;Bhattacharyya distance&#34;, fontsize=LABELSIZE)
+    despine()
+    save(fig=None, out_name=out_name)</code></pre>
 </details>
 </dd>
 <dt id="neuroconnect.plot.plot_region_vals"><code class="name flex">
@@ -994,6 +1047,7 @@ if __name__ == &#34;__main__&#34;:
 <li><code><a title="neuroconnect.plot.plot_pmf" href="#neuroconnect.plot.plot_pmf">plot_pmf</a></code></li>
 <li><code><a title="neuroconnect.plot.plot_pmf_accuracy" href="#neuroconnect.plot.plot_pmf_accuracy">plot_pmf_accuracy</a></code></li>
 <li><code><a title="neuroconnect.plot.plot_pmf_comp" href="#neuroconnect.plot.plot_pmf_comp">plot_pmf_comp</a></code></li>
+<li><code><a title="neuroconnect.plot.plot_region_sim" href="#neuroconnect.plot.plot_region_sim">plot_region_sim</a></code></li>
 <li><code><a title="neuroconnect.plot.plot_region_vals" href="#neuroconnect.plot.plot_region_vals">plot_region_vals</a></code></li>
 <li><code><a title="neuroconnect.plot.plot_samples_v_prop" href="#neuroconnect.plot.plot_samples_v_prop">plot_samples_v_prop</a></code></li>
 <li><code><a title="neuroconnect.plot.save" href="#neuroconnect.plot.save">save</a></code></li>

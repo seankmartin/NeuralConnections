@@ -39,6 +39,7 @@ from .compound import (
     proportion,
     pmf_accuracy,
     connections_dependent_on_regions,
+    distance_dependent_on_regions,
     mouse_region_exp,
     out_exp,
     explain_calc,
@@ -50,6 +51,7 @@ from .plot import (
     plot_pmf_accuracy,
     plot_samples_v_prop,
     plot_region_vals,
+    plot_region_sim,
     plot_dist_explain,
     plot_pmf,
     plot_exp_comp,
@@ -203,7 +205,7 @@ def do_accuracy(
         plot_pmf_accuracy(load_df(&#34;pmf_comp_pmf.csv&#34;), &#34;pmf_acc.pdf&#34;)
 
     if do_regions:
-        # This is fine, and works, but replacing for now
+        # This needs to be updated with correct configs, use stored for now
         # cfg_names = [
         #     &#34;sub_hc.cfg&#34;,
         #     &#34;sub_hc.cfg&#34;,
@@ -216,6 +218,26 @@ def do_accuracy(
         #     cfg_names, r_names, depths, &#34;fig&#34;, num_iters=20000,
         # )
         # plot_region_vals(load_df(&#34;region_exp_fig.csv&#34;), &#34;region_acc.pdf&#34;)
+
+        cfg_names = [
+            &#34;tetrode_ca3_ca1.cfg&#34;,
+            &#34;USE STORED MOUSE&#34;,
+            &#34;recurrent_fig1.cfg&#34;,
+            &#34;d3.cfg&#34;,
+            &#34;v_small.cfg&#34;,
+        ]
+        r_names = [
+            &#34;Tetrode CA3 CA1&#34;,
+            &#34;MOp to SSp-ll&#34;,
+            &#34;Figure 1 E&#34;,
+            &#34;Max distance 3&#34;,
+            &#34;Figure 1 A&#34;,
+        ]
+        depths = [1, 1, 1, 3, 1]
+        distance_dependent_on_regions(
+            cfg_names, r_names, depths, &#34;fig&#34;, num_iters=20000,
+        )
+        plot_region_sim(load_df(&#34;region_bhatt_fig.csv&#34;), &#34;region_acc_bhatt.pdf&#34;)
 
         print(&#34;WARNING: this uses stored results, check correct&#34;)
         store_region_results()
@@ -258,40 +280,50 @@ def do_examples(do_exp=True, do_pmf=True, do_types=True):
         store_npix_results()
         plot_pmf(load_df(&#34;npix_man.csv&#34;), &#34;npix_pmf.pdf&#34;)
     if do_types:
+        kwargs = {
+            &#34;num_iters&#34;: 1000,
+            &#34;do_graph&#34;: False,
+            &#34;use_mean&#34;: False,
+            &#34;num_graphs&#34;: 0,
+            &#34;sr&#34;: 0.01,
+            &#34;clt_start&#34;: 10,
+            &#34;fin_depth&#34;: 1,
+        }
         connections_dependent_on_samples(
-            parse_cfg(&#34;ca1_sub_high.cfg&#34;),
-            &#34;hc_high&#34;,
-            num_iters=1000,
-            do_graph=False,
-            use_mean=False,
-            num_graphs=0,
-            sr=0.01,
-            clt_start=10,
-            fin_depth=1,
+            parse_cfg(&#34;ca1_sub_high.cfg&#34;), &#34;hc_high&#34;, **kwargs
         )
         connections_dependent_on_samples(
-            parse_cfg(&#34;ca1_sub_low.cfg&#34;),
-            &#34;hc_low&#34;,
-            num_iters=1000,
-            do_graph=False,
-            use_mean=False,
-            num_graphs=0,
-            sr=0.01,
-            clt_start=10,
-            fin_depth=1,
+            parse_cfg(&#34;ca1_sub_high_out.cfg&#34;), &#34;hc_high_out&#34;, **kwargs
         )
-        plot_exp_comp(
+        connections_dependent_on_samples(
+            parse_cfg(&#34;ca1_sub_low.cfg&#34;), &#34;hc_low&#34;, **kwargs
+        )
+        connections_dependent_on_samples(
+            parse_cfg(&#34;ca1_sub_vhigh.cfg&#34;), &#34;hc_vhigh&#34;, **kwargs
+        )
+        df_list = [
+            load_df(&#34;connection_samples_hc_vhigh.csv&#34;),
             load_df(&#34;connection_samples_hc_high.csv&#34;),
+            load_df(&#34;Connection_samples_hc_high_out.csv&#34;),
             load_df(&#34;connection_samples_hc_low.csv&#34;),
-            &#34;samples_hc_both.pdf&#34;,
-            prop=True,
+        ]
+        df_names = [
+            &#34;2.8% (90% to 3.1%)&#34;,
+            &#34;1.8% (90% to 2%)&#34;,
+            &#34;1.8% (36% to 5%)&#34;,
+            &#34;0.8% (70% to 1%)&#34;,
+        ]
+        plot_exp_comp(
+            df_list, df_names, &#34;samples_hc_both.pdf&#34;, prop=True,
         )
         store_sub_results()
-        plot_pmf_comp(
-            load_df(&#34;tetrode_sub_high.csv&#34;),
-            load_df(&#34;tetrode_sub_low.csv&#34;),
-            &#34;ca1_sub_tet_comp.pdf&#34;,
-        )
+        dfs = [
+            load_df(&#34;20_sub_vhigh.csv&#34;),
+            load_df(&#34;20_sub_high.csv&#34;),
+            load_df(&#34;20_sub_out.csv&#34;),
+            load_df(&#34;20_sub_low.csv&#34;),
+        ]
+        plot_pmf_comp(dfs, df_names, &#34;ca1_sub_tet_comp.pdf&#34;)
 
 
 def do_explain(do_vis=True, do_pmf=True, do_dist=True):
@@ -438,7 +470,7 @@ if __name__ == &#34;__main__&#34;:
         plot_pmf_accuracy(load_df(&#34;pmf_comp_pmf.csv&#34;), &#34;pmf_acc.pdf&#34;)
 
     if do_regions:
-        # This is fine, and works, but replacing for now
+        # This needs to be updated with correct configs, use stored for now
         # cfg_names = [
         #     &#34;sub_hc.cfg&#34;,
         #     &#34;sub_hc.cfg&#34;,
@@ -451,6 +483,26 @@ if __name__ == &#34;__main__&#34;:
         #     cfg_names, r_names, depths, &#34;fig&#34;, num_iters=20000,
         # )
         # plot_region_vals(load_df(&#34;region_exp_fig.csv&#34;), &#34;region_acc.pdf&#34;)
+
+        cfg_names = [
+            &#34;tetrode_ca3_ca1.cfg&#34;,
+            &#34;USE STORED MOUSE&#34;,
+            &#34;recurrent_fig1.cfg&#34;,
+            &#34;d3.cfg&#34;,
+            &#34;v_small.cfg&#34;,
+        ]
+        r_names = [
+            &#34;Tetrode CA3 CA1&#34;,
+            &#34;MOp to SSp-ll&#34;,
+            &#34;Figure 1 E&#34;,
+            &#34;Max distance 3&#34;,
+            &#34;Figure 1 A&#34;,
+        ]
+        depths = [1, 1, 1, 3, 1]
+        distance_dependent_on_regions(
+            cfg_names, r_names, depths, &#34;fig&#34;, num_iters=20000,
+        )
+        plot_region_sim(load_df(&#34;region_bhatt_fig.csv&#34;), &#34;region_acc_bhatt.pdf&#34;)
 
         print(&#34;WARNING: this uses stored results, check correct&#34;)
         store_region_results()
@@ -532,40 +584,50 @@ if __name__ == &#34;__main__&#34;:
         store_npix_results()
         plot_pmf(load_df(&#34;npix_man.csv&#34;), &#34;npix_pmf.pdf&#34;)
     if do_types:
+        kwargs = {
+            &#34;num_iters&#34;: 1000,
+            &#34;do_graph&#34;: False,
+            &#34;use_mean&#34;: False,
+            &#34;num_graphs&#34;: 0,
+            &#34;sr&#34;: 0.01,
+            &#34;clt_start&#34;: 10,
+            &#34;fin_depth&#34;: 1,
+        }
         connections_dependent_on_samples(
-            parse_cfg(&#34;ca1_sub_high.cfg&#34;),
-            &#34;hc_high&#34;,
-            num_iters=1000,
-            do_graph=False,
-            use_mean=False,
-            num_graphs=0,
-            sr=0.01,
-            clt_start=10,
-            fin_depth=1,
+            parse_cfg(&#34;ca1_sub_high.cfg&#34;), &#34;hc_high&#34;, **kwargs
         )
         connections_dependent_on_samples(
-            parse_cfg(&#34;ca1_sub_low.cfg&#34;),
-            &#34;hc_low&#34;,
-            num_iters=1000,
-            do_graph=False,
-            use_mean=False,
-            num_graphs=0,
-            sr=0.01,
-            clt_start=10,
-            fin_depth=1,
+            parse_cfg(&#34;ca1_sub_high_out.cfg&#34;), &#34;hc_high_out&#34;, **kwargs
         )
-        plot_exp_comp(
+        connections_dependent_on_samples(
+            parse_cfg(&#34;ca1_sub_low.cfg&#34;), &#34;hc_low&#34;, **kwargs
+        )
+        connections_dependent_on_samples(
+            parse_cfg(&#34;ca1_sub_vhigh.cfg&#34;), &#34;hc_vhigh&#34;, **kwargs
+        )
+        df_list = [
+            load_df(&#34;connection_samples_hc_vhigh.csv&#34;),
             load_df(&#34;connection_samples_hc_high.csv&#34;),
+            load_df(&#34;Connection_samples_hc_high_out.csv&#34;),
             load_df(&#34;connection_samples_hc_low.csv&#34;),
-            &#34;samples_hc_both.pdf&#34;,
-            prop=True,
+        ]
+        df_names = [
+            &#34;2.8% (90% to 3.1%)&#34;,
+            &#34;1.8% (90% to 2%)&#34;,
+            &#34;1.8% (36% to 5%)&#34;,
+            &#34;0.8% (70% to 1%)&#34;,
+        ]
+        plot_exp_comp(
+            df_list, df_names, &#34;samples_hc_both.pdf&#34;, prop=True,
         )
         store_sub_results()
-        plot_pmf_comp(
-            load_df(&#34;tetrode_sub_high.csv&#34;),
-            load_df(&#34;tetrode_sub_low.csv&#34;),
-            &#34;ca1_sub_tet_comp.pdf&#34;,
-        )</code></pre>
+        dfs = [
+            load_df(&#34;20_sub_vhigh.csv&#34;),
+            load_df(&#34;20_sub_high.csv&#34;),
+            load_df(&#34;20_sub_out.csv&#34;),
+            load_df(&#34;20_sub_low.csv&#34;),
+        ]
+        plot_pmf_comp(dfs, df_names, &#34;ca1_sub_tet_comp.pdf&#34;)</code></pre>
 </details>
 </dd>
 <dt id="neuroconnect.produce_figures.do_explain"><code class="name flex">
