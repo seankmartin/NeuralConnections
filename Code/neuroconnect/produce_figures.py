@@ -178,7 +178,7 @@ def do_accuracy(
         plot_pmf_accuracy(load_df("pmf_comp_pmf.csv"), "pmf_acc.pdf")
 
     if do_regions:
-        # This is fine, and works, but replacing for now
+        # This needs to be updated with correct configs, use stored for now
         # cfg_names = [
         #     "sub_hc.cfg",
         #     "sub_hc.cfg",
@@ -272,29 +272,29 @@ def do_examples(do_exp=True, do_pmf=True, do_types=True):
             parse_cfg("ca1_sub_low.cfg"), "hc_low", **kwargs
         )
         connections_dependent_on_samples(
-            parse_cfg("ca1_sub_low_con.cfg"), "hc_low_con", **kwargs
+            parse_cfg("ca1_sub_vhigh.cfg"), "hc_vhigh", **kwargs
         )
         df_list = [
+            load_df("connection_samples_hc_vhigh.csv"),
             load_df("connection_samples_hc_high.csv"),
             load_df("Connection_samples_hc_high_out.csv"),
             load_df("connection_samples_hc_low.csv"),
-            load_df("connection_samples_hc_low_con.csv"),
         ]
         df_names = [
-            "High - 90% to 2%",
-            "High - 40% to 5%",
-            "Low - 70% to 1%",
-            "Low - less pyr.",
+            "2.8% (90% to 3.1%)",
+            "1.8% (90% to 2%)",
+            "1.8% (36% to 5%)",
+            "0.8% (70% to 1%)",
         ]
         plot_exp_comp(
             df_list, df_names, "samples_hc_both.pdf", prop=True,
         )
         store_sub_results()
         dfs = [
-            load_df("tetrode_sub_high.csv"),
-            load_df("tetrode_sub_out.csv"),
-            load_df("tetrode_sub_low.csv"),
-            load_df("tetrode_sub_con.csv"),
+            load_df("20_sub_vhigh.csv"),
+            load_df("20_sub_high.csv"),
+            load_df("20_sub_out.csv"),
+            load_df("20_sub_low.csv"),
         ]
         plot_pmf_comp(dfs, df_names, "ca1_sub_tet_comp.pdf")
 

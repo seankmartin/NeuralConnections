@@ -111,13 +111,13 @@ def store_sub_results():
         "ca1_sub_high.cfg",
         "ca1_sub_high_out.cfg",
         "ca1_sub_low.cfg",
-        "ca1_sub_low_con.cfg",
+        "ca1_sub_vhigh.cfg",
     ]
     out_names = [
-        "tetrode_sub_high.csv",
-        "tetrode_sub_out.csv",
-        "tetrode_sub_low.csv",
-        "tetrode_sub_con.csv",
+        "20_sub_high.csv",
+        "20_sub_out.csv",
+        "20_sub_low.csv",
+        "20_sub_vhigh.csv",
     ]
 
     for cfg_name, name in zip(configs, out_names):
@@ -126,7 +126,7 @@ def store_sub_results():
             num_cpus=1,
             cfg=cfg_name,
             clt_start=30,
-            subsample_rate=0,
+            subsample_rate=0.01,
             approx_hypergeo=False,
         )
         cfg = parse_cfg(cfg_name)
