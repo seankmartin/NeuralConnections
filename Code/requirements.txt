@@ -10,3 +10,4 @@ pandas
 seaborn
 pyqt5
 dictances
+bg-atlasapi
