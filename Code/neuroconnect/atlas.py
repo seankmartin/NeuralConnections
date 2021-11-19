@@ -3,11 +3,10 @@
 from pprint import pprint
 
 import vedo
+import brainrender
 import numpy as np
 import matplotlib.pyplot as plt
 from bg_atlasapi import BrainGlobeAtlas, show_atlases
-from brainrender import Scene
-from brainrender.actors import Points
 from skm_pyutils.py_plot import ColorManager
 
 
@@ -82,6 +81,7 @@ def vedo_vis(regions, colors=None, atlas_name="allen_mouse_25um"):
     camera = dict(pos=from_, focalPoint=to, viewup=[0, 0, -1])
     vedo.show(*vedo_points, axes=axs, camera=camera).close()
 
+
 def brainrender_vis(regions, colors=None, atlas_name="allen_mouse_25um"):
 
     if colors is None:
@@ -94,21 +94,19 @@ def brainrender_vis(regions, colors=None, atlas_name="allen_mouse_25um"):
         """
 
         region_bounds = region.mesh.bounds()
-        print(region_bounds)
         X = np.random.randint(region_bounds[0], region_bounds[1], size=10000)
         Y = np.random.randint(region_bounds[2], region_bounds[3], size=10000)
         Z = np.random.randint(region_bounds[4], region_bounds[5], size=10000)
         pts = [[x, y, z] for x, y, z in zip(X, Y, Z)]
 
         ipts = region.mesh.insidePoints(pts).points()
-        
+
         if N < ipts.shape[0]:
             return ipts[np.random.choice(ipts.shape[0], N, replace=False), :]
         else:
             return ipts
 
-
-    scene = Scene(title="Labelled cells")
+    scene = brainrender.Scene(title="Labelled cells")
 
     # Get a numpy array with (fake) coordinates of some labelled cells
     for region, color in zip(regions, colors):
@@ -118,7 +116,9 @@ def brainrender_vis(regions, colors=None, atlas_name="allen_mouse_25um"):
         color = [color] * coordinates.shape[0]
 
         # Add to scene
-        scene.add(Points(coordinates, name=f"{region} CELLS", colors=color))
+        scene.add(
+            brainrender.actors.Points(coordinates, name=f"{region} CELLS", colors=color)
+        )
 
     # render
     scene.content
