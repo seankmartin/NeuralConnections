@@ -1,17 +1,18 @@
 """Functions related to atlas processing"""
 
-from bg_atlasapi import BrainGlobeAtlas, show_atlases
-import numpy as np
-import matplotlib.pyplot as plt
+from pprint import pprint
 
 import vedo
-
-from pprint import pprint
+import numpy as np
+import matplotlib.pyplot as plt
+from bg_atlasapi import BrainGlobeAtlas, show_atlases
+from brainrender import Scene
+from brainrender.actors import Points
 from skm_pyutils.py_plot import ColorManager
 
 
-def explore_atlas(regions, colors=None, name="allen_mouse_25um"):
-    bg_atlas = BrainGlobeAtlas(name, check_latest=False)
+def vedo_vis(regions, colors=None, atlas_name="allen_mouse_25um"):
+    bg_atlas = BrainGlobeAtlas(atlas_name, check_latest=False)
     pprint(bg_atlas.metadata)
 
     if colors is None:
@@ -44,27 +45,6 @@ def explore_atlas(regions, colors=None, name="allen_mouse_25um"):
         print(f"{region} occupies {vol_pc}% of the full brain")
         points_list.append((x, y, z))
 
-    # Matplotlib version
-    # fig = plt.figure()
-    # ax = fig.add_subplot(projection="3d")
-    # for val, color in zip(points_list, colors):
-    #     x, y, z = val
-    #     ax.scatter(x, y, z, color=color)
-    # ax.set_xlabel("Lateral")
-    # ax.set_ylabel("Anterior")
-    # ax.set_zlabel("Inferior")
-    # # ax.invert_zaxis()
-
-    # ax.set_xlim(-(max_x // 2), (max_x // 2))
-    # ax.set_ylim(-(max_y // 2), (max_y // 2))
-    # ax.set_zlim((max_z // 2), -(max_z // 2))
-    # ax.elev = 31
-    # ax.azim = 240
-
-    # plt.tight_layout()
-    # plt.show()
-
-    # vedo version
     vedo_points = []
     for val, color in zip(points_list, colors):
         vedo_points.append(vedo.Points(np.array(val)).c(color))
@@ -96,15 +76,58 @@ def explore_atlas(regions, colors=None, name="allen_mouse_25um"):
     #     zInverted=True,
     #     tipSize=0.25,
     # )
-    axs = vedo.Axes(vedo_points, zInverted=True)
+    axs = vedo.Axes(vedo_points, zInverted=True, zHighlightZero=False)
     to = [0, 0, 0]
     from_ = [7000, 6000, 2000]
     camera = dict(pos=from_, focalPoint=to, viewup=[0, 0, -1])
     vedo.show(*vedo_points, axes=axs, camera=camera).close()
+
+def brainrender_vis(regions, colors=None, atlas_name="allen_mouse_25um"):
+
+    if colors is None:
+        cm = ColorManager(num_colors=len(regions), method="rgb")
+        colors = cm.colors
+
+    def get_n_random_points_in_region(region, N):
+        """
+        Gets N random points inside (or on the surface) of a mes
+        """
+
+        region_bounds = region.mesh.bounds()
+        print(region_bounds)
+        X = np.random.randint(region_bounds[0], region_bounds[1], size=10000)
+        Y = np.random.randint(region_bounds[2], region_bounds[3], size=10000)
+        Z = np.random.randint(region_bounds[4], region_bounds[5], size=10000)
+        pts = [[x, y, z] for x, y, z in zip(X, Y, Z)]
+
+        ipts = region.mesh.insidePoints(pts).points()
+        
+        if N < ipts.shape[0]:
+            return ipts[np.random.choice(ipts.shape[0], N, replace=False), :]
+        else:
+            return ipts
+
+
+    scene = Scene(title="Labelled cells")
+
+    # Get a numpy array with (fake) coordinates of some labelled cells
+    for region, color in zip(regions, colors):
+        print(color)
+        mos = scene.add_brain_region(region, alpha=0.15)
+        coordinates = get_n_random_points_in_region(mos, 2000)
+        color = [color] * coordinates.shape[0]
+
+        # Add to scene
+        scene.add(Points(coordinates, name=f"{region} CELLS", colors=color))
+
+    # render
+    scene.content
+    scene.render()
 
 
 if __name__ == "__main__":
     show_atlases()
     main_regions = ["CA", "PL"]
     # main_colours = ["k", "b"]
-    explore_atlas(main_regions, None)
+    vedo_vis(main_regions, None)
+    brainrender_vis(main_regions, None)
