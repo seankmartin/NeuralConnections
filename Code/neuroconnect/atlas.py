@@ -11,6 +11,7 @@ from skm_pyutils.py_plot import ColorManager
 
 
 def vedo_vis(regions, colors=None, atlas_name="allen_mouse_25um"):
+    """Visualise regions of atlas using vedo."""
     bg_atlas = BrainGlobeAtlas(atlas_name, check_latest=False)
     pprint(bg_atlas.metadata)
 
@@ -82,7 +83,22 @@ def vedo_vis(regions, colors=None, atlas_name="allen_mouse_25um"):
     vedo.show(*vedo_points, axes=axs, camera=camera).close()
 
 
+def get_points_in_hemisphere(atlas, region_actor, side="left"):
+
+    all_points = region_actor.mesh.points()
+    points_in_hemisphere = np.array(
+        [
+            point
+            for point in all_points
+            if atlas.hemisphere_from_coords(point, as_string=True, microns=True) == side
+        ]
+    )
+
+    return points_in_hemisphere
+
+
 def brainrender_vis(regions, colors=None, atlas_name="allen_mouse_25um"):
+    """Visualise regions in atlas using brainrender"""
 
     if colors is None:
         cm = ColorManager(num_colors=len(regions), method="rgb")
@@ -106,19 +122,33 @@ def brainrender_vis(regions, colors=None, atlas_name="allen_mouse_25um"):
         else:
             return ipts
 
-    scene = brainrender.Scene(title="Labelled cells")
+    scene = brainrender.Scene(root=False, title="Labelled cells", atlas_name=atlas_name)
 
     # Get a numpy array with (fake) coordinates of some labelled cells
+    brain_region_actors = []
     for region, color in zip(regions, colors):
-        print(color)
-        mos = scene.add_brain_region(region, alpha=0.15)
-        coordinates = get_n_random_points_in_region(mos, 2000)
+        brain_region = scene.add_brain_region(region, alpha=0.15, color=color)
+        coordinates = get_n_random_points_in_region(brain_region, 2000)
         color = [color] * coordinates.shape[0]
 
         # Add to scene
         scene.add(
             brainrender.actors.Points(coordinates, name=f"{region} CELLS", colors=color)
         )
+        brain_region_actors.append(brain_region)
+
+    hemisphere_points = [
+        get_points_in_hemisphere(scene.atlas, brain_region_actor)
+        for brain_region_actor in brain_region_actors
+    ]
+
+    p1 = hemisphere_points[0].mean(axis=0)
+    p2 = hemisphere_points[1].mean(axis=0)
+
+    mesh = vedo.shapes.Cylinder(pos=[p1, p2], c="blue", r=100, alpha=0.5)
+    cylinder = brainrender.actor.Actor(mesh, name="Cylinder", br_class="Cylinder")
+
+    scene.add(cylinder)
 
     # render
     scene.content
@@ -127,7 +157,8 @@ def brainrender_vis(regions, colors=None, atlas_name="allen_mouse_25um"):
 
 if __name__ == "__main__":
     show_atlases()
-    main_regions = ["CA", "PL"]
+    # main_regions = ["CA", "PL"]
     # main_colours = ["k", "b"]
-    vedo_vis(main_regions, None)
+    # vedo_vis(main_regions, None)
+    main_regions = ["MOp", "SSp-ll"]
     brainrender_vis(main_regions, None)
