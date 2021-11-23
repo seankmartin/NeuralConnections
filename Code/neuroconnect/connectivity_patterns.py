@@ -193,6 +193,19 @@ class RecurrentConnectivity(ConnectionStrategy):
     neurons for each neuron.
     The rate at which interconnected synapses are formed is kept fixed
     but the number of connections varies as multiple synapses can be formed.
+
+    Should pass the following keyword arguments on initialisation:
+    num_senders : int
+        The number of neurons which send a connection
+    min_inter : float
+        The minimum interconnection rate
+    max_inter : float
+        The maximum interconnection rate
+    min_forward : int
+        The minimum number of forward connections from one neuron
+    max_forward : int
+        The maximum number of forward connections from one neuron
+    
     """
 
     def __init__(self, **kwargs):
