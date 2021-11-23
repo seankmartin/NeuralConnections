@@ -1,4 +1,10 @@
-"""Experimenting with assorted code in this package."""
+"""
+Experimenting with assorted code in this package.
+
+Can run with
+
+python -m neuroconnect.playground
+"""
 
 import os
 from collections import OrderedDict
@@ -12,7 +18,7 @@ import pandas as pd
 
 def test_hyper_eg(total, bad, draws):
     """Demonstrates that expected overlap between two sets is formula."""
-    from connect_math import (
+    from .connect_math import (
         hypergeometric_pmf,
         expected_non_overlapping,
         expected_overlapping,
@@ -95,7 +101,9 @@ def test_uniform(
 
     alt_full, alt_final = alt_way(N, n_dists, n_senders, min_val, max_val)
     uni = create_uniform(min_val, max_val)
-    dists = [uni,] * n_dists
+    dists = [
+        uni,
+    ] * n_dists
     dist = nfold_conv(dists)
 
     print("Expected value: {}".format(get_dist_mean(dist)))
@@ -189,7 +197,8 @@ def test_uniform(
 
     print(get_dist_mean(dist), get_dist_mean(old_dist))
     print(
-        get_dist_mean(fn_dist), expected_unique(N, n_dists * (max_val + min_val) / 2),
+        get_dist_mean(fn_dist),
+        expected_unique(N, n_dists * (max_val + min_val) / 2),
     )
     print(get_dist_mean(est_dist), get_dist_mean(stats), get_dist_mean(alt_final))
     print(get_dist_mean(new_dist), get_dist_mean(alt_full))
@@ -311,9 +320,19 @@ def sample_graph_exp():
         return (len(reachable),)
 
     result = monte_carlo(fn_to_eval, random_var_gen, 10000, num_cpus=1)
-    df = list_to_df(result, ["Connections",],)
+    df = list_to_df(
+        result,
+        [
+            "Connections",
+        ],
+    )
     result = summarise_monte_carlo(
-        df, to_plot=["Connections",], plt_outfile="graph_dist.png", plot=False,
+        df,
+        to_plot=[
+            "Connections",
+        ],
+        plt_outfile="graph_dist.png",
+        plot=False,
     )
     distrib = get_distribution(df, "Connections", 10000)
 
@@ -437,6 +456,41 @@ def test_conv_speed(min_val, max_val, clt_start1, clt_start2, max_samples):
     )
 
 
+def vis_graph_as_matrix():
+    from .simple_graph import to_matrix, matrix_vis, create_graph
+    from .matrix import gen_random_matrix
+    from .connectivity_patterns import get_by_name
+
+    mat = gen_random_matrix(1000, 1500, 0.01, 0.05, 0.001, 0.005)
+    matrix_vis(*mat, 10, name="random_mat_vis.png")
+
+    connect_pattern = get_by_name("mean_connectivity")
+    a_params = dict(
+        num_senders=100,
+        min_inter=0.0005,
+        max_inter=0.002,
+        min_forward=100,
+        max_forward=200,
+    )
+    b_params = dict(
+        num_senders=200,
+        min_inter=0.003,
+        max_inter=0.007,
+        min_forward=150,
+        max_forward=350,
+    )
+    graph, _ = create_graph(
+        [1000, 1500],
+        connect_pattern,
+        [a_params, b_params]
+    )
+    mat_graph = to_matrix(graph, 1000, 1500)
+    matrix_vis(*mat_graph, 10, name="random_graph_vis.png")
+
+    # TODO add in the connect matrix strat in block
+
+
+
 if __name__ == "__main__":
     # Hypergeometric again right?
     arr = [
@@ -528,3 +582,8 @@ if __name__ == "__main__":
 
     print(C(4, 2))
     print(C(3.5, 2))
+
+    print(sample_graph_exp())
+    print(test_sample_graph())
+
+    vis_graph_as_matrix()

@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 from scipy.sparse import find, lil_matrix
 
 from .plot_graph import get_positions, get_colours
-from .connect_math import multi_2d_avg
+from .connect_math import multi_2d_avg, window_2d_avg
 
 
 def reverse(graph):
@@ -30,7 +30,7 @@ def reverse(graph):
     return reverse_graph
 
 
-def from_matrix(AB, BA, AA, BB, to_use=[True, True, True, True]):
+def from_matrix(AB, BA, AA, BB, to_use=(True, True, True, True)):
     """Return a graph from matrix representation."""
     num_a, num_b = AB.shape
     graph = [[] for _ in range(num_a + num_b)]
@@ -88,8 +88,10 @@ def to_matrix(graph, num_a, num_b):
     return AB, BA, AA, BB
 
 
-def find_path(graph, start, end, path=[]):
+def find_path(graph, start, end, path=None):
     """Return a path from start to end if it exists."""
+    if path is None:
+        path = []
     path = path + [start]
     if start == end:
         return path
@@ -132,6 +134,74 @@ def create_graph(region_sizes, connection_strategy, connectivity_params):
         graph = graph + connections
 
     return graph, connected
+
+
+def create_3d_graph(region_sizes, regions, connection_strategy, connectivity_params):
+    """
+    Create a 3d graph using a connectivity pattern from connectivity_patterns.
+
+    regions should be a list of vedo meshes or brainrender actors.
+
+    Returns
+    -------
+    graph
+        A graph as a list of lists indicating connections
+    connected
+        A list of vertices which send connections
+    positions
+        A list of 3D positions of cells within the region.
+
+    """
+
+    def get_n_random_points_in_region(region, N, s=None):
+        """
+        Gets N random points inside (or on the surface) of a mes
+        """
+
+        region_bounds = region.mesh.bounds()
+        if s is None:
+            s = int(N * 2)
+        X = np.random.randint(region_bounds[0], region_bounds[1], size=s)
+        Y = np.random.randint(region_bounds[2], region_bounds[3], size=s)
+        Z = np.random.randint(region_bounds[4], region_bounds[5], size=s)
+        pts = [[x, y, z] for x, y, z in zip(X, Y, Z)]
+
+        ipts = region.mesh.insidePoints(pts).points()
+
+        if N < ipts.shape[0]:
+            return ipts[np.random.choice(ipts.shape[0], N, replace=False), :]
+        else:
+            return get_n_random_points_in_region(region, N, s=int(N * 4))
+
+    graph = []
+    region_verts = []
+    count = 0
+    for r_s in region_sizes:
+        vertices = [j + count for j in range(r_s)]
+        region_verts.append(vertices)
+        count += r_s
+    for i in range(len(region_sizes)):
+
+        positions = get_n_random_points_in_region(regions[i], region_sizes[i], s=None)
+
+        # Recursive connections
+        if i == len(region_sizes) - 1:
+            connect_inst = connection_strategy(**connectivity_params[i], recursive=True)
+            connections, _ = connect_inst.create_connections(
+                region_verts[0], region_verts=region_verts[i]
+            )
+
+        # Regular connections
+        else:
+            connect_inst = connection_strategy(
+                **connectivity_params[i], recursive=False
+            )
+            connections, connected = connect_inst.create_connections(
+                region_verts[i + 1], region_verts=region_verts[i]
+            )
+        graph = graph + connections
+
+    return graph, connected, positions
 
 
 def is_reachable(graph, end, start_set):
@@ -221,7 +291,11 @@ def matrix_vis(AB, BA, AA, BB, k_size, name="matrix_vis.pdf"):
     out_name = os.path.join(here, "..", "figures", name)
 
     print("Averaging over {}^2 matrix in {}x{} windows".format(total, k_size, k_size))
-    mat = multi_2d_avg(AB, BA, AA, BB, k_size)
+
+    if BA is not None:
+        mat = multi_2d_avg(AB, BA, AA, BB, k_size)
+    else:
+        mat = window_2d_avg(AB, k_size)
     sampled = np.clip(mat * 100, a_min=0.0, a_max=100.0)
 
     plt.clf()
@@ -231,5 +305,3 @@ def matrix_vis(AB, BA, AA, BB, k_size, name="matrix_vis.pdf"):
     plt.savefig(out_name, dpi=400)
 
     plt.clf()
-
-    return
