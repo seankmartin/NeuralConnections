@@ -171,8 +171,14 @@ def graph_connectome(
         )
 
     result = monte_carlo(fn_to_eval, random_var_gen, num_iters, num_cpus=1)
-    df = list_to_df(result, ["Connections"],)
-    result = summarise_monte_carlo(df, plot=False,)
+    df = list_to_df(
+        result,
+        ["Connections"],
+    )
+    result = summarise_monte_carlo(
+        df,
+        plot=False,
+    )
     ordered_dist = get_distribution(df, "Connections", num_iters)
 
     return {
@@ -255,8 +261,14 @@ def check_stats(mc, div_ratio, max_depth, num_iters=1000, num_cpus=1, plot=False
     }
 
     result = monte_carlo(fn_to_eval, random_var_gen, num_iters, num_cpus=num_cpus)
-    df = list_to_df(result, ["Connections"],)
-    result = summarise_monte_carlo(df, plot=False,)
+    df = list_to_df(
+        result,
+        ["Connections"],
+    )
+    result = summarise_monte_carlo(
+        df,
+        plot=False,
+    )
     ordered_dist = get_distribution(df, "Connections", num_iters)
 
     return {

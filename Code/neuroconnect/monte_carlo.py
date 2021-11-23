@@ -97,7 +97,12 @@ def list_to_df(in_list, headers=None):
 
 
 def summarise_monte_carlo(
-    df, txt_outfile=None, plot=True, to_plot=None, plt_outfile=None, do_print=False,
+    df,
+    txt_outfile=None,
+    plot=True,
+    to_plot=None,
+    plt_outfile=None,
+    do_print=False,
 ):
     """Summary stats of monte carlo with optional dist plot."""
     result = df.describe().round(4)

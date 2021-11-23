@@ -415,9 +415,13 @@ def second_deriv_improve_interp(x_samps, xvals, yvals, dist, fn_to_eval, x_val):
     for val in outliers:
         start_idx = total_so_far + val
         new_x = np.array(
-            list(range(xvals[start_idx] + 1, xvals[start_idx + 1])), dtype=np.int32,
+            list(range(xvals[start_idx] + 1, xvals[start_idx + 1])),
+            dtype=np.int32,
         )
-        new_y = np.zeros(shape=(len(new_x)), dtype=np.float64,)
+        new_y = np.zeros(
+            shape=(len(new_x)),
+            dtype=np.float64,
+        )
         for i_idx, i in enumerate(new_x):
             v = dist[i]
             if not isclose(v, 0.0, abs_tol=1e-8):

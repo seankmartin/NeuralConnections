@@ -35,13 +35,17 @@ def set_p():
     #     },
     # )
     sns.set_context(
-        "paper", font_scale=1.4, rc={"lines.linewidth": 3.2},
+        "paper",
+        font_scale=1.4,
+        rc={"lines.linewidth": 3.2},
     )
 
 
 def set_m():
     sns.set_context(
-        "paper", font_scale=1.4, rc={"lines.linewidth": 1.5},
+        "paper",
+        font_scale=1.4,
+        rc={"lines.linewidth": 1.5},
     )
 
 
@@ -236,7 +240,12 @@ def plot_exp_accuracy(df, out_name, prop=False, split=True):
     fig, ax = plt.subplots()
     set_p()
     sns.lineplot(
-        x="Number of samples", y=y_name, data=df, style="Calculation", hue=hue, ax=ax,
+        x="Number of samples",
+        y=y_name,
+        data=df,
+        style="Calculation",
+        hue=hue,
+        ax=ax,
     )
     ax.xaxis.set_major_locator(MaxNLocator(nbins=11, integer=True, min_n_ticks=10))
     plt.xlabel("Number of samples", fontsize=LABELSIZE)
@@ -251,7 +260,11 @@ def plot_region_vals(df, out_name, x_name="Connectivity", scale=(10, 4)):
     set_p()
 
     sns.barplot(
-        x=x_name, y="Expected proportion connected", hue="Calculation", data=df, ax=ax,
+        x=x_name,
+        y="Expected proportion connected",
+        hue="Calculation",
+        data=df,
+        ax=ax,
     )
     plt.xlabel(x_name, fontsize=LABELSIZE)
     plt.ylabel("Expected proportion connected", fontsize=LABELSIZE)
@@ -265,7 +278,10 @@ def plot_region_sim(df, out_name, x_name="Connectivity", scale=(10, 4)):
     set_p()
 
     sns.barplot(
-        x=x_name, y="Bhattacharyya distance", data=df, ax=ax,
+        x=x_name,
+        y="Bhattacharyya distance",
+        data=df,
+        ax=ax,
     )
     plt.xlabel(x_name, fontsize=LABELSIZE)
     plt.ylabel("Bhattacharyya distance", fontsize=LABELSIZE)
@@ -410,7 +426,12 @@ def main():
             load_df("b_each_eg.csv"),
             load_df("b_fin_eg.csv"),
         ],
-        ["a_prob_eg.pdf", "b_prob_eg.pdf", "b_each_eg.pdf", "b_fin_eg.pdf",],
+        [
+            "a_prob_eg.pdf",
+            "b_prob_eg.pdf",
+            "b_each_eg.pdf",
+            "b_fin_eg.pdf",
+        ],
     )
 
 

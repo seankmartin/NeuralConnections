@@ -31,7 +31,13 @@ def nx_vis_graph(
 
 
 def nx_vis_force(
-    nx_graph, start_set, end_set, sources, targets, name="nx_simple.png", labels=False,
+    nx_graph,
+    start_set,
+    end_set,
+    sources,
+    targets,
+    name="nx_simple.png",
+    labels=False,
 ):
     """Simple force based visual representation of the networkx graph."""
     options = {

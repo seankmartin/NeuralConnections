@@ -31,7 +31,10 @@ def main():
         help="Whether to analyse the stats convergence rate",
     )
     parser.add_argument(
-        "-f", "--final", action="store_true", help="Whether to analyse the final plots",
+        "-f",
+        "--final",
+        action="store_true",
+        help="Whether to analyse the final plots",
     )
     parser.add_argument(
         "-l", "--clt_start", type=int, default=30, help="Start point for CLT"

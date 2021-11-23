@@ -250,7 +250,9 @@ class RecurrentConnectivity(ConnectionStrategy):
 
                 in_box_idx = np.array([i for i in range(box_size)], dtype=np.int32)
                 self_connects_box = np.random.choice(
-                    in_box_idx, size=(len(region_verts), sample_sizes[0]), replace=True,
+                    in_box_idx,
+                    size=(len(region_verts), sample_sizes[0]),
+                    replace=True,
                 )
 
                 out_box_idx = np.array(
@@ -464,7 +466,9 @@ class RecurrentConnectivity(ConnectionStrategy):
                             num_start, total_samples, aa_sampled
                         )
                         aa_senders = expected_overlapping(
-                            num_start, num_senders - i, aa_new,
+                            num_start,
+                            num_senders - i,
+                            aa_new,
                         )
                         return int(round(aa_senders))
 
@@ -784,7 +788,9 @@ class MeanRecurrentConnectivity(RecurrentConnectivity):
                 )
                 aa_new = expected_non_overlapping(num_start, total_samples, aa_sampled)
                 aa_senders = expected_overlapping(
-                    num_start, max(num_senders - num_sender_samples, 0), aa_new,
+                    num_start,
+                    max(num_senders - num_sender_samples, 0),
+                    aa_new,
                 )
                 aab_total = expected_unique(num_end, aa_senders * num_connections)
                 aab_less_ab = expected_non_overlapping(num_end, final, aab_total)

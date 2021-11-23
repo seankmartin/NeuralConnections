@@ -208,7 +208,11 @@ def do_accuracy(
         ]
         depths = [1, 1, 1, 3, 1]
         distance_dependent_on_regions(
-            cfg_names, r_names, depths, "fig", num_iters=20000,
+            cfg_names,
+            r_names,
+            depths,
+            "fig",
+            num_iters=20000,
         )
         plot_region_sim(load_df("region_bhatt_fig.csv"), "region_acc_bhatt.pdf")
 
@@ -287,7 +291,10 @@ def do_examples(do_exp=True, do_pmf=True, do_types=True):
             "0.8% (70% to 1%)",
         ]
         plot_exp_comp(
-            df_list, df_names, "samples_hc_both.pdf", prop=True,
+            df_list,
+            df_names,
+            "samples_hc_both.pdf",
+            prop=True,
         )
         store_sub_results()
         dfs = [
@@ -324,7 +331,12 @@ def do_explain(do_vis=True, do_pmf=True, do_dist=True):
         ctrl_main(parse_cfg("recurrent_fig1.cfg"), args)
 
     if do_pmf:
-        proportion(parse_cfg("recurrent_fig1.cfg"), depths=[1,])
+        proportion(
+            parse_cfg("recurrent_fig1.cfg"),
+            depths=[
+                1,
+            ],
+        )
 
     if do_dist:
         explain_calc(parse_cfg("recurrent_fig1.cfg"), out_name="eg", sr=0.01)
@@ -368,7 +380,10 @@ def main():
     """Main entry point - seeds numpy before all figures generated."""
     np.random.seed(42)
     do_all(
-        mouse=True, explain=True, accuracy=True, examples=True,
+        mouse=True,
+        explain=True,
+        accuracy=True,
+        examples=True,
     )
     return
 

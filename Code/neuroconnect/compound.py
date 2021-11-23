@@ -394,7 +394,12 @@ def connections_dependent_on_samples(
 
 
 def connections_dependent_on_regions(
-    cfg_names, r_names, depths, out_name, num_iters=20000, do_graph=True,
+    cfg_names,
+    r_names,
+    depths,
+    out_name,
+    num_iters=20000,
+    do_graph=True,
 ):
     """Return connection expectation for different regions or connectivity."""
     vals = []
@@ -465,7 +470,12 @@ def connections_dependent_on_regions(
         if do_graph:
             to_add = np.mean(result["graph"]["full_results"]["Connections"].values)
             vals.append(
-                [to_add, to_add / num_samples[1], r_name, "Monte Carlo simulation",]
+                [
+                    to_add,
+                    to_add / num_samples[1],
+                    r_name,
+                    "Monte Carlo simulation",
+                ]
             )
 
     df = pd.DataFrame(vals, columns=cols)
@@ -479,7 +489,11 @@ def connections_dependent_on_regions(
 
 
 def distance_dependent_on_regions(
-    cfg_names, r_names, depths, out_name, num_iters=20000,
+    cfg_names,
+    r_names,
+    depths,
+    out_name,
+    num_iters=20000,
 ):
     """Return connection expectation for different regions or connectivity."""
     vals = []

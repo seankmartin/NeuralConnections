@@ -62,7 +62,8 @@ def store_region_results():
     cols = ["Connectivity", "Expected proportion connected", "Calculation"]
     df = pd.DataFrame(vals, columns=cols)
     df.to_csv(
-        os.path.join(here, "..", "results", "exp_man.csv"), index=False,
+        os.path.join(here, "..", "results", "exp_man.csv"),
+        index=False,
     )
 
 
@@ -82,7 +83,8 @@ def store_tetrode_results():
         cols=["Number of sampled connected neurons", "Probability"],
     )
     df.to_csv(
-        os.path.join(here, "..", "results", "tetrode_man.csv"), index=False,
+        os.path.join(here, "..", "results", "tetrode_man.csv"),
+        index=False,
     )
 
 
@@ -102,7 +104,8 @@ def store_npix_results():
         cols=["Number of sampled connected neurons", "Probability"],
     )
     df.to_csv(
-        os.path.join(here, "..", "results", "npix_man.csv"), index=False,
+        os.path.join(here, "..", "results", "npix_man.csv"),
+        index=False,
     )
 
 
@@ -137,7 +140,8 @@ def store_sub_results():
             cols=["Number of sampled connected neurons", "Probability"],
         )
         df.to_csv(
-            os.path.join(here, "..", "results", name), index=False,
+            os.path.join(here, "..", "results", name),
+            index=False,
         )
 
 

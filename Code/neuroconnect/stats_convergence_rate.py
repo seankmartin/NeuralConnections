@@ -50,12 +50,19 @@ def test_hyper_convergence_rate(N, K, n, num_iters=1000, num_cpus=1):
         return (count,)
 
     result = monte_carlo(fn_to_eval, random_var_gen, num_iters, num_cpus=num_cpus)
-    df = list_to_df(result, ["Connections",],)
+    df = list_to_df(
+        result,
+        [
+            "Connections",
+        ],
+    )
     dist = get_distribution(df, "Connections", num_iters)
     os.makedirs(os.path.join(here, "..", "figures"), exist_ok=True)
     result = summarise_monte_carlo(
         df,
-        to_plot=["Connections",],
+        to_plot=[
+            "Connections",
+        ],
         plt_outfile=os.path.join(here, "..", "figures", "dist.png"),
     )
 
@@ -111,7 +118,12 @@ def test_network_convergence(num_cpus=1):
 
     num_iters = 100000
     result = monte_carlo(fn_to_eval, random_var_gen, num_iters, num_cpus=num_cpus)
-    df = list_to_df(result, ["Connections",],)
+    df = list_to_df(
+        result,
+        [
+            "Connections",
+        ],
+    )
 
     for n in [1000, 10000, 50000, num_iters]:
         dist = get_distribution(df.head(n), "Connections", n)
@@ -122,7 +134,8 @@ def test_network_convergence(num_cpus=1):
     df = pd.DataFrame(vals, columns=columns)
     os.makedirs(os.path.join(here, "..", "results"), exist_ok=True)
     df.to_csv(
-        os.path.join(here, "..", "results", "stats_convergence_fixed.csv"), index=False,
+        os.path.join(here, "..", "results", "stats_convergence_fixed.csv"),
+        index=False,
     )
     return df
 
@@ -233,7 +246,12 @@ def test_rand_network_convergence(num_cpus=1, sr=None):
 
     random_var_gen, fn_to_eval = make_test_net()
     result = monte_carlo(fn_to_eval, random_var_gen, 50000, num_cpus=num_cpus)
-    df = list_to_df(result, ["Connections",],)
+    df = list_to_df(
+        result,
+        [
+            "Connections",
+        ],
+    )
 
     for n in [10000, 20000, 50000]:
         dist = get_distribution(df.head(n), "Connections", n)
@@ -244,7 +262,8 @@ def test_rand_network_convergence(num_cpus=1, sr=None):
     df = pd.DataFrame(vals, columns=columns)
     os.makedirs(os.path.join(here, "..", "results"), exist_ok=True)
     df.to_csv(
-        os.path.join(here, "..", "results", "stats_convergence_rand.csv"), index=False,
+        os.path.join(here, "..", "results", "stats_convergence_rand.csv"),
+        index=False,
     )
 
     return df

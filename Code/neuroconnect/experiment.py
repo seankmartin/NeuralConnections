@@ -329,14 +329,25 @@ def graph_control(
         random_var_gen,
         num_iters,
         num_cpus=num_cpus,
-        headers=["Connections",],
+        headers=[
+            "Connections",
+        ],
         save_name="graph_mc.csv",
         save_every=save_every,
         progress=not quiet,
     )
-    df = list_to_df(result, ["Connections",],)
+    df = list_to_df(
+        result,
+        [
+            "Connections",
+        ],
+    )
     result = summarise_monte_carlo(
-        df, to_plot=["Connections",], plt_outfile="graph_dist.png",
+        df,
+        to_plot=[
+            "Connections",
+        ],
+        plt_outfile="graph_dist.png",
     )
     distrib = get_distribution(df, "Connections", num_iters)
 
@@ -405,9 +416,18 @@ def nx_control(
         return
 
     result = monte_carlo(fn_to_eval, random_var_gen, num_iters, num_cpus=num_cpus)
-    df = list_to_df(result, ["Connections",],)
+    df = list_to_df(
+        result,
+        [
+            "Connections",
+        ],
+    )
     result = summarise_monte_carlo(
-        df, to_plot=["Connections",], plt_outfile="nx_graph_dist.png",
+        df,
+        to_plot=[
+            "Connections",
+        ],
+        plt_outfile="nx_graph_dist.png",
     )
 
     if do_vis_graph:
