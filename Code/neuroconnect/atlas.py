@@ -5,9 +5,11 @@ from pprint import pprint
 import vedo
 import brainrender
 import numpy as np
+import myterial
 import matplotlib.pyplot as plt
 from bg_atlasapi import BrainGlobeAtlas, show_atlases
 from skm_pyutils.py_plot import ColorManager
+from one.api import One
 
 
 def vedo_vis(regions, colors=None, atlas_name="allen_mouse_25um"):
@@ -122,7 +124,7 @@ def brainrender_vis(regions, colors=None, atlas_name="allen_mouse_25um"):
         else:
             return ipts
 
-    scene = brainrender.Scene(root=False, title="Labelled cells", atlas_name=atlas_name)
+    scene = brainrender.Scene(root=True, title="Labelled cells", atlas_name=atlas_name)
 
     # Get a numpy array with (fake) coordinates of some labelled cells
     brain_region_actors = []
@@ -155,10 +157,99 @@ def brainrender_vis(regions, colors=None, atlas_name="allen_mouse_25um"):
     scene.render()
 
 
+def make_probes():
+
+    # download probes data from IBL
+    cache_dir = r"E:\OpenNeuroData\Steinmetz2019\Steinmetz_et_al_2019_9974357\9974357"
+    one = One(cache_dir=cache_dir)  # The location of the unarchived data
+    sessions = one.search(dataset="trials")
+    # session = sessions[0]  # take the first session
+    # trials = one.load_object(session, "trials")  # load the trials object
+    # print(
+    #     trials.intervals
+    # )  # trials is a Bunch, values are NumPy arrays or pandas DataFrames
+    # print(trials.goCue_times)
+
+    # Get the location of implanted probes
+    probes_locs = []
+    for session in sessions:
+        locations = one.load_object(session, "channels", attribute="brainLocation")["brainLocation"]
+        probes_locs.append(locations)
+
+    # render a bunch of probes as sets of spheres (one per channel)
+    scene = brainrender.Scene()
+    scene.root._silhouette_kwargs["lw"] = 1
+    scene.root.alpha(0.2)
+    print(len(probes_locs), len(sessions))
+    for locs in probes_locs:
+        k = int(len(locs) / 374.0)
+
+        for i in range(k):
+            points = locs[i * 374 : (i + 1) * 374]
+            regs = points.allen_ontology.values
+
+            if "LGd" in regs and ("VISa" in regs or "VISp" in regs):
+                color = myterial.salmon_darker
+                alpha = 1
+                sil = 1
+            elif "VISa" in regs:
+                color = myterial.salmon_light
+                alpha = 1
+                sil = 0.5
+            else:
+                continue
+
+            spheres = brainrender.actors.Points(
+                points[["ccf_ap", "ccf_dv", "ccf_lr"]].values,
+                colors=color,
+                alpha=alpha,
+                radius=30,
+            )
+            spheres = scene.add(spheres)
+
+            if sil:
+                scene.add_silhouette(spheres, lw=sil)
+
+    # Add brain regions
+    visp, lgd = scene.add_brain_region(
+        "VISp",
+        "LGd",
+        hemisphere="right",
+        alpha=0.3,
+        silhouette=False,
+        color=myterial.blue_grey_dark,
+    )
+    visa = scene.add_brain_region(
+        "VISa",
+        hemisphere="right",
+        alpha=0.2,
+        silhouette=False,
+        color=myterial.blue_grey,
+    )
+    th = scene.add_brain_region(
+        "TH", alpha=0.3, silhouette=False, color=myterial.blue_grey_dark
+    )
+    th.wireframe()
+    scene.add_silhouette(lgd, visp, lw=2)
+
+    camera = {
+        "pos": (-16170, -7127, 31776),
+        "viewup": (0, -1, 0),
+        "clippingRange": (27548, 67414),
+        "focalPoint": (7319, 2861, -3942),
+        "distance": 43901,
+    }
+
+    scene.render(zoom=3.5, camera=camera)
+    scene.close()
+
+
 if __name__ == "__main__":
-    show_atlases()
+    # show_atlases()
     # main_regions = ["CA", "PL"]
     # main_colours = ["k", "b"]
     # vedo_vis(main_regions, None)
-    main_regions = ["MOp", "SSp-ll"]
-    brainrender_vis(main_regions, None)
+    make_probes()
+
+    # main_regions = ["MOp", "SSp-ll"]
+    # brainrender_vis(main_regions, None)
