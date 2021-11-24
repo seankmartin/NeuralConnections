@@ -1,6 +1,7 @@
 """Functions related to atlas processing"""
 
 from pprint import pprint
+import os
 
 import vedo
 import brainrender
@@ -86,7 +87,7 @@ def vedo_vis(regions, colors=None, atlas_name="allen_mouse_25um"):
 
 
 def get_points_in_hemisphere(atlas, region_actor, side="left"):
-
+    """Return all points for a given region on one side"""
     all_points = region_actor.mesh.points()
     points_in_hemisphere = np.array(
         [
@@ -158,29 +159,13 @@ def brainrender_vis(regions, colors=None, atlas_name="allen_mouse_25um"):
 
 
 def make_probes():
-
-    # download probes data from IBL
-    cache_dir = r"E:\OpenNeuroData\Steinmetz2019\Steinmetz_et_al_2019_9974357\9974357"
-    one = One(cache_dir=cache_dir)  # The location of the unarchived data
-    sessions = one.search(dataset="trials")
-    # session = sessions[0]  # take the first session
-    # trials = one.load_object(session, "trials")  # load the trials object
-    # print(
-    #     trials.intervals
-    # )  # trials is a Bunch, values are NumPy arrays or pandas DataFrames
-    # print(trials.goCue_times)
-
-    # Get the location of implanted probes
-    probes_locs = []
-    for session in sessions:
-        locations = one.load_object(session, "channels", attribute="brainLocation")["brainLocation"]
-        probes_locs.append(locations)
-
+    """Visualise some actual probes that were recorded with."""
     # render a bunch of probes as sets of spheres (one per channel)
     scene = brainrender.Scene()
     scene.root._silhouette_kwargs["lw"] = 1
     scene.root.alpha(0.2)
-    print(len(probes_locs), len(sessions))
+    probes_locs = load_steinmetz_locations()
+
     for locs in probes_locs:
         k = int(len(locs) / 374.0)
 
@@ -206,6 +191,14 @@ def make_probes():
                 radius=30,
             )
             spheres = scene.add(spheres)
+
+            p1 = points[["ccf_ap", "ccf_dv", "ccf_lr"]].values[0]
+            p2 = points[["ccf_ap", "ccf_dv", "ccf_lr"]].values[-1]
+            mesh = vedo.shapes.Cylinder(pos=[p1, p2], c=color, r=100, alpha=0.3)
+            cylinder = brainrender.actor.Actor(
+                mesh, name="Cylinder", br_class="Cylinder"
+            )
+            scene.add(cylinder)
 
             if sil:
                 scene.add_silhouette(spheres, lw=sil)
@@ -244,12 +237,150 @@ def make_probes():
     scene.close()
 
 
+def steinmetz_brain_regions():
+    """Write to file the set of regions in each recording."""
+    cache_dir = r"E:\OpenNeuroData\Steinmetz2019\Steinmetz_et_al_2019_9974357\9974357"
+    one = One(cache_dir=cache_dir)  # The location of the unarchived data
+    sessions = one.search(dataset="trials")
+
+    # Get the location of implanted probes
+    brain_regions = []
+    here = os.path.abspath(os.path.dirname(__file__))
+    with open(os.path.join(here, "..", "results", "allen_regions.txt"), "w") as f:
+        for session in sessions:
+            locations = one.load_object(session, "channels", attribute="brainLocation")[
+                "brainLocation"
+            ]
+            brain_regions.append(sorted(list(set(locations["allen_ontology"].values))))
+            f.write(str(brain_regions[-1]) + "\n")
+
+
+def load_steinmetz_locations():
+    """
+    Load the steinmetz dataset of brain locations from figshare.
+
+    https://figshare.com/articles/dataset/Distributed_coding_of_choice_action_and_engagement_across_the_mouse_brain/9974357
+    """
+    cache_dir = r"E:\OpenNeuroData\Steinmetz2019\Steinmetz_et_al_2019_9974357\9974357"
+    one = One(cache_dir=cache_dir)  # The location of the unarchived data
+    sessions = one.search(dataset="trials")
+    # session = sessions[0]  # take the first session
+    # trials = one.load_object(session, "trials")  # load the trials object
+    # print(
+    #     trials.intervals
+    # )  # trials is a Bunch, values are NumPy arrays or pandas DataFrames
+    # print(trials.goCue_times)
+
+    # Get the location of implanted probes
+    probes_locs = []
+    for session in sessions:
+        locations = one.load_object(session, "channels", attribute="brainLocation")[
+            "brainLocation"
+        ]
+        probes_locs.append(locations)
+
+    return probes_locs
+
+
+def vis_steinmetz_with_regions(region_names, colors=None):
+    """Visualise recordings containing regions"""
+    probes_locs = load_steinmetz_locations()
+
+    scene = brainrender.Scene()
+    scene.root._silhouette_kwargs["lw"] = 1
+    scene.root.alpha(0.2)
+
+    if colors is None:
+        cm = ColorManager(num_colors=len(region_names) + 2, method="rgb")
+        colors = cm.colors
+
+    for locs in probes_locs:
+        brain_regions = locs["allen_ontology"].values
+        cont = False
+        for region_name in region_names:
+            if region_name not in brain_regions:
+                print(sorted(list(set(brain_regions))))
+                cont = True
+
+        if cont:
+            continue
+
+        k = int(len(locs) / 374.0)
+
+        for i in range(k):
+            points = locs[i * 374 : (i + 1) * 374]
+            brain_regions = points["allen_ontology"].values
+            cont = True
+            for region_name in region_names:
+                if region_name in brain_regions:
+                    print(sorted(list(set(brain_regions))))
+                    cont = False
+
+            if cont:
+                continue
+
+            sil = 0.5
+            alpha = 0.8
+            color_list = [colors[-1]] * len(points)
+            spheres = brainrender.actors.Points(
+                points[["ccf_ap", "ccf_dv", "ccf_lr"]].values,
+                colors=color_list,
+                alpha=alpha,
+                radius=20,
+            )
+            spheres = scene.add(spheres)
+
+            p1 = points[["ccf_ap", "ccf_dv", "ccf_lr"]].values[0]
+            p2 = points[["ccf_ap", "ccf_dv", "ccf_lr"]].values[-1]
+            mesh = vedo.shapes.Cylinder(pos=[p1, p2], c=colors[-2], r=100, alpha=0.3)
+            cylinder = brainrender.actor.Actor(
+                mesh, name="Cylinder", br_class="Cylinder"
+            )
+            scene.add(cylinder)
+
+            if sil:
+                scene.add_silhouette(spheres, lw=sil)
+
+    # Add brain regions
+    for region_name, color in zip(region_names, colors[:-2]):
+        reg = scene.add_brain_region(
+            region_name, hemisphere="right", alpha=0.3, silhouette=False, color=color
+        )
+        scene.add_silhouette(reg, lw=2)
+
+    th = scene.add_brain_region(
+        "TH", alpha=0.3, silhouette=False, color=myterial.blue_grey_dark
+    )
+    th.wireframe()
+
+    camera = {
+        "pos": (-16170, -7127, 31776),
+        "viewup": (0, -1, 0),
+        "clippingRange": (27548, 67414),
+        "focalPoint": (7319, 2861, -3942),
+        "distance": 43901,
+    }
+
+    scene.render(zoom=3.5, camera=camera)
+    scene.close()
+
+
+def get_points_in_mesh(points, mesh, N=None):
+    ipts = mesh.insidePoints(points).points()
+    if N is not None:
+        return ipts[np.random.choice(ipts.shape[0], N, replace=False), :]
+    else:
+        return ipts
+
+
 if __name__ == "__main__":
     # show_atlases()
     # main_regions = ["CA", "PL"]
     # main_colours = ["k", "b"]
     # vedo_vis(main_regions, None)
-    make_probes()
+    # make_probes()
+    steinmetz_brain_regions()
+    vis_steinmetz_with_regions(["VISp", "VISl"])
 
     # main_regions = ["MOp", "SSp-ll"]
     # brainrender_vis(main_regions, None)
