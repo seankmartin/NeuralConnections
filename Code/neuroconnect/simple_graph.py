@@ -17,7 +17,7 @@ from scipy.sparse import find, lil_matrix
 
 from .plot_graph import get_positions, get_colours
 from .connect_math import multi_2d_avg, window_2d_avg
-
+from .atlas import get_n_random_points_in_region
 
 def reverse(graph):
     """Reverse the direction of edges in a graph."""
@@ -152,26 +152,6 @@ def create_3d_graph(region_sizes, regions, connection_strategy, connectivity_par
         A list of 3D positions of cells within the region.
 
     """
-
-    def get_n_random_points_in_region(region, N, s=None):
-        """
-        Gets N random points inside (or on the surface) of a mes
-        """
-
-        region_bounds = region.mesh.bounds()
-        if s is None:
-            s = int(N * 2)
-        X = np.random.randint(region_bounds[0], region_bounds[1], size=s)
-        Y = np.random.randint(region_bounds[2], region_bounds[3], size=s)
-        Z = np.random.randint(region_bounds[4], region_bounds[5], size=s)
-        pts = [[x, y, z] for x, y, z in zip(X, Y, Z)]
-
-        ipts = region.mesh.insidePoints(pts).points()
-
-        if N < ipts.shape[0]:
-            return ipts[np.random.choice(ipts.shape[0], N, replace=False), :]
-        else:
-            return get_n_random_points_in_region(region, N, s=int(N * 4))
 
     graph = []
     region_verts = []
