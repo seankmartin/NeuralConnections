@@ -518,7 +518,7 @@ def visualise_probe_cells(
     )
 
     scene = brainrender.Scene()
-    # brainrender.settings.SHADER_STYLE = "metallic"
+    brainrender.settings.SHADER_STYLE = "metallic"
     brainrender.settings.SHOW_AXES = False
 
     if colors is None:
@@ -531,9 +531,10 @@ def visualise_probe_cells(
     ):
         region_color = next(iter_color)
         brain_mesh = brainrender.actor.Actor(
-            mesh, name=name, br_class="brain region", color=region_color, alpha=0.2
+            mesh, name=name, br_class="brain region", color=region_color, alpha=0.3
         )
         scene.add(brain_mesh)
+        scene.add_silhouette(brain_mesh, lw=2)
 
         color_list = [region_color] * len(points_loc)
         spheres = brainrender.actors.Points(
@@ -543,6 +544,8 @@ def visualise_probe_cells(
             radius=15,
         )
         spheres = scene.add(spheres)
+
+        scene.add_silhouette(spheres, lw=0.5)
 
     for probes in probe_info:
         sphere_color = next(iter_color)
@@ -556,11 +559,12 @@ def visualise_probe_cells(
         )
         spheres = scene.add(spheres)
 
-        brain_mesh = brainrender.actor.Actor(mesh, name=name, br_class="brain region")
-        scene.add(brain_mesh)
-
         cylinder = brainrender.actor.Actor(
-            probes[-1], name="Cylinder", br_class="Cylinder"
+            probes[-1],
+            name="Cylinder",
+            br_class="Cylinder",
+            color=sphere_color,
+            alpha=0.4,
         )
         scene.add(cylinder)
 
