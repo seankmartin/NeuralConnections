@@ -131,7 +131,7 @@ def brainrender_vis(regions, colors=None, atlas_name="allen_mouse_25um"):
     brain_region_actors = []
     for region, color in zip(regions, colors):
         brain_region = scene.add_brain_region(region, alpha=0.15, color=color)
-        coordinates = get_n_random_points_in_region(brain_region, 2000)
+        coordinates = get_n_random_points_in_region(brain_region.mesh, 2000)
         color = [color] * coordinates.shape[0]
 
         # Add to scene
@@ -365,12 +365,219 @@ def vis_steinmetz_with_regions(region_names, colors=None):
     scene.close()
 
 
-def get_points_in_mesh(points, mesh, N=None):
-    ipts = mesh.insidePoints(points).points()
+def get_idx_of_points_in_meshs(points, meshes, N=None):
+    ipts = [mesh.insidePoints(points, returnIds=True) for mesh in meshes]
+
+    set_of_points = set()
+    for pt in ipts:
+        for p in pt:
+            set_of_points.add(p)
+    ipts = list(set_of_points)
+
     if N is not None:
         return ipts[np.random.choice(ipts.shape[0], N, replace=False), :]
     else:
         return ipts
+
+
+def get_bounding_probes(region_names, session_id=None):
+    if session_id is None:
+        probes_locs = load_steinmetz_locations()
+    else:
+        probes_locs = [load_steinmetz_locations()[session_id]]
+
+    info = {}
+    for i, locs in enumerate(probes_locs):
+        brain_regions = locs["allen_ontology"].values
+        cont = False
+        for region_name in region_names:
+            if region_name not in brain_regions:
+                cont = True
+
+        if cont:
+            continue
+
+        # Split into single probes per session
+        k = int(len(locs) / 374.0)
+
+        info[i] = []
+        for j in range(k):
+            points = locs[j * 374 : (j + 1) * 374]
+            brain_regions = points["allen_ontology"].values
+            cont = True
+            for region_name in region_names:
+                if region_name in brain_regions:
+                    found_regions = sorted(list(set(brain_regions)))
+                    print(f"Found probe in regions: {found_regions}")
+                    cont = False
+
+            if cont:
+                continue
+
+            p1 = points[["ccf_ap", "ccf_dv", "ccf_lr"]].values[0]
+            p2 = points[["ccf_ap", "ccf_dv", "ccf_lr"]].values[-1]
+
+            # 100micron radius cylinder from top to bottom of probe
+            n_pixel_micron_radius = 100
+            mesh = vedo.shapes.Cylinder(
+                pos=[p1, p2], r=n_pixel_micron_radius, alpha=0.3
+            )
+
+            info[i].append([found_regions, points, mesh])
+
+    return info
+
+
+def get_n_random_points_in_region(region_mesh, N, s=None):
+    """
+    Gets N random points inside (or on the surface) of a mes
+    """
+
+    region_bounds = region_mesh.bounds()
+    if s is None:
+        s = int(N * 2)
+    X = np.random.randint(region_bounds[0], region_bounds[1], size=s)
+    Y = np.random.randint(region_bounds[2], region_bounds[3], size=s)
+    Z = np.random.randint(region_bounds[4], region_bounds[5], size=s)
+    pts = [[x, y, z] for x, y, z in zip(X, Y, Z)]
+
+    ipts = region_mesh.insidePoints(pts).points()
+
+    if N <= ipts.shape[0]:
+        return ipts[np.random.choice(ipts.shape[0], N, replace=False), :]
+    else:
+        return get_n_random_points_in_region(region_mesh, N, s=int(N * 4))
+
+
+def get_brain_region_meshes(region_names, atlas_name, hemisphere="right"):
+    # TODO am coverting from brain render
+    atlas = brainrender.Atlas(atlas_name=atlas_name)
+    root = vedo.load(str(atlas.root_meshfile()))
+    atlas.root = root
+    # slice to keep only one hemisphere
+    if hemisphere == "right":
+        plane = atlas.get_plane(pos=root.centerOfMass(), norm=(0, 0, 1))
+    elif hemisphere == "left":
+        plane = atlas.get_plane(pos=root.centerOfMass(), norm=(0, 0, -1))
+
+    region_meshes = []
+    for region_name in region_names:
+        region_mesh = vedo.load(str(atlas.meshfile_from_structure(region_name)))
+        if hemisphere in ("left", "right"):
+            region_mesh.cutWithPlane(
+                origin=plane.center,
+                normal=plane.normal,
+            )
+
+            region_mesh.cap()
+        region_meshes.append(region_mesh)
+
+    return region_meshes
+
+
+def gen_graph_for_regions(
+    region_names,
+    region_sizes,
+    atlas_name=None,
+    session_id=None,
+    hemisphere="left",
+):
+    probe_info = get_bounding_probes(region_names, session_id)
+    if len(probe_info) > 1:
+        print("Found multiple matching probes for the given brain regions.")
+        print("You can visualise these probes using get_bounding_probes method")
+        print(f"These were {probe_info}")
+        print("Using the first entry for now")
+
+    probes_to_use = list(probe_info.values())[0]
+    # TODO could improve efficiency by storing which regions the probes are in
+    all_cylinders = [entry[-1] for entry in probes_to_use]
+    brain_region_meshes = get_brain_region_meshes(
+        region_names, atlas_name, hemisphere=hemisphere
+    )
+
+    region_pts = []
+    for region_mesh, region_size in zip(brain_region_meshes, region_sizes):
+        pts = get_n_random_points_in_region(region_mesh, region_size)
+        pts = pts[get_idx_of_points_in_meshs(pts, all_cylinders)]
+        region_pts.append(pts)
+
+    return region_pts, brain_region_meshes, probes_to_use
+
+
+def visualise_probe_cells(
+    region_names,
+    region_sizes,
+    atlas_name=None,
+    session_id=None,
+    hemisphere="left",
+    colors=None,
+):
+    point_locations, brain_region_meshes, probe_info = gen_graph_for_regions(
+        region_names, region_sizes, atlas_name, session_id, hemisphere
+    )
+
+    scene = brainrender.Scene()
+    # brainrender.settings.SHADER_STYLE = "metallic"
+    brainrender.settings.SHOW_AXES = False
+
+    if colors is None:
+        cm = ColorManager(num_colors=len(region_names) + len(probe_info), method="rgb")
+        colors = cm.colors
+    iter_color = iter(colors)
+
+    for name, mesh, points_loc in zip(
+        region_names, brain_region_meshes, point_locations
+    ):
+        region_color = next(iter_color)
+        brain_mesh = brainrender.actor.Actor(
+            mesh, name=name, br_class="brain region", color=region_color, alpha=0.2
+        )
+        scene.add(brain_mesh)
+
+        color_list = [region_color] * len(points_loc)
+        spheres = brainrender.actors.Points(
+            points_loc,
+            colors=color_list,
+            alpha=0.5,
+            radius=15,
+        )
+        spheres = scene.add(spheres)
+
+    for probes in probe_info:
+        sphere_color = next(iter_color)
+        points = probes[1][["ccf_ap", "ccf_dv", "ccf_lr"]].values
+        color_list = [sphere_color] * len(points)
+        spheres = brainrender.actors.Points(
+            points,
+            colors=color_list,
+            alpha=0.6,
+            radius=20,
+        )
+        spheres = scene.add(spheres)
+
+        brain_mesh = brainrender.actor.Actor(mesh, name=name, br_class="brain region")
+        scene.add(brain_mesh)
+
+        cylinder = brainrender.actor.Actor(
+            probes[-1], name="Cylinder", br_class="Cylinder"
+        )
+        scene.add(cylinder)
+
+    th = scene.add_brain_region(
+        "TH", alpha=0.3, silhouette=False, color=myterial.blue_grey_dark
+    )
+    th.wireframe()
+
+    camera = {
+        "pos": (-16170, -7127, 31776),
+        "viewup": (0, -1, 0),
+        "clippingRange": (27548, 67414),
+        "focalPoint": (7319, 2861, -3942),
+        "distance": 43901,
+    }
+    scene.render(zoom=3.5, camera=camera)
+    scene.close()
 
 
 if __name__ == "__main__":
@@ -379,8 +586,17 @@ if __name__ == "__main__":
     # main_colours = ["k", "b"]
     # vedo_vis(main_regions, None)
     # make_probes()
-    steinmetz_brain_regions()
-    vis_steinmetz_with_regions(["VISp", "VISl"])
+    # steinmetz_brain_regions()
+    # vis_steinmetz_with_regions(["VISp", "VISl"])
 
     # main_regions = ["MOp", "SSp-ll"]
     # brainrender_vis(main_regions, None)
+
+    visualise_probe_cells(
+        ["VISp", "VISl"],
+        [30000, 10000],
+        atlas_name="allen_mouse_25um",
+        session_id=None,
+        hemisphere="left",
+        colors=None,
+    )
