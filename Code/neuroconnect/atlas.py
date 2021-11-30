@@ -512,17 +512,18 @@ def visualise_probe_cells(
     session_id=None,
     hemisphere="left",
     colors=None,
+    style="metallic",
 ):
     point_locations, brain_region_meshes, probe_info = gen_graph_for_regions(
         region_names, region_sizes, atlas_name, session_id, hemisphere
     )
 
-    scene = brainrender.Scene()
-    brainrender.settings.SHADER_STYLE = "metallic"
+    brainrender.settings.SHADER_STYLE = style
     brainrender.settings.SHOW_AXES = False
+    scene = brainrender.Scene()
 
     if colors is None:
-        cm = ColorManager(num_colors=len(region_names) + len(probe_info), method="rgb")
+        cm = ColorManager(num_colors=len(region_names) + len(probe_info), method="sns")
         colors = cm.colors
     iter_color = iter(colors)
 
@@ -596,11 +597,15 @@ if __name__ == "__main__":
     # main_regions = ["MOp", "SSp-ll"]
     # brainrender_vis(main_regions, None)
 
+    # for style in ("cartoon", "metallic", "plastic", "shiny", "glossy"):
+    style = "cartoon"
+    colors = ColorManager(4, method="sns", sns_style="deep").colors
     visualise_probe_cells(
         ["VISp", "VISl"],
         [30000, 10000],
         atlas_name="allen_mouse_25um",
         session_id=None,
         hemisphere="left",
-        colors=None,
+        colors=colors,
+        style=style
     )
