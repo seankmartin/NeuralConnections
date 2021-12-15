@@ -7,11 +7,10 @@ import vedo
 import brainrender
 import numpy as np
 import myterial
-import matplotlib.pyplot as plt
 from bg_atlasapi import BrainGlobeAtlas, show_atlases
 from skm_pyutils.py_plot import ColorManager
 from one.api import One
-
+from hilbertcurve.hilbertcurve import HilbertCurve
 
 def vedo_vis(regions, colors=None, atlas_name="allen_mouse_25um"):
     """Visualise regions of atlas using vedo."""
@@ -365,7 +364,7 @@ def vis_steinmetz_with_regions(region_names, colors=None):
     scene.close()
 
 
-def get_idx_of_points_in_meshs(points, meshes, N=None):
+def get_idx_of_points_in_meshes(points, meshes, N=None):
     ipts = [mesh.insidePoints(points, returnIds=True) for mesh in meshes]
 
     set_of_points = set()
@@ -428,9 +427,11 @@ def get_bounding_probes(region_names, session_id=None):
     return info
 
 
-def get_n_random_points_in_region(region_mesh, N, s=None):
+def get_n_random_points_in_region(region_mesh, N, s=None, sort_=False):
     """
-    Gets N random points inside (or on the surface) of a mes
+    Gets N random points inside (or on the surface) of a mesh
+
+    If sort_ is True, performs a Hilbert curve sorting process
     """
 
     region_bounds = region_mesh.bounds()
@@ -444,9 +445,21 @@ def get_n_random_points_in_region(region_mesh, N, s=None):
     ipts = region_mesh.insidePoints(pts).points()
 
     if N <= ipts.shape[0]:
-        return ipts[np.random.choice(ipts.shape[0], N, replace=False), :]
+        ipts = ipts[np.random.choice(ipts.shape[0], N, replace=False), :]
     else:
-        return get_n_random_points_in_region(region_mesh, N, s=int(N * 4))
+        ipts = get_n_random_points_in_region(region_mesh, N, s=int(N * 4))
+
+    if sort_:
+        print(ipts)
+        hilbert_curve = HilbertCurve(3, 3)
+        int_points = (100000 * ipts).astype(int)
+        distances = hilbert_curve.distances_from_points(int_points, match_type=True)
+        sorted_idxs = distances.argsort(axis=-1)
+        ipts = np.take_along_axis(ipts, sorted_idxs, axis=-1)
+        print(ipts)
+        exit(-1)
+
+    return ipts
 
 
 def get_brain_region_meshes(region_names, atlas_name, hemisphere="right"):
@@ -481,6 +494,7 @@ def gen_graph_for_regions(
     atlas_name=None,
     session_id=None,
     hemisphere="left",
+    sort_=False,
 ):
     probe_info = get_bounding_probes(region_names, session_id)
     if len(probe_info) > 1:
@@ -498,8 +512,8 @@ def gen_graph_for_regions(
 
     region_pts = []
     for region_mesh, region_size in zip(brain_region_meshes, region_sizes):
-        pts = get_n_random_points_in_region(region_mesh, region_size)
-        pts = pts[get_idx_of_points_in_meshs(pts, all_cylinders)]
+        pts = get_n_random_points_in_region(region_mesh, region_size, sort_=sort_)
+        pts = pts[get_idx_of_points_in_meshes(pts, all_cylinders)]
         region_pts.append(pts)
 
     return region_pts, brain_region_meshes, probes_to_use
@@ -584,8 +598,8 @@ def visualise_probe_cells(
     scene.render(zoom=3.5, camera=camera)
     scene.close()
 
-
 if __name__ == "__main__":
+    ### Testing smaller functions
     # show_atlases()
     # main_regions = ["CA", "PL"]
     # main_colours = ["k", "b"]
@@ -593,10 +607,10 @@ if __name__ == "__main__":
     # make_probes()
     # steinmetz_brain_regions()
     # vis_steinmetz_with_regions(["VISp", "VISl"])
-
     # main_regions = ["MOp", "SSp-ll"]
     # brainrender_vis(main_regions, None)
 
+    #### Visualise probes and cells
     # for style in ("cartoon", "metallic", "plastic", "shiny", "glossy"):
     style = "cartoon"
     colors = ColorManager(4, method="sns", sns_style="deep").colors
@@ -607,5 +621,5 @@ if __name__ == "__main__":
         session_id=None,
         hemisphere="left",
         colors=colors,
-        style=style
+        style=style,
     )

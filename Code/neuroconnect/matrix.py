@@ -151,12 +151,15 @@ def handle_pickle(data, name, mode):
 
 
 def graph_connectome(
-    num_sampled, max_depth, num_iters=10, graph=None, reverse_graph=None, to_write=None
+    num_sampled, max_depth, num_iters=10, graph=None, reverse_graph=None, to_write=None, num_cpus=1, a_indices=None, b_indices=None,
 ):
     """Perform monte carlo graph simulations on the mouse connectome."""
     num_a, num_b = to_write
-    a_indices = np.array([i for i in range(num_a)])
-    b_indices = np.array([i for i in range(num_b)])
+    
+    if a_indices is None:
+        a_indices = np.array([i for i in range(num_a)])
+    if b_indices is None:
+        b_indices = np.array([i for i in range(num_b)])
 
     def random_var_gen(iter_val):
         start = np.random.choice(a_indices, size=num_sampled[0], replace=False)
@@ -170,7 +173,7 @@ def graph_connectome(
             len(find_connected_limited(graph, start, end, max_depth, reverse_graph)),
         )
 
-    result = monte_carlo(fn_to_eval, random_var_gen, num_iters, num_cpus=1)
+    result = monte_carlo(fn_to_eval, random_var_gen, num_iters, num_cpus=num_cpus)
     df = list_to_df(
         result,
         ["Connections"],

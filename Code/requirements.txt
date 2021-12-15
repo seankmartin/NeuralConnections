@@ -14,3 +14,4 @@ bg-atlasapi
 brainrender
 vedo
 ONE-api
+hilbertcurve
