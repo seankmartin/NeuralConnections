@@ -29,7 +29,7 @@ def reverse(graph):
 
     return reverse_graph
 
-
+# TODO consider directly using lil scipy format
 def from_matrix(AB, BA, AA, BB, to_use=(True, True, True, True)):
     """Return a graph from matrix representation."""
     num_a, num_b = AB.shape

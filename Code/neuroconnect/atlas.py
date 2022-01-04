@@ -450,14 +450,11 @@ def get_n_random_points_in_region(region_mesh, N, s=None, sort_=False):
         ipts = get_n_random_points_in_region(region_mesh, N, s=int(N * 4))
 
     if sort_:
-        print(ipts)
-        hilbert_curve = HilbertCurve(3, 3)
-        int_points = (100000 * ipts).astype(int)
-        distances = hilbert_curve.distances_from_points(int_points, match_type=True)
-        sorted_idxs = distances.argsort(axis=-1)
-        ipts = np.take_along_axis(ipts, sorted_idxs, axis=-1)
-        print(ipts)
-        exit(-1)
+        hilbert_dim = int(np.floor(np.log10(np.max(ipts)) / np.log10(2)) + 1)
+        hilbert_curve = HilbertCurve(hilbert_dim, 3)
+        distances = hilbert_curve.distances_from_points(ipts, match_type=True)
+        sorted_idxs = distances.argsort()
+        ipts = ipts[sorted_idxs]
 
     return ipts
 
@@ -513,8 +510,9 @@ def gen_graph_for_regions(
     region_pts = []
     for region_mesh, region_size in zip(brain_region_meshes, region_sizes):
         pts = get_n_random_points_in_region(region_mesh, region_size, sort_=sort_)
-        pts = pts[get_idx_of_points_in_meshes(pts, all_cylinders)]
-        region_pts.append(pts)
+        pts_idxs = get_idx_of_points_in_meshes(pts, all_cylinders)
+        pts = pts[pts_idxs]
+        region_pts.append((pts, pts_idxs))
 
     return region_pts, brain_region_meshes, probes_to_use
 

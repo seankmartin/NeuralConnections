@@ -151,11 +151,19 @@ def handle_pickle(data, name, mode):
 
 
 def graph_connectome(
-    num_sampled, max_depth, num_iters=10, graph=None, reverse_graph=None, to_write=None, num_cpus=1, a_indices=None, b_indices=None,
+    num_sampled,
+    max_depth,
+    num_iters=10,
+    graph=None,
+    reverse_graph=None,
+    to_write=None,
+    num_cpus=1,
+    a_indices=None,
+    b_indices=None,
 ):
     """Perform monte carlo graph simulations on the mouse connectome."""
     num_a, num_b = to_write
-    
+
     if a_indices is None:
         a_indices = np.array([i for i in range(num_a)])
     if b_indices is None:
