@@ -12,6 +12,7 @@ from skm_pyutils.py_plot import ColorManager
 from one.api import One
 from hilbertcurve.hilbertcurve import HilbertCurve
 
+
 def vedo_vis(regions, colors=None, atlas_name="allen_mouse_25um"):
     """Visualise regions of atlas using vedo."""
     bg_atlas = BrainGlobeAtlas(atlas_name, check_latest=False)
@@ -236,9 +237,22 @@ def make_probes():
     scene.close()
 
 
-def steinmetz_brain_regions():
-    """Write to file the set of regions in each recording."""
-    cache_dir = r"E:\OpenNeuroData\Steinmetz2019\Steinmetz_et_al_2019_9974357\9974357"
+def steinmetz_brain_regions(cache_dir=None):
+    """
+    Write to file the set of regions in each recording.
+
+    Parameters
+    ----------
+    cache_dir : str
+        The path to the directory containing the steinmetz dataset.
+        By default None, which uses the path on my PC.
+
+
+    """
+    if cache_dir is None:
+        cache_dir = (
+            r"E:\OpenNeuroData\Steinmetz2019\Steinmetz_et_al_2019_9974357\9974357"
+        )
     one = One(cache_dir=cache_dir)  # The location of the unarchived data
     sessions = one.search(dataset="trials")
 
@@ -254,13 +268,28 @@ def steinmetz_brain_regions():
             f.write(str(brain_regions[-1]) + "\n")
 
 
-def load_steinmetz_locations():
+def load_steinmetz_locations(cache_dir=None):
     """
     Load the steinmetz dataset of brain locations from figshare.
 
     https://figshare.com/articles/dataset/Distributed_coding_of_choice_action_and_engagement_across_the_mouse_brain/9974357
+
+    Parameters
+    ----------
+    cache_dir : str
+        The path to the directory containing the steinmetz dataset.
+        By default None, which uses the path on my PC.
+
+    Returns
+    -------
+    probes_locs : dataframe like
+        A dataframe like object containing information on the brain location of probes.
+
     """
-    cache_dir = r"E:\OpenNeuroData\Steinmetz2019\Steinmetz_et_al_2019_9974357\9974357"
+    if cache_dir is None:
+        cache_dir = (
+            r"E:\OpenNeuroData\Steinmetz2019\Steinmetz_et_al_2019_9974357\9974357"
+        )
     one = One(cache_dir=cache_dir)  # The location of the unarchived data
     sessions = one.search(dataset="trials")
     # session = sessions[0]  # take the first session
@@ -282,7 +311,21 @@ def load_steinmetz_locations():
 
 
 def vis_steinmetz_with_regions(region_names, colors=None):
-    """Visualise recordings containing regions"""
+    """
+    Visualise recordings containing regions
+
+    Parameters
+    ----------
+    region_names : list of str
+        The names of the regions
+    colors : list of RGB or str, optional
+        The colors to use for visualization, by default None
+
+    Returns
+    -------
+    None
+
+    """
     probes_locs = load_steinmetz_locations()
 
     scene = brainrender.Scene()
@@ -365,6 +408,24 @@ def vis_steinmetz_with_regions(region_names, colors=None):
 
 
 def get_idx_of_points_in_meshes(points, meshes, N=None):
+    """
+    Find the indices of the points inside the given meshes.
+
+    Parameters
+    ----------
+    points : list of vedo points
+        The points to check.
+    meshes : list of vedo meshes
+        The meshes to check.
+    N : int, optional
+        A required number of points to find inside the given meshes, by default None
+
+    Returns
+    -------
+    list of int
+        The indices of the points that are inside the given meshes.
+
+    """
     ipts = [mesh.insidePoints(points, returnIds=True) for mesh in meshes]
 
     set_of_points = set()
@@ -380,6 +441,27 @@ def get_idx_of_points_in_meshes(points, meshes, N=None):
 
 
 def get_bounding_probes(region_names, session_id=None):
+    """
+    Find the probes which intersect given regions and their bounds.
+
+    Parameters
+    ----------
+    region_names : list of str
+        The names of the regions
+    session_id : int, optional
+        The session to consider, by default None,
+        which uses all sessions.
+
+    Returns
+    -------
+    list of tuples
+        each tuple contains
+        found_regions, points, mesh
+        where found_regions is a list of regions found
+        points is a list of probe site locations in AP, DV, LR
+        mesh is a vedo mesh bounding the probe
+
+    """
     if session_id is None:
         probes_locs = load_steinmetz_locations()
     else:
@@ -475,8 +557,7 @@ def get_brain_region_meshes(region_names, atlas_name, hemisphere="right"):
         region_mesh = vedo.load(str(atlas.meshfile_from_structure(region_name)))
         if hemisphere in ("left", "right"):
             region_mesh.cutWithPlane(
-                origin=plane.center,
-                normal=plane.normal,
+                origin=plane.center, normal=plane.normal,
             )
 
             region_mesh.cap()
@@ -493,6 +574,36 @@ def gen_graph_for_regions(
     hemisphere="left",
     sort_=False,
 ):
+    """
+    Generate a set of points in 3D space for given regions and intersect with probes.
+
+    Parameters
+    ----------
+    region_names : list of str
+        The names of the regions involved.
+    region_sizes : list of int
+        The number of cells to place in each brain region respectively.
+    atlas_name : str, optional
+        The name of the atlas to use, by default None
+    session_id : int, optional
+        The ID of the recording session to consider, by default None
+    hemisphere : str, optional
+        The part of the brain to consider.
+        "right" or "left" or None, by default "left"
+    sort_ : bool, optional
+        If True, sort the output cells by a Hilbert curve, by default False
+
+    Returns
+    -------
+    (region_pts, brain_region_meshes, probes_to_use)
+    region_pts : list of tuples
+        (cell locations in the probes, indices of the cells inside the probes)
+    brain_region_meshes : list of vedo meshes
+        The brain region meshes for plotting purposes
+    probes_to_use : list of tuple
+        The probe information of the probes used
+
+    """
     probe_info = get_bounding_probes(region_names, session_id)
     if len(probe_info) > 1:
         print("Found multiple matching probes for the given brain regions.")
@@ -526,6 +637,27 @@ def visualise_probe_cells(
     colors=None,
     style="metallic",
 ):
+    """
+    Render probes in a recording and the cells in inside probe bounds.
+
+    Parameters
+    ----------
+    region_names : list of str
+        The names of the regions
+    region_sizes : list of int
+        The number of cells in each region
+    atlas_name : str, optional
+        The name of the atlas, by default None
+    session_id : int, optional
+        The ID of the session, by default None
+    hemisphere : str, optional
+        The side of the brain, by default "left"
+    colors : list of str or RGB, optional
+        The colors to use, by default None
+    style : str, optional
+        The style of rendering to use, by default "metallic"
+
+    """
     point_locations, brain_region_meshes, probe_info = gen_graph_for_regions(
         region_names, region_sizes, atlas_name, session_id, hemisphere
     )
@@ -551,10 +683,7 @@ def visualise_probe_cells(
 
         color_list = [region_color] * len(points_loc)
         spheres = brainrender.actors.Points(
-            points_loc,
-            colors=color_list,
-            alpha=0.5,
-            radius=15,
+            points_loc, colors=color_list, alpha=0.5, radius=15,
         )
         spheres = scene.add(spheres)
 
@@ -565,10 +694,7 @@ def visualise_probe_cells(
         points = probes[1][["ccf_ap", "ccf_dv", "ccf_lr"]].values
         color_list = [sphere_color] * len(points)
         spheres = brainrender.actors.Points(
-            points,
-            colors=color_list,
-            alpha=0.6,
-            radius=20,
+            points, colors=color_list, alpha=0.6, radius=20,
         )
         spheres = scene.add(spheres)
 
@@ -595,6 +721,7 @@ def visualise_probe_cells(
     }
     scene.render(zoom=3.5, camera=camera)
     scene.close()
+
 
 if __name__ == "__main__":
     ### Testing smaller functions
