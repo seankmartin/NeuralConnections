@@ -205,7 +205,7 @@ class RecurrentConnectivity(ConnectionStrategy):
         The minimum number of forward connections from one neuron
     max_forward : int
         The maximum number of forward connections from one neuron
-    
+
     """
 
     def __init__(self, **kwargs):
@@ -390,6 +390,8 @@ class RecurrentConnectivity(ConnectionStrategy):
                     # return expected_unique(num_end, k, do_round=False)
                     return expected_unique(num_end, k, do_round=True)
 
+                # Gives dist of num outgoing connections from A
+                # This tends towards normal distribution by CLT in most cases
                 ab_dist = random_draw_dist(
                     total_samples,
                     out_connections_dist,
@@ -933,7 +935,15 @@ class MatrixConnectivity(ConnectionStrategy):
         self.graph = from_matrix(self.ab, self.ba, self.aa, self.bb, self.to_use)
 
     def compute_stats(self):
-        """Compute descriptive stats on the matrix connectivity."""
+        """
+        Compute descriptive stats on the matrix connectivity.
+
+        Returns
+        -------
+        dict
+            Descriptive statistics on the matrix connectivity.
+
+        """
         args_dict = {}
         args_dict["N"] = self.num_b
         args_dict["num_start"] = self.num_a
@@ -974,6 +984,28 @@ class MatrixConnectivity(ConnectionStrategy):
 
         return args_dict
 
+    def compute_probe_stats(self, A_idx, B_idx):
+        """
+        Compute descriptive stats on the matrix connectivity relative to device.
+
+        Parameters
+        ----------
+        A_idx : list of int
+            The list of integers inside the recording device in region A.
+        B_idx : list of int
+            The list of integers inside the recording device in region B.
+
+        Returns
+        -------
+        MatrixConnectivity
+            The subsampled connectivity matrix.
+        dict
+            Descriptive statistics on the matrix connectivity relative to device.
+
+        """
+        subsampled_to_probes = self.subsample(A_idx, B_idx)
+        return subsampled_to_probes, subsampled_to_probes.compute_stats()
+
     def expected_connections(self, total_samples, max_depth):
         """Call to static_expected_connections."""
         args_dict = self.compute_stats()
@@ -990,8 +1022,30 @@ class MatrixConnectivity(ConnectionStrategy):
             return RecurrentConnectivity.static_expected_connections(**kwargs)
 
     def subsample(self, num_a, num_b):
-        """Subsample the connectivity matrices."""
-        a_samples, b_samples = self.gen_random_samples((num_a, num_b))
+        """
+        Subsample the connectivity matrices.
+
+        Parameters
+        ----------
+        num_a : int or list
+            The number of indices to randomly select
+            OR the actual indices
+            must be the same type as num_b
+        num_b : int or list
+            The number of indices to randomly select
+            OR the actual indices
+            must be the same type as num_a
+
+        Returns
+        -------
+        MatrixConnectivity
+            The subsampled connectivity matrix.
+
+        """
+        if type(num_a) is int:
+            a_samples, b_samples = self.gen_random_samples((num_a, num_b))
+        else:
+            a_samples, b_samples = num_a, num_b
 
         if self.to_use[0]:
             ab_grid = np.ix_(a_samples, b_samples)
@@ -1006,7 +1060,13 @@ class MatrixConnectivity(ConnectionStrategy):
             bb_grid = np.ix_(b_samples, b_samples)
             bb = self.bb[bb_grid]
 
-        new_mc = MatrixConnectivity(aa=aa, bb=bb, ab=ab, ba=ba, to_use=self.to_use,)
+        new_mc = MatrixConnectivity(
+            aa=aa,
+            bb=bb,
+            ab=ab,
+            ba=ba,
+            to_use=self.to_use,
+        )
 
         return new_mc
 

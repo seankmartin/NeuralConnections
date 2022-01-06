@@ -27,7 +27,7 @@ class CombProb:
         which are connected to neurons in B.
         Represents the number of neurons in B which
         receive connections from the recorded neurons in A.
-        Must return an distribution over the number of neurons,
+        Must return a distribution over the number of neurons,
         represented as an ordered dictionary.
     delta_params : dict
         keyword arguments to pass into delta_fn

@@ -38,6 +38,7 @@ def nx_vis_force(
     targets,
     name="nx_simple.png",
     labels=False,
+    reachable=None,
 ):
     """Simple force based visual representation of the networkx graph."""
     options = {
@@ -46,7 +47,7 @@ def nx_vis_force(
         "width": 0.1,
     }
     c = get_colours_extend(
-        nx_graph.number_of_nodes(), start_set, end_set, sources, targets, None
+        nx_graph.number_of_nodes(), start_set, end_set, sources, targets, reachable
     )
     plt.clf()
     networkx.draw(nx_graph, node_color=c, with_labels=labels, **options)
