@@ -379,11 +379,15 @@ class RecurrentConnectivity(ConnectionStrategy):
                 clt_start = kwargs.get("clt_start", 30)
                 sub = kwargs.get("subsample_rate", 0.01)
 
+                # Used to specify stats in relation to the recording device(s).
+                num_start_probe = kwargs.get("num_start_probe", num_start)
+                num_senders_probe = kwargs.get("num_senders_probe", num_senders)
+                out_connections_dist_probe = kwargs.get(
+                    "out_connections_dist_probe", out_connections_dist
+                )
+                num_end_probe = kwargs.get("num_end_probe", num_end)
+
                 # Setup required regardless of the depth of the connection
-
-                # Gives dist of num outgoing connections from A
-                # This tends towards normal distribution by CLT in most cases
-
                 def fn_to_apply(k):
                     # Ideally, here would use float if large var dist, and int otherwise.
                     # Not a huge difference though
