@@ -308,7 +308,7 @@ if __name__ == "__main__":
     num_sampled = [10, 7]
     max_depth = 2
     num_iters = 100
-    load = False
+    load = True
 
     if profile:
 
