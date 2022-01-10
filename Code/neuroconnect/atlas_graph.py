@@ -9,7 +9,7 @@ from skm_pyutils.py_profile import profileit
 
 import numpy as np
 from .atlas import gen_graph_for_regions
-from .simple_graph import reverse, find_connected_limited
+from .simple_graph import reverse, find_connected_limited, vis_graph
 from .nx_graph import nx_vis_force, nx_create_graph
 from .connectivity_patterns import MatrixConnectivity
 from .matrix import (
@@ -20,13 +20,16 @@ from .matrix import (
     mpf_connectome,
     gen_random_matrix,
 )
+from .nx_graph import nx_find_connected_limited, nx_create_graph
 from .mpf_connection import CombProb
 
 here = os.path.dirname(os.path.abspath(__file__))
 
 
-def gen_random_matrix_(region_sizes, result):
-    ab, ba, aa, bb = gen_random_matrix(*region_sizes, 0.1, 0.2, 0.001, 0.0005)
+def gen_random_matrix_(region_sizes, result, densities=None):
+    if densities is None:
+        densities = [0.01, 0.02, 0.0001, 0.0005]
+    ab, ba, aa, bb = gen_random_matrix(*region_sizes, *densities)
     mc = MatrixConnectivity(ab=ab, ba=ba, aa=aa, bb=bb)
     mc.create_connections()
     reverse_graph = reverse(mc.graph)
@@ -82,6 +85,22 @@ def compare_sub_and_full(
     mc, reverse_graph, a_indices, b_indices, num_sampled, max_depth=1, num_iters=1
 ):
     print("Comparing the subsample to the full method.")
+
+    # TEMP going to override the full
+    # found_error = False
+    # j = 5
+    # while (not found_error) and (j < 25):
+    #     mc, reverse_graph, to_write, args_dict = gen_random_matrix_(
+    #         [j, j], {}, (0.2, 0.1, 0.1, 0.1)
+    #     )
+    #     num_sampled = [j // 4, j // 4]
+    #     a_indices = np.sort(
+    #         np.random.choice(np.arange(j), size=j // 2, replace=False)
+    #     ).astype(int)
+    #     b_indices = np.sort(
+    #         np.random.choice(np.arange(j), size=j // 2, replace=False)
+    #     ).astype(int)
+
     sub_mc, args_dict = mc.compute_probe_stats(a_indices, b_indices)
     sub_mc.create_connections()
     reverse_sub = reverse(sub_mc.graph)
@@ -90,21 +109,30 @@ def compare_sub_and_full(
     flat_indices_b = np.arange(len(b_indices))
 
     def random_var_gen(iter_val):
-        start_idx = np.random.choice(flat_indices_a, size=num_sampled[0], replace=False)
-        end_idx = np.random.choice(flat_indices_b, size=num_sampled[1], replace=False)
+        start_idx = np.random.choice(
+            flat_indices_a, size=num_sampled[0], replace=False
+        )
+        end_idx = np.random.choice(
+            flat_indices_b, size=num_sampled[1], replace=False
+        )
 
         start = np.array(a_indices)[start_idx]
         end = np.array(b_indices)[end_idx]
         end = end + mc.num_a
+        end_idx = end_idx + sub_mc.num_a
 
         return start_idx, end_idx, start, end
 
     def fn_to_eval(start, end):
-        return (find_connected_limited(mc.graph, start, end, max_depth, reverse_graph),)
+        return (
+            find_connected_limited(mc.graph, start, end, max_depth, reverse_graph)
+        )
 
     def sub_fn_to_eval(start, end):
         return (
-            find_connected_limited(sub_mc.graph, start, end, max_depth, reverse_sub),
+            find_connected_limited(
+                sub_mc.graph, start, end, max_depth, reverse_sub
+            )
         )
 
     full_results = []
@@ -112,18 +140,55 @@ def compare_sub_and_full(
         start_idx, end_idx, start, end = random_var_gen(i)
         big_res = fn_to_eval(start, end)
         small_res = sub_fn_to_eval(start_idx, end_idx)
-
-        full_results.append(
-            dict(
-                big=big_res,
-                small=small_res,
-                start_idx=start_idx,
-                end_idx=end_idx,
-                start=start,
-                end=end,
-            )
+        res = dict(
+            big=big_res,
+            small=small_res,
+            start_idx=start_idx,
+            end_idx=end_idx,
+            start=start,
+            end=end,
         )
+        small_res_mod = (
+            np.array(b_indices)[np.array(small_res).astype(int) - sub_mc.num_a]
+            + mc.num_a
+        )
+        if not np.all(small_res_mod == np.array(big_res)):
+            res["mod"] = small_res_mod
+            r1 = nx_find_connected_limited(
+                nx_create_graph(mc.graph),
+                start,
+                end,
+                max_depth,
+            )
+            r2 = nx_find_connected_limited(
+                nx_create_graph(sub_mc.graph),
+                start_idx,
+                end_idx,
+                max_depth,
+            )
+            res["nx"] = dict(big=r1, small=r2)
+            print(res)
+            found_error = True
+            print(a_indices)
+            print(b_indices)
+            print(mc.graph)
+            print(sub_mc.graph)
 
+            f1 = vis_graph(mc.graph, [mc.num_a, mc.num_b], start, end, reachable=r1)
+            f2 = vis_graph(
+                sub_mc.graph,
+                [sub_mc.num_a, sub_mc.num_b],
+                start_idx,
+                end_idx,
+                reachable=r2,
+            )
+            f1.savefig(os.path.join(here, "..", "figures", "big_graph_debug.png"))
+            f2.savefig(os.path.join(here, "..", "figures", "small_graph_debug.png"))
+            break
+
+        full_results.append(res)
+
+        # j = j + 1
     return full_results
 
 
@@ -226,10 +291,9 @@ def atlas_control(
     print(f"Finished finding intersections in {end_time:.2f}s")
 
     # 2A TEMP compare the subsampled versus the full graph
-    compare_sub_and_full(
-        mc, reverse_graph, a_indices, b_indices, num_sampled, max_depth, num_iters=10
-    )
-    return
+    # compare_res = compare_sub_and_full(
+    #     mc, reverse_graph, a_indices, b_indices, num_sampled, max_depth, num_iters=10
+    # )
 
     # 3. Monte carlo simulation on these points
     graph_res = graph_connectome(
@@ -306,8 +370,8 @@ if __name__ == "__main__":
     hemisphere = "left"
     profile = True
     num_sampled = [10, 7]
-    max_depth = 2
-    num_iters = 100
+    max_depth = 1
+    num_iters = 10000
     load = True
 
     if profile:
