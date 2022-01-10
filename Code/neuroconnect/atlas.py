@@ -621,7 +621,7 @@ def gen_graph_for_regions(
     region_pts = []
     for region_mesh, region_size in zip(brain_region_meshes, region_sizes):
         pts = get_n_random_points_in_region(region_mesh, region_size, sort_=sort_)
-        pts_idxs = get_idx_of_points_in_meshes(pts, all_cylinders)
+        pts_idxs = np.sort(get_idx_of_points_in_meshes(pts, all_cylinders))
         pts = pts[pts_idxs]
         region_pts.append((pts, pts_idxs))
 
