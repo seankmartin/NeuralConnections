@@ -17,6 +17,7 @@ from .matrix import (
     load_matrix_data,
     print_args_dict,
     graph_connectome,
+    mpf_probe_connectome,
     mpf_connectome,
     gen_random_matrix,
 )
@@ -27,6 +28,11 @@ here = os.path.dirname(os.path.abspath(__file__))
 
 
 def gen_random_matrix_(region_sizes, result, densities=None):
+    """
+    Generate a random matrix.
+
+    Densities are AB, BA, AA, BB if provided.
+    """
     if densities is None:
         densities = [0.01, 0.02, 0.0001, 0.0005]
     ab, ba, aa, bb = gen_random_matrix(*region_sizes, *densities)
@@ -84,6 +90,12 @@ def process_matrix_data(A_name, B_name, region_sizes, result):
 def compare_sub_and_full(
     mc, reverse_graph, a_indices, b_indices, num_sampled, max_depth=1, num_iters=1
 ):
+    """
+    Compare stats from sub matrix and full matrix.
+
+    These should match for depth 1, and otherwise should differ.
+
+    """
     print("Comparing the subsample to the full method.")
 
     # TEMP going to override the full
@@ -109,12 +121,8 @@ def compare_sub_and_full(
     flat_indices_b = np.arange(len(b_indices))
 
     def random_var_gen(iter_val):
-        start_idx = np.random.choice(
-            flat_indices_a, size=num_sampled[0], replace=False
-        )
-        end_idx = np.random.choice(
-            flat_indices_b, size=num_sampled[1], replace=False
-        )
+        start_idx = np.random.choice(flat_indices_a, size=num_sampled[0], replace=False)
+        end_idx = np.random.choice(flat_indices_b, size=num_sampled[1], replace=False)
 
         start = np.array(a_indices)[start_idx]
         end = np.array(b_indices)[end_idx]
@@ -124,16 +132,10 @@ def compare_sub_and_full(
         return start_idx, end_idx, start, end
 
     def fn_to_eval(start, end):
-        return (
-            find_connected_limited(mc.graph, start, end, max_depth, reverse_graph)
-        )
+        return find_connected_limited(mc.graph, start, end, max_depth, reverse_graph)
 
     def sub_fn_to_eval(start, end):
-        return (
-            find_connected_limited(
-                sub_mc.graph, start, end, max_depth, reverse_sub
-            )
-        )
+        return find_connected_limited(sub_mc.graph, start, end, max_depth, reverse_sub)
 
     full_results = []
     for i in range(num_iters):
@@ -310,48 +312,56 @@ def atlas_control(
     result["graph"] = graph_res
 
     # 4. Mathematical calculation on these points
+
+    mpf_res = mpf_probe_connectome(
+        mc, num_sampled, a_indices, b_indices, max_depth, args_dict
+    )
+    result["mpf"] = mpf_res
+
     mc, args_dict = mc.compute_probe_stats(
-        a_indices,
+        a_indices, 
         b_indices,
     )
-    mpf_res = mpf_connectome(mc, num_sampled, max_depth, args_dict)
-    result["mpf"] = mpf_res
+    mpf_res = mpf_connectome(
+        mc, num_sampled, max_depth, args_dict
+    )
+    result["mpf_orig"] = mpf_res
     result["probe_matrix_stats"] = print_args_dict(args_dict, out=False)
 
     # 5a TEMP
-    mc.create_connections()
-    reverse_graph = reverse(mc.graph)
-    graph_res = graph_connectome(
-        num_sampled,
-        max_depth,
-        num_iters,
-        mc.graph,
-        reverse_graph,
-        [mc.num_a, mc.num_b],
-        num_cpus,
-    )
-    result["small_graph"] = graph_res
+    # mc.create_connections()
+    # reverse_graph = reverse(mc.graph)
+    # graph_res = graph_connectome(
+    #     num_sampled,
+    #     max_depth,
+    #     num_iters,
+    #     mc.graph,
+    #     reverse_graph,
+    #     [mc.num_a, mc.num_b],
+    #     num_cpus,
+    # )
+    # result["small_graph"] = graph_res
 
     # 5b. TEMP? Visualise the small graph inside probes
-    nx_graph = nx_create_graph(mc.graph)
-    random_sources, random_targets = mc.gen_random_samples(num_sampled, zeroed=False)
-    reachable = find_connected_limited(
-        mc.graph,
-        random_sources,
-        random_targets,
-        max_depth=max_depth,
-        reverse_graph=reverse_graph,
-    )
-    nx_vis_force(
-        nx_graph,
-        start_set=mc.a_indices,
-        end_set=mc.num_a + mc.b_indices,
-        sources=random_sources,
-        targets=random_targets,
-        name=os.path.join(here, "..", "figures", "nx_atlas.png"),
-        labels=False,
-        reachable=reachable,
-    )
+    # nx_graph = nx_create_graph(mc.graph)
+    # random_sources, random_targets = mc.gen_random_samples(num_sampled, zeroed=False)
+    # reachable = find_connected_limited(
+    #     mc.graph,
+    #     random_sources,
+    #     random_targets,
+    #     max_depth=max_depth,
+    #     reverse_graph=reverse_graph,
+    # )
+    # nx_vis_force(
+    #     nx_graph,
+    #     start_set=mc.a_indices,
+    #     end_set=mc.num_a + mc.b_indices,
+    #     sources=random_sources,
+    #     targets=random_targets,
+    #     name=os.path.join(here, "..", "figures", "nx_atlas.png"),
+    #     labels=False,
+    #     reachable=reachable,
+    # )
 
     if result is not None:
         with open(os.path.join(here, "..", "results", "atlas.txt"), "w") as f:
@@ -368,7 +378,7 @@ if __name__ == "__main__":
     atlas_name = "allen_mouse_25um"
     session_id = None
     hemisphere = "left"
-    profile = True
+    profile = False
     num_sampled = [10, 7]
     max_depth = 1
     num_iters = 10000

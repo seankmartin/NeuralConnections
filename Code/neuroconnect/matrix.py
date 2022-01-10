@@ -135,6 +135,49 @@ def mpf_connectome(
 
     return result
 
+def mpf_probe_connectome(
+    mc, num_sampled, a_indices, b_indices, max_depth, args_dict, clt_start=10, sr=0.01, mean_estimate=False
+):
+    """Perform mpf statistical calculations on the mouse connectome with a probe."""
+    sub_mc, sub_args_dict = mc.compute_probe_stats(
+        a_indices,
+        b_indices,
+    )
+    for k, v in sub_args_dict.items():
+        args_dict[f"{k}_probe"] = v
+
+    args_dict["max_depth"] = max_depth
+    args_dict["total_samples"] = num_sampled[0]
+    args_dict["static_verbose"] = False
+    args_dict["clt_start"] = clt_start
+    args_dict["mean_estimate"] = mean_estimate
+
+    print(args_dict)
+
+    if max_depth > 1:
+        sr = None
+    if mean_estimate is True:
+        sr = None
+
+    cp = CombProb(
+        sub_mc.num_a,
+        num_sampled[0],
+        sub_mc.num_senders,
+        sub_mc.num_b,
+        num_sampled[1],
+        MatrixConnectivity.static_expected_connections,
+        verbose=True,
+        subsample_rate=sr,
+        **args_dict
+    )
+    result = {
+        "expected": cp.expected_connections(),
+        "total": cp.get_all_prob(),
+        "each_expected": {k: cp.expected_total(k) for k in range(num_sampled[0] + 1)},
+    }
+
+    return result
+
 
 def handle_pickle(data, name, mode):
     """Save or load data to a pickle file."""

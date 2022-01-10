@@ -127,7 +127,9 @@ class UniqueConnectivity(ConnectionStrategy):
 
     def expected_connections(self, num_samples, **kwargs):
         """Calls static_expected_connections"""
-        return RecurrentConnectivity.static_expected_connections(num_samples, **kwargs)
+        return UniqueConnectivity.static_expected_connections(
+            total_samples=num_samples, **kwargs
+        )
 
     @staticmethod
     def static_expected_connections(**kwargs):
@@ -354,7 +356,9 @@ class RecurrentConnectivity(ConnectionStrategy):
 
     def expected_connections(self, num_samples, **kwargs):
         """Calls static_expected_connections"""
-        return RecurrentConnectivity.static_expected_connections(num_samples, **kwargs)
+        return RecurrentConnectivity.static_expected_connections(
+            total_samples=num_samples, **kwargs
+        )
 
     @staticmethod
     def static_expected_connections(**kwargs):
@@ -392,14 +396,14 @@ class RecurrentConnectivity(ConnectionStrategy):
                     # Ideally, here would use float if large var dist, and int otherwise.
                     # Not a huge difference though
                     # return expected_unique(num_end, k, do_round=False)
-                    return expected_unique(num_end, k, do_round=True)
+                    return expected_unique(num_end_probe, k, do_round=True)
 
                 # Gives dist of num outgoing connections from A
                 # This tends towards normal distribution by CLT in most cases
                 ab_dist = random_draw_dist(
                     total_samples,
-                    out_connections_dist,
-                    num_end,
+                    out_connections_dist_probe,
+                    num_end_probe,
                     apply_fn=False,
                     keep_all=True,
                     clt_start=clt_start,
@@ -738,7 +742,9 @@ class RecurrentConnectivity(ConnectionStrategy):
 
             for i in range(total_samples + 1):
                 prob_a_senders[i] = float(
-                    hypergeometric_pmf(num_start, num_senders, total_samples, i)
+                    hypergeometric_pmf(
+                        num_start_probe, num_senders_probe, total_samples, i
+                    )
                 )
 
             weighted_dist = combine_dists(
@@ -958,7 +964,9 @@ class MatrixConnectivity(ConnectionStrategy):
                 args_dict["num_senders"] = self.num_senders
                 self.num_connections = OrderedDict()
                 dist = np.bincount(ab_sum)
-                for i in range(int(np.amin(ab_sum[ab_sum != 0])), int(np.amax(ab_sum) + 1)):
+                for i in range(
+                    int(np.amin(ab_sum[ab_sum != 0])), int(np.amax(ab_sum) + 1)
+                ):
                     self.num_connections[i] = dist[i] / float(self.num_senders)
                 args_dict["out_connections_dist"] = self.num_connections
         if self.to_use[1]:
