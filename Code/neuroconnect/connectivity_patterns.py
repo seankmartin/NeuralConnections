@@ -954,21 +954,27 @@ class MatrixConnectivity(ConnectionStrategy):
         if self.to_use[0]:
             ab_sum = np.squeeze(np.array(self.ab.sum(axis=1).astype(np.int64)))
             self.num_senders = np.count_nonzero(ab_sum)
-            args_dict["num_senders"] = self.num_senders
-            self.num_connections = OrderedDict()
-            dist = np.bincount(ab_sum)
-            for i in range(int(np.amin(ab_sum[ab_sum != 0])), int(np.amax(ab_sum) + 1)):
-                self.num_connections[i] = dist[i] / float(self.num_senders)
-            args_dict["out_connections_dist"] = self.num_connections
+            if self.num_senders != 0:
+                args_dict["num_senders"] = self.num_senders
+                self.num_connections = OrderedDict()
+                dist = np.bincount(ab_sum)
+                for i in range(int(np.amin(ab_sum[ab_sum != 0])), int(np.amax(ab_sum) + 1)):
+                    self.num_connections[i] = dist[i] / float(self.num_senders)
+                args_dict["out_connections_dist"] = self.num_connections
         if self.to_use[1]:
             ba_sum = np.squeeze(np.array(self.ba.sum(axis=1).astype(np.int64)))
             self.num_recurrent = np.count_nonzero(ba_sum)
             args_dict["num_recurrent"] = self.num_recurrent
-            dist = np.bincount(ba_sum)
-            self.num_recurrent_connections = OrderedDict()
-            for i in range(int(np.amin(ba_sum[ba_sum != 0])), int(np.amax(ba_sum) + 1)):
-                self.num_recurrent_connections[i] = dist[i] / float(self.num_recurrent)
-            args_dict["recurrent_connections_dist"] = self.num_recurrent_connections
+            if self.num_recurrent != 0:
+                dist = np.bincount(ba_sum)
+                self.num_recurrent_connections = OrderedDict()
+                for i in range(
+                    int(np.amin(ba_sum[ba_sum != 0])), int(np.amax(ba_sum) + 1)
+                ):
+                    self.num_recurrent_connections[i] = dist[i] / float(
+                        self.num_recurrent
+                    )
+                args_dict["recurrent_connections_dist"] = self.num_recurrent_connections
         if self.to_use[2]:
             aa_sum = np.squeeze(np.array(self.aa.sum(axis=1).astype(np.int64)))
             dist = np.bincount(aa_sum)
