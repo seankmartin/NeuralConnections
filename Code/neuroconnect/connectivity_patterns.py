@@ -1021,8 +1021,23 @@ class MatrixConnectivity(ConnectionStrategy):
             Descriptive statistics on the matrix connectivity relative to device.
 
         """
-        subsampled_to_probes = self.subsample(A_idx, B_idx)
-        return subsampled_to_probes, subsampled_to_probes.compute_stats()
+        subsampled_to_probes_only = self.subsample(A_idx, B_idx)
+        subsampled_to_probes_A = self.subsample(A_idx, None)
+        subsampled_to_probes_B = self.subsample(None, B_idx)
+
+        only_probes = subsampled_to_probes_only.compute_stats()
+        only_A = subsampled_to_probes_A.compute_stats()
+        only_B = subsampled_to_probes_B.compute_stats()
+
+        results = dict(
+            probes=subsampled_to_probes_only,
+            A=subsampled_to_probes_A,
+            B=subsampled_to_probes_B,
+            stats=only_probes,
+            A_stats=only_A,
+            B_stats=only_B,
+        )
+        return results
 
     def expected_connections(self, total_samples, max_depth):
         """Call to static_expected_connections."""
