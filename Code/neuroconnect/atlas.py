@@ -674,6 +674,7 @@ def visualise_probe_cells(
     for name, mesh, points_loc in zip(
         region_names, brain_region_meshes, point_locations
     ):
+        points_loc = points_loc[0]
         region_color = next(iter_color)
         brain_mesh = brainrender.actor.Actor(
             mesh, name=name, br_class="brain region", color=region_color, alpha=0.3
