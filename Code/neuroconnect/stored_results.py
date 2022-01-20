@@ -5,6 +5,7 @@ from configparser import ConfigParser
 from types import SimpleNamespace
 
 import pandas as pd
+import numpy as np
 from dictances.bhattacharyya import bhattacharyya
 
 from .main import main as ctrl_main
@@ -33,6 +34,7 @@ def df_from_dict(dict, cols):
 
 
 def store_region_results():
+    np.random.seed(42)
     vals = []
     names = [
         "Tetrode CA3 CA1",
@@ -68,6 +70,7 @@ def store_region_results():
 
 
 def store_tetrode_results():
+    np.random.seed(42)
     args = SimpleNamespace(
         max_depth=1,
         num_cpus=1,
@@ -89,6 +92,7 @@ def store_tetrode_results():
 
 
 def store_npix_results():
+    np.random.seed(42)
     args = SimpleNamespace(
         max_depth=1,
         num_cpus=1,
@@ -110,6 +114,7 @@ def store_npix_results():
 
 
 def store_sub_results():
+    np.random.seed(42)
     configs = [
         "ca1_sub_high.cfg",
         "ca1_sub_high_out.cfg",

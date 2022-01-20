@@ -23,6 +23,7 @@ here = os.path.dirname(os.path.realpath(__file__))
 
 def proportion(config, depths=[1, 2, 3]):
     """Load a config, change a var, and plot the result over the change."""
+    np.random.seed(42)
     sns.set_style("ticks")
     sns.set_palette("colorblind")
 
@@ -143,6 +144,7 @@ def pmf_accuracy(
     do_the_stats=True,
 ):
     """Return pmf on samples."""
+    np.random.seed(42)
     region_sizes = json.loads(config.get("default", "region_sizes"))
     num_samples = json.loads(config.get("default", "num_samples"))
     connectivity_pattern = config.get("default", "connectivity_pattern")
@@ -276,6 +278,7 @@ def connections_dependent_on_samples(
     fin_depth=3,
 ):
     """Return expected connections on samples."""
+    np.random.seed(42)
     region_sizes = json.loads(config.get("default", "region_sizes"))
     num_samples = json.loads(config.get("default", "num_samples"))
 
@@ -496,6 +499,7 @@ def distance_dependent_on_regions(
     num_iters=20000,
 ):
     """Return connection expectation for different regions or connectivity."""
+    np.random.seed(42)
     vals = []
     cols = [
         "Bhattacharyya distance",
@@ -574,6 +578,7 @@ def mouse_region_exp(
     regions, depths, out_name, num_samples, num_iters=1000, do_graph=False
 ):
     """The expected value from different mouse brain regions."""
+    np.random.seed(42)
     vals = []
     cols = [
         "Expected connected",
@@ -608,6 +613,7 @@ def mouse_region_exp(
 
 def out_exp(config, out_name, depth, num_iters=1000):
     """The expected number of receiving neurons in region 2."""
+    np.random.seed(42)
     vals = []
     cols = [
         "Number of samples",
@@ -691,6 +697,7 @@ def df_from_dict(dict, cols):
 
 def explain_calc(config, out_name="explain", sr=0.01):
     """Figures to explain how the calculation is performed."""
+    np.random.seed(42)
     region_sizes = json.loads(config.get("default", "region_sizes"))
     num_samples = json.loads(config.get("default", "num_samples"))
     connectivity_pattern = config.get("default", "connectivity_pattern")
