@@ -557,7 +557,8 @@ def get_brain_region_meshes(region_names, atlas_name, hemisphere="right"):
         region_mesh = vedo.load(str(atlas.meshfile_from_structure(region_name)))
         if hemisphere in ("left", "right"):
             region_mesh.cutWithPlane(
-                origin=plane.center, normal=plane.normal,
+                origin=plane.center,
+                normal=plane.normal,
             )
 
             region_mesh.cap()
@@ -684,7 +685,10 @@ def visualise_probe_cells(
 
         color_list = [region_color] * len(points_loc)
         spheres = brainrender.actors.Points(
-            points_loc, colors=color_list, alpha=0.5, radius=15,
+            points_loc,
+            colors=color_list,
+            alpha=0.5,
+            radius=15,
         )
         spheres = scene.add(spheres)
 
@@ -695,7 +699,10 @@ def visualise_probe_cells(
         points = probes[1][["ccf_ap", "ccf_dv", "ccf_lr"]].values
         color_list = [sphere_color] * len(points)
         spheres = brainrender.actors.Points(
-            points, colors=color_list, alpha=0.6, radius=20,
+            points,
+            colors=color_list,
+            alpha=0.6,
+            radius=20,
         )
         spheres = scene.add(spheres)
 

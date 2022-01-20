@@ -19,6 +19,7 @@ from .plot_graph import get_positions, get_colours
 from .connect_math import multi_2d_avg, window_2d_avg
 from .atlas import get_n_random_points_in_region
 
+
 def reverse(graph):
     """Reverse the direction of edges in a graph."""
     reverse_graph = [[] for _ in range(len(graph))]
@@ -28,6 +29,7 @@ def reverse(graph):
             reverse_graph[child].append(node)
 
     return reverse_graph
+
 
 # TODO consider directly using lil scipy format
 def from_matrix(AB, BA, AA, BB, to_use=(True, True, True, True)):

@@ -876,10 +876,10 @@ class MeanRecurrentConnectivity(RecurrentConnectivity):
                 final = final + aab_less_ab
 
                 # ABB
-                ab_full = expected_unique(num_end, num_sender_samples * num_connections_from_Aprobe_to_B)
-                abb_total = expected_unique(
-                    num_end, ab_full * inter_connections_end
+                ab_full = expected_unique(
+                    num_end, num_sender_samples * num_connections_from_Aprobe_to_B
                 )
+                abb_total = expected_unique(num_end, ab_full * inter_connections_end)
                 abb_in_probe = expected_overlapping(num_end, num_end_probe, abb_total)
                 abb_less_prev = expected_non_overlapping(
                     num_end_probe, final, abb_in_probe

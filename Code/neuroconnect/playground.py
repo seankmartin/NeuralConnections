@@ -479,16 +479,11 @@ def vis_graph_as_matrix():
         min_forward=150,
         max_forward=350,
     )
-    graph, _ = create_graph(
-        [1000, 1500],
-        connect_pattern,
-        [a_params, b_params]
-    )
+    graph, _ = create_graph([1000, 1500], connect_pattern, [a_params, b_params])
     mat_graph = to_matrix(graph, 1000, 1500)
     matrix_vis(*mat_graph, 10, name="random_graph_vis.png")
 
     # TODO add in the connect matrix strat in block
-
 
 
 if __name__ == "__main__":

@@ -39,7 +39,7 @@ def get_colours(graph_size, start_set, end_set, reachable=None):
 def get_colours_extend(graph_size, start_set, end_set, source, target, reachable=None):
     """
     Get colours for nodes including source and target nodes.
-    
+
     Blue nodes are those in the source set.
     Orange nodes are those in the start set, not in the source set.
     Green nodes are those reachable from the source that are in target.
