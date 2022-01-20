@@ -125,7 +125,7 @@ def mpf_connectome(
         MatrixConnectivity.static_expected_connections,
         verbose=True,
         subsample_rate=sr,
-        **args_dict
+        **args_dict,
     )
     result = {
         "expected": cp.expected_connections(),
@@ -135,24 +135,42 @@ def mpf_connectome(
 
     return result
 
+
 def mpf_probe_connectome(
-    mc, num_sampled, a_indices, b_indices, max_depth, args_dict, clt_start=10, sr=0.01, mean_estimate=False
+    mc,
+    num_sampled,
+    a_indices,
+    b_indices,
+    max_depth,
+    args_dict,
+    clt_start=10,
+    sr=0.01,
+    mean_estimate=False,
+    force_no_mean=False,
 ):
     """Perform mpf statistical calculations on the mouse connectome with a probe."""
-    sub_mc, sub_args_dict = mc.compute_probe_stats(
+    probe_stats = mc.compute_probe_stats(
         a_indices,
         b_indices,
     )
+    sub_mc = probe_stats["probes"]
+    sub_args_dict = probe_stats["stats"]
     for k, v in sub_args_dict.items():
         args_dict[f"{k}_probe"] = v
+    sub_args_dict = probe_stats["A_stats"]
+    for k, v in sub_args_dict.items():
+        args_dict[f"{k}_A"] = v
+    sub_args_dict = probe_stats["B_stats"]
+    for k, v in sub_args_dict.items():
+        args_dict[f"{k}_B"] = v
 
     args_dict["max_depth"] = max_depth
     args_dict["total_samples"] = num_sampled[0]
     args_dict["static_verbose"] = False
     args_dict["clt_start"] = clt_start
     args_dict["mean_estimate"] = mean_estimate
-
-    print(args_dict)
+    if force_no_mean:
+        args_dict["use_mean"] = False
 
     if max_depth > 1:
         sr = None
@@ -168,7 +186,7 @@ def mpf_probe_connectome(
         MatrixConnectivity.static_expected_connections,
         verbose=True,
         subsample_rate=sr,
-        **args_dict
+        **args_dict,
     )
     result = {
         "expected": cp.expected_connections(),
@@ -307,7 +325,7 @@ def check_stats(mc, div_ratio, max_depth, num_iters=1000, num_cpus=1, plot=False
         float(num_samples[1]),
         MatrixConnectivity.static_expected_connections,
         verbose=False,
-        **args_dict
+        **args_dict,
     )
     result_mpf = {
         "expected": cp.expected_connections(),
@@ -387,7 +405,7 @@ def main(
     desired_samples=79,
 ):
     """Load data and perform calculations."""
-    np.random.seed(422)
+    np.random.seed(42)
 
     if random:
         AB, BA, AA, BB = gen_random_matrix(150, 50, 0, 0.04, 0, 0.0)
