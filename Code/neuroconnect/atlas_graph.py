@@ -298,33 +298,41 @@ def atlas_control(
     # )
 
     # 3. Monte carlo simulation on these points
-    graph_res = graph_connectome(
-        num_sampled,
-        max_depth,
-        num_iters,
-        graph,
-        reverse_graph,
-        to_write,
-        num_cpus,
-        a_indices,
-        b_indices,
-    )
-    result["graph"] = graph_res
+    # graph_res = graph_connectome(
+    #     num_sampled,
+    #     max_depth,
+    #     num_iters,
+    #     graph,
+    #     reverse_graph,
+    #     to_write,
+    #     num_cpus,
+    #     a_indices,
+    #     b_indices,
+    # )
+    # result["graph"] = graph_res
 
     # 4. Mathematical calculation on these points
-
     mpf_res = mpf_probe_connectome(
-        mc, num_sampled, a_indices, b_indices, max_depth, args_dict
+        mc,
+        num_sampled,
+        a_indices,
+        b_indices,
+        max_depth,
+        args_dict,
+        mean_estimate=False,
+        force_no_mean=True,
+        sr=0.1,
+        clt_start=8,
     )
     result["mpf"] = mpf_res
 
-    mc, args_dict = mc.compute_probe_stats(
-        a_indices, 
+    res_dict_probe = mc.compute_probe_stats(
+        a_indices,
         b_indices,
     )
-    mpf_res = mpf_connectome(
-        mc, num_sampled, max_depth, args_dict
-    )
+    mc = res_dict_probe["probes"]
+    args_dict = res_dict_probe["stats"]
+    mpf_res = mpf_connectome(mc, num_sampled, max_depth, args_dict, mean_estimate=False)
     result["mpf_orig"] = mpf_res
     result["probe_matrix_stats"] = print_args_dict(args_dict, out=False)
 
@@ -380,7 +388,7 @@ if __name__ == "__main__":
     hemisphere = "left"
     profile = False
     num_sampled = [10, 7]
-    max_depth = 1
+    max_depth = 2
     num_iters = 10000
     load = True
 
