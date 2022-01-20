@@ -1066,17 +1066,33 @@ class MatrixConnectivity(ConnectionStrategy):
             a_samples, b_samples = num_a, num_b
 
         if self.to_use[0]:
-            ab_grid = np.ix_(a_samples, b_samples)
-            ab = self.ab[ab_grid]
+            if a_samples is None:
+                ab = self.ab[:, b_samples]
+            elif b_samples is None:
+                ab = self.ab[a_samples, :]
+            else:
+                ab_grid = np.ix_(a_samples, b_samples)
+                ab = self.ab[ab_grid]
         if self.to_use[1]:
-            ba_grid = np.ix_(b_samples, a_samples)
-            ba = self.ba[ba_grid]
+            if a_samples is None:
+                ba = self.ba[b_samples, :]
+            elif b_samples is None:
+                ba = self.ba[:, a_samples]
+            else:
+                ba_grid = np.ix_(b_samples, a_samples)
+                ba = self.ba[ba_grid]
         if self.to_use[2]:
-            aa_grid = np.ix_(a_samples, a_samples)
-            aa = self.aa[aa_grid]
+            if a_samples is not None:
+                aa_grid = np.ix_(a_samples, a_samples)
+                aa = self.aa[aa_grid]
+            else:
+                aa = self.aa
         if self.to_use[3]:
-            bb_grid = np.ix_(b_samples, b_samples)
-            bb = self.bb[bb_grid]
+            if b_samples is not None:
+                bb_grid = np.ix_(b_samples, b_samples)
+                bb = self.bb[bb_grid]
+            else:
+                bb = self.bb
 
         new_mc = MatrixConnectivity(
             aa=aa,
