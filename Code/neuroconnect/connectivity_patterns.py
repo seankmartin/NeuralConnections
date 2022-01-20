@@ -801,12 +801,37 @@ class MeanRecurrentConnectivity(RecurrentConnectivity):
         for num_sender_samples in range(total_samples + 1):
             final = 0
             if max_depth >= 1:
+                num_start_probe = kwargs.get("num_start_probe", num_start)
+                num_senders_probe = kwargs.get("num_senders_probe", num_senders)
+                out_connects = kwargs.get("out_connections_dist_probe", None)
+                num_connections_probe = (
+                    get_dist_mean(out_connects)
+                    if out_connects is not None
+                    else num_connections
+                )
+                num_end_probe = kwargs.get("num_end_probe", num_end)
+
                 # AB
-                ab = expected_unique(num_end, num_sender_samples * num_connections)
+                ab = expected_unique(
+                    num_end_probe, num_sender_samples * num_connections_probe
+                )
                 plist.append(ab)
                 final = final + ab
 
             if max_depth >= 2:
+                out_connects_B = kwargs.get("out_connections_dist_B", None)
+                num_connections_from_A_to_Bprobe = (
+                    get_dist_mean(out_connects_B)
+                    if out_connects_B is not None
+                    else num_connections
+                )
+                out_connects_A = kwargs.get("out_connections_dist_A", None)
+                num_connections_from_Aprobe_to_B = (
+                    get_dist_mean(out_connects_A)
+                    if out_connects_A is not None
+                    else num_connections
+                )
+
                 # AAB
                 aa_sampled = expected_unique(
                     num_start, total_samples * inter_connections_start
@@ -817,14 +842,22 @@ class MeanRecurrentConnectivity(RecurrentConnectivity):
                     max(num_senders - num_sender_samples, 0),
                     aa_new,
                 )
-                aab_total = expected_unique(num_end, aa_senders * num_connections)
-                aab_less_ab = expected_non_overlapping(num_end, final, aab_total)
+                aab_total = expected_unique(
+                    num_end_probe, aa_senders * num_connections_from_A_to_Bprobe
+                )
+                aab_less_ab = expected_non_overlapping(num_end_probe, final, aab_total)
                 plist.append(aab_total)
                 final = final + aab_less_ab
 
                 # ABB
-                abb_total = expected_unique(num_end, ab * inter_connections_end)
-                abb_less_prev = expected_non_overlapping(num_end, final, abb_total)
+                ab_full = expected_unique(num_end, num_sender_samples * num_connections_from_Aprobe_to_B)
+                abb_total = expected_unique(
+                    num_end, ab_full * inter_connections_end
+                )
+                abb_in_probe = expected_overlapping(num_end, num_end_probe, abb_total)
+                abb_less_prev = expected_non_overlapping(
+                    num_end_probe, final, abb_in_probe
+                )
                 plist.append(abb_total)
                 final = final + abb_less_prev
 
@@ -878,6 +911,7 @@ class MeanRecurrentConnectivity(RecurrentConnectivity):
                 abbb_less_prev = expected_non_overlapping(num_end, final, abbb_total)
                 plist.append(abbb_total)
                 final = final + abbb_less_prev
+
             dists[num_sender_samples] = OrderedDict()
             dists[num_sender_samples][int(final)] = 1.0
 
@@ -886,10 +920,10 @@ class MeanRecurrentConnectivity(RecurrentConnectivity):
 
         for i in range(total_samples + 1):
             prob_a_senders[i] = float(
-                hypergeometric_pmf(num_start, num_senders, total_samples, i)
+                hypergeometric_pmf(num_start_probe, num_senders_probe, total_samples, i)
             )
 
-        weighted_dist = combine_dists(range(num_end + 1), dists, prob_a_senders)
+        weighted_dist = combine_dists(range(num_end_probe + 1), dists, prob_a_senders)
 
         return dists, weighted_dist
 
