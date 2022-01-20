@@ -63,10 +63,9 @@ Please place in the Code\resources folder everything from [our OSF repository](h
 To reproduce all the figures, it will probably take about half a day on a decent computer.
 To do so, run the following command after downloading all the blue brain resources:
 
-
 ```
 cd Code
-python cli.py -f
+python -m neuroconnect.produce_figures do-all
 ```
 
 ### Profiling the code

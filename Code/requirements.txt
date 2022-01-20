@@ -15,3 +15,4 @@ brainrender
 vedo
 ONE-api
 hilbertcurve
+typer

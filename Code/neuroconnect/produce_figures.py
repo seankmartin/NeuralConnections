@@ -5,6 +5,7 @@ from types import SimpleNamespace
 
 import numpy as np
 import pandas as pd
+import typer
 
 from .matrix import main as mouse_main
 from .compound import (
@@ -43,6 +44,7 @@ from .stored_results import (
 )
 
 here = os.path.dirname(os.path.realpath(__file__))
+app = typer.Typer()
 
 
 def parse_cfg(name):
@@ -96,6 +98,11 @@ def mo_to_ss_acc():
     )
 
 
+def sub():
+    pass
+
+
+@app.command()
 def do_mouse(do_mat_vis=True, do_comp=True, do_exp=True):
     """Produce figures related to blue brain data."""
     if do_mat_vis:
@@ -128,6 +135,7 @@ def do_mouse(do_mat_vis=True, do_comp=True, do_exp=True):
         )
 
 
+@app.command()
 def do_accuracy(
     do_samples=True,
     do_pmf=True,
@@ -247,6 +255,7 @@ def do_accuracy(
         print("Not yet implemented growth plot")
 
 
+@app.command()
 def do_examples(do_exp=True, do_pmf=True, do_types=True):
     """Produce figures related to examples."""
     if do_exp:
@@ -306,6 +315,7 @@ def do_examples(do_exp=True, do_pmf=True, do_types=True):
         plot_pmf_comp(dfs, df_names, "ca1_sub_tet_comp.pdf")
 
 
+@app.command()
 def do_explain(do_vis=True, do_pmf=True, do_dist=True):
     """Produce figures to explain the problem at hand."""
     if do_vis:
@@ -355,7 +365,13 @@ def do_explain(do_vis=True, do_pmf=True, do_dist=True):
         plot_dist_explain(dfs, names)
 
 
-def do_all(mouse=True, explain=True, accuracy=True, examples=True):
+@app.command()
+def do_all(
+    mouse: bool = True,
+    explain: bool = True,
+    accuracy: bool = True,
+    examples: bool = True,
+):
     """Produce all figures for the paper."""
     print("Reproducing all figures")
 
@@ -376,17 +392,5 @@ def do_all(mouse=True, explain=True, accuracy=True, examples=True):
         )
 
 
-def main():
-    """Main entry point - seeds numpy before all figures generated."""
-    np.random.seed(42)
-    do_all(
-        mouse=True,
-        explain=True,
-        accuracy=True,
-        examples=True,
-    )
-    return
-
-
 if __name__ == "__main__":
-    main()
+    app()
