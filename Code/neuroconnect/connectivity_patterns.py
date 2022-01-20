@@ -410,24 +410,28 @@ class RecurrentConnectivity(ConnectionStrategy):
                     sub=sub,
                 )
 
-                dists = OrderedDict()
+                ab_un_dist = OrderedDict()
                 for k, v in ab_dist.items():
-                    dists[k] = apply_fn_to_dist(v, fn_to_apply, sub=sub)
-                ab_un_dist = dists
+                    ab_un_dist[k] = apply_fn_to_dist(v, fn_to_apply, sub=sub)
                 final_dist = ab_un_dist
 
             if max_depth >= 2:
                 final_dist = OrderedDict()
                 start_inter_dist = kwargs.get("start_inter_dist")
                 end_inter_dist = kwargs.get("end_inter_dist")
+                ab_dist_from_probe = kwargs.get("out_connections_dist_A")
+
                 start_mean = get_dist_mean(out_connections_dist)
                 start_var = get_dist_var(out_connections_dist)
+                ABprobe_mean = get_dist_mean(ab_dist_from_probe)
+                ABprobe_var = get_dist_var(ab_dist_from_probe)
 
                 start_inter_mean = get_dist_mean(start_inter_dist)
                 start_inter_var = get_dist_var(start_inter_dist)
                 end_inter_mean = get_dist_mean(end_inter_dist)
                 end_inter_var = get_dist_var(end_inter_dist)
 
+                # Raw AB cache
                 ab_cache = OrderedDict()
                 ab_cache[0] = OrderedDict()
                 ab_cache[0][0] = 1.0
@@ -446,6 +450,26 @@ class RecurrentConnectivity(ConnectionStrategy):
                             interp_after=True,
                         )
 
+                # Probe AB cache
+                ab_cache_from_a = OrderedDict()
+                ab_cache_from_a[0] = OrderedDict()
+                ab_cache_from_a[0][0] = 1.0
+                start_max_val_a = max(list(ab_dist_from_probe.keys()))
+                for i in range(1, num_senders_probe + 1):
+                    if i < clt_start:
+                        ab_cache_from_a[i] = convolution(
+                            ab_dist_from_probe, ab_cache_from_a[i - 1], sub=sub
+                        )
+                    else:
+                        ab_cache_from_a[i] = create_normal(
+                            range((start_max_val_a * i) + 1),
+                            ABprobe_mean * i,
+                            ABprobe_var * i,
+                            sub=sub,
+                            interp_after=True,
+                        )
+
+                # Raw BB cache
                 bb_cache = OrderedDict()
                 bb_cache[0] = OrderedDict()
                 bb_cache[0][0] = 1.0
@@ -503,10 +527,11 @@ class RecurrentConnectivity(ConnectionStrategy):
                         aa_sender_dist[i],
                         sub=None,
                     )
+                    # NOTE this needs to be extended to consider abbb dist for e.g.
                     abb_dist[i] = combine_dists(
                         range((end_inter_max_val * num_end) + 1),
                         bb_cache,
-                        ab_un_dist[i],
+                        ab_cache_from_a[i],
                         sub=None,
                     )
                     aab_dist[i] = apply_fn_to_dist(aab_dist[i], fn_to_apply, sub=sub)
@@ -515,17 +540,18 @@ class RecurrentConnectivity(ConnectionStrategy):
                     aab_cache = OrderedDict()
                     abb_cache = OrderedDict()
 
-                    for j in range(num_end + 1):
+                    for j in range(num_end_probe + 1):
 
                         def to_app(x):
                             return min(
-                                j + round(expected_non_overlapping(num_end, j, x)),
-                                num_end,
+                                j
+                                + round(expected_non_overlapping(num_end_probe, j, x)),
+                                num_end_probe,
                             )
 
-                        if j == num_end:
+                        if j == num_end_probe:
                             to_add = OrderedDict()
-                            to_add[num_end] = 1
+                            to_add[num_end_probe] = 1
                             aab_cache[j] = to_add
                             abb_cache[j] = to_add
                         else:
@@ -538,10 +564,10 @@ class RecurrentConnectivity(ConnectionStrategy):
 
                     in_prog = OrderedDict()
                     in_prog = combine_dists(
-                        range(num_end + 1), aab_cache, ab_un_dist[i], sub=None
+                        range(num_end_probe + 1), aab_cache, ab_un_dist[i], sub=None
                     )
                     in_prog = combine_dists(
-                        range(num_end + 1), abb_cache, in_prog, sub=None
+                        range(num_end_probe + 1), abb_cache, in_prog, sub=None
                     )
                     final_dist[i] = in_prog
 
@@ -748,10 +774,10 @@ class RecurrentConnectivity(ConnectionStrategy):
                 )
 
             weighted_dist = combine_dists(
-                range(num_end + 1), final_dist, prob_a_senders, sub=None
+                range(num_end_probe + 1), final_dist, prob_a_senders, sub=None
             )
 
-            return dists, weighted_dist
+            return ab_un_dist, weighted_dist
 
     @staticmethod
     def nfmt(start, *args):
