@@ -957,6 +957,7 @@ class MatrixConnectivity(ConnectionStrategy):
         args_dict = {}
         args_dict["N"] = self.num_b
         args_dict["num_start"] = self.num_a
+        args_dict["num_end"] = self.num_b
         if self.to_use[0]:
             ab_sum = np.squeeze(np.array(self.ab.sum(axis=1).astype(np.int64)))
             self.num_senders = np.count_nonzero(ab_sum)
