@@ -12,6 +12,8 @@ from skm_pyutils.py_plot import ColorManager
 from one.api import One
 from hilbertcurve.hilbertcurve import HilbertCurve
 
+here = os.path.abspath(os.path.dirname(__file__))
+
 
 def vedo_vis(regions, colors=None, atlas_name="allen_mouse_25um"):
     """Visualise regions of atlas using vedo."""
@@ -637,9 +639,13 @@ def visualise_probe_cells(
     hemisphere="left",
     colors=None,
     style="metallic",
+    interactive=True,
+    screenshot_name=None,
 ):
     """
     Render probes in a recording and the cells in inside probe bounds.
+
+    By default will look for probes in steinmetz data that match the given regions.
 
     Parameters
     ----------
@@ -655,8 +661,12 @@ def visualise_probe_cells(
         The side of the brain, by default "left"
     colors : list of str or RGB, optional
         The colors to use, by default None
-    style : str, optional
-        The style of rendering to use, by default "metallic"
+    style : str, optional, by default "metallic"
+        The style of rendering to use
+    interactive : bool, optional, by default True
+        Whether to plot in interactive mode.
+    screenshot_name : str, optional, by default None
+        Should be passed if interactive is False.
 
     """
     point_locations, brain_region_meshes, probe_info = gen_graph_for_regions(
@@ -665,7 +675,8 @@ def visualise_probe_cells(
 
     brainrender.settings.SHADER_STYLE = style
     brainrender.settings.SHOW_AXES = False
-    scene = brainrender.Scene()
+    screenshots_folder = os.path.join(here, "..", "figures", "brainrender")
+    scene = brainrender.Scene(screenshots_folder=screenshots_folder, inset=False)
 
     if colors is None:
         cm = ColorManager(num_colors=len(region_names) + len(probe_info), method="sns")
@@ -727,7 +738,11 @@ def visualise_probe_cells(
         "focalPoint": (7319, 2861, -3942),
         "distance": 43901,
     }
-    scene.render(zoom=3.5, camera=camera)
+    scene.render(zoom=3.5, camera=camera, interactive=interactive)
+
+    if not interactive:
+        scene.screenshot(name=screenshot_name, scale=2)
+
     scene.close()
 
 

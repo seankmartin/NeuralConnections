@@ -1,4 +1,8 @@
-"""Produce all the paper figures."""
+"""
+Produce all the paper figures.
+
+See also plot.py
+"""
 import os
 from configparser import ConfigParser
 from types import SimpleNamespace
@@ -7,7 +11,6 @@ import numpy as np
 import pandas as pd
 import typer
 
-from .matrix import main as mouse_main
 from .compound import (
     connections_dependent_on_samples,
     proportion,
@@ -18,6 +21,7 @@ from .compound import (
     out_exp,
     explain_calc,
 )
+from .matrix import main as mouse_main
 from .main import main as ctrl_main
 from .plot import (
     plot_exp_accuracy,
@@ -98,8 +102,8 @@ def mo_to_ss_acc():
     )
 
 
-def sub():
-    pass
+# TODO extract each of these to separate functions and add commands.
+# Then can install completion to make it quite fast to use.
 
 
 @app.command()

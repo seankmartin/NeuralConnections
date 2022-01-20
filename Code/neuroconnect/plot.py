@@ -4,6 +4,7 @@ import os
 import seaborn as sns
 import matplotlib.pyplot as plt
 import pandas as pd
+from .atlas import visualise_probe_cells
 from matplotlib.ticker import MaxNLocator
 
 here = os.path.dirname(os.path.realpath(__file__))
@@ -378,6 +379,21 @@ def plot_dist_explain(dfs, out_names):
     save(fig, out_names[3])
 
 
+def plot_subset_vis(region_names, number_of_cells_in_regions, style="cartoon"):
+    """Visualise recording device subsets."""
+    # Add in here the new figure for subsampling
+
+    # You can find the camera position with c to take screenshots with
+    visualise_probe_cells(
+        region_names,
+        number_of_cells_in_regions,
+        hemisphere="left",
+        style=style,
+        interactive=False,
+        screenshot_name="test",
+    )
+
+
 def main():
     """Defines the plots performed in produce_figures - without performing analysis."""
     print("Starting main plotting")
@@ -434,6 +450,13 @@ def main():
         ],
     )
 
+    plot_subset_vis(["VISp", "VISl"], [30000, 10000])
+
+
+def temp():
+    plot_subset_vis(["VISp", "VISl"], [30000, 10000])
+
 
 if __name__ == "__main__":
-    main()
+    # main()
+    temp()

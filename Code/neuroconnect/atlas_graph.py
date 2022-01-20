@@ -3,8 +3,6 @@
 import os
 import time
 from pprint import pprint
-import cProfile, pstats, io
-from pstats import SortKey
 from skm_pyutils.py_profile import profileit
 
 import numpy as np
