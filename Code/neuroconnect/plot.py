@@ -4,6 +4,7 @@ import os
 import seaborn as sns
 import matplotlib.pyplot as plt
 import pandas as pd
+import myterial
 from .atlas import visualise_probe_cells
 from matplotlib.ticker import MaxNLocator
 
@@ -379,7 +380,9 @@ def plot_dist_explain(dfs, out_names):
     save(fig, out_names[3])
 
 
-def plot_subset_vis(region_names, number_of_cells_in_regions, style="cartoon"):
+def plot_subset_vis(
+    out_name, region_names, number_of_cells_in_regions, colors=None, style="cartoon"
+):
     """Visualise recording device subsets."""
     # Add in here the new figure for subsampling
 
@@ -388,9 +391,22 @@ def plot_subset_vis(region_names, number_of_cells_in_regions, style="cartoon"):
         region_names,
         number_of_cells_in_regions,
         hemisphere="left",
+        colors=colors,
         style=style,
         interactive=False,
-        screenshot_name="test",
+        screenshot_name=out_name,
+        shift=False,
+    )
+
+    visualise_probe_cells(
+        region_names,
+        number_of_cells_in_regions,
+        hemisphere="left",
+        colors=colors,
+        style=style,
+        interactive=False,
+        screenshot_name=out_name + "_shifted",
+        shift=True,
     )
 
 
@@ -450,11 +466,17 @@ def main():
         ],
     )
 
-    plot_subset_vis(["VISp", "VISl"], [30000, 10000])
+    plot_subset_vis()
 
 
 def temp():
-    plot_subset_vis(["VISp", "VISl"], [30000, 10000])
+    colors = [
+        myterial.blue_dark,
+        myterial.pink_darker,
+        myterial.indigo_dark,
+        myterial.salmon_darker,
+    ]
+    plot_subset_vis("Visp_Visl_probes", ["VISp", "VISl"], [30000, 10000], colors=colors)
 
 
 if __name__ == "__main__":

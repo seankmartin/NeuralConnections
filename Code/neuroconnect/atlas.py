@@ -442,7 +442,7 @@ def get_idx_of_points_in_meshes(points, meshes, N=None):
         return ipts
 
 
-def get_bounding_probes(region_names, session_id=None):
+def get_bounding_probes(region_names, session_id=None, shift=False):
     """
     Find the probes which intersect given regions and their bounds.
 
@@ -453,6 +453,8 @@ def get_bounding_probes(region_names, session_id=None):
     session_id : int, optional
         The session to consider, by default None,
         which uses all sessions.
+    shift : bool, optional, by default False
+        Whether to shift the probes in the lateral anterior direction.
 
     Returns
     -------
@@ -486,6 +488,10 @@ def get_bounding_probes(region_names, session_id=None):
         info[i] = []
         for j in range(k):
             points = locs[j * 374 : (j + 1) * 374]
+
+            if shift:
+                points["ccf_lr"] = points["ccf_lr"] - (points["ccf_lr"] / 10)
+                points["ccf_ap"] = points["ccf_ap"] + (points["ccf_ap"] / 15)
             brain_regions = points["allen_ontology"].values
             cont = True
             for region_name in region_names:
@@ -576,6 +582,7 @@ def gen_graph_for_regions(
     session_id=None,
     hemisphere="left",
     sort_=False,
+    shift=False,
 ):
     """
     Generate a set of points in 3D space for given regions and intersect with probes.
@@ -586,15 +593,17 @@ def gen_graph_for_regions(
         The names of the regions involved.
     region_sizes : list of int
         The number of cells to place in each brain region respectively.
-    atlas_name : str, optional
-        The name of the atlas to use, by default None
-    session_id : int, optional
-        The ID of the recording session to consider, by default None
-    hemisphere : str, optional
+    atlas_name : str, optional, by default None
+        The name of the atlas to use.
+    session_id : int, optional, by default None
+        The ID of the recording session to consider.
+    hemisphere : str, optional, by default "left"
         The part of the brain to consider.
-        "right" or "left" or None, by default "left"
-    sort_ : bool, optional
-        If True, sort the output cells by a Hilbert curve, by default False
+        "right" or "left" or None.
+    sort_ : bool, optional, by default False
+        If True, sort the output cells by a Hilbert curve
+    shift : bool, optional, by default False
+        Whether to shift the probes in the lateral anterior direction.
 
     Returns
     -------
@@ -607,7 +616,7 @@ def gen_graph_for_regions(
         The probe information of the probes used
 
     """
-    probe_info = get_bounding_probes(region_names, session_id)
+    probe_info = get_bounding_probes(region_names, session_id, shift=shift)
     if len(probe_info) > 1:
         print("Found multiple matching probes for the given brain regions.")
         print("You can visualise these probes using get_bounding_probes method")
@@ -641,6 +650,7 @@ def visualise_probe_cells(
     style="metallic",
     interactive=True,
     screenshot_name=None,
+    shift=False,
 ):
     """
     Render probes in a recording and the cells in inside probe bounds.
@@ -667,15 +677,26 @@ def visualise_probe_cells(
         Whether to plot in interactive mode.
     screenshot_name : str, optional, by default None
         Should be passed if interactive is False.
+    shift : bool, optional, by default False
+        Whether to shift the probes in the lateral anterior direction.
 
     """
     np.random.seed(42)
+
+    # Here is where all the setup of points is done.
     point_locations, brain_region_meshes, probe_info = gen_graph_for_regions(
-        region_names, region_sizes, atlas_name, session_id, hemisphere
+        region_names,
+        region_sizes,
+        atlas_name,
+        session_id,
+        hemisphere,
+        sort_=False,
+        shift=shift,
     )
 
     brainrender.settings.SHADER_STYLE = style
     brainrender.settings.SHOW_AXES = False
+    brainrender.settings.SCREENSHOT_SCALE = 2
     screenshots_folder = os.path.join(here, "..", "figures", "brainrender")
     scene = brainrender.Scene(screenshots_folder=screenshots_folder, inset=False)
 
