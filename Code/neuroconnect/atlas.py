@@ -669,6 +669,7 @@ def visualise_probe_cells(
         Should be passed if interactive is False.
 
     """
+    np.random.seed(42)
     point_locations, brain_region_meshes, probe_info = gen_graph_for_regions(
         region_names, region_sizes, atlas_name, session_id, hemisphere
     )
