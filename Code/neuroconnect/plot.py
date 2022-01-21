@@ -4,8 +4,6 @@ import os
 import seaborn as sns
 import matplotlib.pyplot as plt
 import pandas as pd
-import myterial
-from .atlas import visualise_probe_cells
 from matplotlib.ticker import MaxNLocator
 
 here = os.path.dirname(os.path.realpath(__file__))
@@ -380,36 +378,6 @@ def plot_dist_explain(dfs, out_names):
     save(fig, out_names[3])
 
 
-def plot_subset_vis(
-    out_name, region_names, number_of_cells_in_regions, colors=None, style="cartoon"
-):
-    """Visualise recording device subsets."""
-    # Add in here the new figure for subsampling
-
-    # You can find the camera position with c to take screenshots with
-    visualise_probe_cells(
-        region_names,
-        number_of_cells_in_regions,
-        hemisphere="left",
-        colors=colors,
-        style=style,
-        interactive=False,
-        screenshot_name=out_name,
-        shift=False,
-    )
-
-    visualise_probe_cells(
-        region_names,
-        number_of_cells_in_regions,
-        hemisphere="left",
-        colors=colors,
-        style=style,
-        interactive=False,
-        screenshot_name=out_name + "_shifted",
-        shift=True,
-    )
-
-
 def main():
     """Defines the plots performed in produce_figures - without performing analysis."""
     print("Starting main plotting")
@@ -466,19 +434,6 @@ def main():
         ],
     )
 
-    plot_subset_vis()
-
-
-def temp():
-    colors = [
-        myterial.blue_dark,
-        myterial.pink_darker,
-        myterial.indigo_dark,
-        myterial.salmon_darker,
-    ]
-    plot_subset_vis("Visp_Visl_probes", ["VISp", "VISl"], [30000, 10000], colors=colors)
-
 
 if __name__ == "__main__":
-    # main()
-    temp()
+    main()

@@ -46,6 +46,8 @@ from .stored_results import (
     store_npix_results,
     store_sub_results,
 )
+from .atlas_graph import plot_subset_vis
+import myterial
 
 here = os.path.dirname(os.path.realpath(__file__))
 app = typer.Typer()
@@ -367,6 +369,27 @@ def do_explain(do_vis=True, do_pmf=True, do_dist=True):
             "b_fin_eg.pdf",
         ]
         plot_dist_explain(dfs, names)
+
+
+@app.command()
+def do_sub(do_full_vis: bool = False):
+    """Subset figures with probes."""
+    names = [
+        "full_matrix_vis_VISl_VISp.pdf",
+        "sub_matrix_vis_VISl_VISp.pdf",
+        "probe_matrix_vis_visl_VISp.pdf",
+        "brainrender_visl_visp",
+    ]
+    colors = [
+        myterial.blue_dark,
+        myterial.pink_darker,
+        myterial.indigo_dark,
+        myterial.salmon_darker,
+    ]
+    region_sizes = [391292, 55816]
+    plot_subset_vis(
+        names, ["VISp", "VISl"], region_sizes, colors=colors, do_full_vis=do_full_vis
+    )
 
 
 @app.command()

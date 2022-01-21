@@ -6,8 +6,8 @@ from pprint import pprint
 from skm_pyutils.py_profile import profileit
 
 import numpy as np
-from .atlas import gen_graph_for_regions
-from .simple_graph import reverse, find_connected_limited, vis_graph
+from .atlas import gen_graph_for_regions, visualise_probe_cells
+from .simple_graph import reverse, find_connected_limited, vis_graph, matrix_vis
 from .nx_graph import nx_vis_force, nx_create_graph
 from .connectivity_patterns import MatrixConnectivity
 from .matrix import (
@@ -374,6 +374,48 @@ def atlas_control(
             pprint(result, width=120, stream=f)
 
     return result
+
+
+def plot_subset_vis(
+    out_names,
+    region_names,
+    number_of_cells_in_regions,
+    colors=None,
+    style="cartoon",
+    do_full_vis=True,
+):
+    """Visualise recording device subsets."""
+    A_name, B_name = region_names
+    convert_mouse_data(A_name, B_name)
+    to_use = [True, True, True, True]
+    mc, args_dict = load_matrix_data(to_use, A_name, B_name)
+    print("{} - {}, {} - {}".format(A_name, B_name, mc.num_a, mc.num_b))
+    if do_full_vis:
+        matrix_vis(mc.ab, mc.ba, mc.aa, mc.bb, 150, out_names[0])
+
+    if number_of_cells_in_regions[0] < mc.num_a:
+        print(f"Subsampled regions to {number_of_cells_in_regions}")
+        mc = mc.subsample(*number_of_cells_in_regions)
+        matrix_vis(mc.ab, mc.ba, mc.aa, mc.bb, 30, out_names[1])
+
+    for shift in (True, False):
+        end_piece = "_shifted" if shift else ""
+        region_pts = visualise_probe_cells(
+            region_names,
+            number_of_cells_in_regions,
+            hemisphere="left",
+            colors=colors,
+            style=style,
+            interactive=False,
+            screenshot_name=out_names[-1] + end_piece,
+            shift=shift,
+        )
+        a_indices = region_pts[0][1]
+        b_indices = region_pts[1][1]
+        mc_sub = mc.subsample(a_indices, b_indices)
+        parts = os.path.splitext(out_names[2])
+        o_name = parts[0] + end_piece + parts[1]
+        matrix_vis(mc_sub.ab, mc_sub.ba, mc_sub.aa, mc_sub.bb, 10, o_name)
 
 
 if __name__ == "__main__":

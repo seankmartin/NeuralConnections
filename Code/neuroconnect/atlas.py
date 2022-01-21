@@ -492,6 +492,8 @@ def get_bounding_probes(region_names, session_id=None, shift=False):
             if shift:
                 points["ccf_lr"] = points["ccf_lr"] - (points["ccf_lr"] / 10)
                 points["ccf_ap"] = points["ccf_ap"] + (points["ccf_ap"] / 15)
+                points["ccf_dv"] = points["ccf_dv"] + (points["ccf_dv"] / 4)
+            
             brain_regions = points["allen_ontology"].values
             cont = True
             for region_name in region_names:
@@ -690,7 +692,7 @@ def visualise_probe_cells(
         atlas_name,
         session_id,
         hemisphere,
-        sort_=False,
+        sort_=True,
         shift=shift,
     )
 
@@ -766,6 +768,8 @@ def visualise_probe_cells(
         scene.screenshot(name=screenshot_name, scale=2)
 
     scene.close()
+
+    return point_locations
 
 
 if __name__ == "__main__":
