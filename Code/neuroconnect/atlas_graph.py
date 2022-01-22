@@ -376,19 +376,73 @@ def atlas_control(
     return result
 
 
+def prob_connect_probe(
+    mc,
+    num_sampled,
+    a_indices,
+    b_indices,
+    full_stats,
+    reverse_graph=None,
+    **simulation_kwargs
+):
+    num_iters = simulation_kwargs.get("num_iters", 1000)
+    max_depth = simulation_kwargs.get("max_depth", 1)
+    num_cpus = simulation_kwargs.get("num_cpus", 1)
+
+
+    graph = mc.graph
+    if reverse_graph is None:
+        reverse_graph = reverse(mc.graph)
+    to_write = [mc.num_a, mc.num_b]
+
+    # 3. Monte carlo simulation on these points
+    graph_res = graph_connectome(
+        num_sampled,
+        max_depth,
+        num_iters,
+        graph,
+        reverse_graph,
+        to_write,
+        num_cpus,
+        a_indices,
+        b_indices,
+    )
+
+    # 4. Mathematical calculation on these points
+    mpf_res = mpf_probe_connectome(
+        mc,
+        num_sampled,
+        a_indices,
+        b_indices,
+        max_depth,
+        full_stats,
+        mean_estimate=False,
+        force_no_mean=False,
+        sr=0.01,
+        clt_start=10,
+    )
+
+    return graph_res, mpf_res
+
+
 def plot_subset_vis(
     out_names,
     region_names,
     number_of_cells_in_regions,
+    num_sampled,
     colors=None,
     style="cartoon",
     do_full_vis=True,
+    do_probability=True,
+    **simulation_kwargs,
 ):
     """Visualise recording device subsets."""
+    result = {}
+
     A_name, B_name = region_names
     convert_mouse_data(A_name, B_name)
     to_use = [True, True, True, True]
-    mc, args_dict = load_matrix_data(to_use, A_name, B_name)
+    mc, full_stats = load_matrix_data(to_use, A_name, B_name)
     print("{} - {}, {} - {}".format(A_name, B_name, mc.num_a, mc.num_b))
     if do_full_vis:
         matrix_vis(mc.ab, mc.ba, mc.aa, mc.bb, 150, out_names[0])
@@ -397,6 +451,8 @@ def plot_subset_vis(
         print(f"Subsampled regions to {number_of_cells_in_regions}")
         mc = mc.subsample(*number_of_cells_in_regions)
         matrix_vis(mc.ab, mc.ba, mc.aa, mc.bb, 30, out_names[1])
+    if do_probability:
+        mc.create_connections()
 
     for shift in (True, False):
         end_piece = "_shifted" if shift else ""
@@ -417,6 +473,19 @@ def plot_subset_vis(
         o_name = parts[0] + end_piece + parts[1]
         matrix_vis(mc_sub.ab, mc_sub.ba, mc_sub.aa, mc_sub.bb, 10, o_name)
 
+        # Probability here
+        if do_probability:
+            res = prob_connect_probe(
+                mc, num_sampled, a_indices, b_indices, full_stats, **simulation_kwargs
+            )
+            result["graph" + end_piece] = res[0]
+            result["mpf" + end_piece] = res[1]
+
+    if result is not None:
+        with open(os.path.join(here, "..", "results", "atlas_plot.txt"), "w") as f:
+            pprint(result, width=120, stream=f)
+
+    return result
 
 if __name__ == "__main__":
     np.random.seed(42)

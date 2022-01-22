@@ -372,7 +372,7 @@ def do_explain(do_vis=True, do_pmf=True, do_dist=True):
 
 
 @app.command()
-def do_sub(do_full_vis: bool = False):
+def do_sub(do_full_vis: bool = False, do_probability: bool = True):
     """Subset figures with probes."""
     names = [
         "full_matrix_vis_VISl_VISp.pdf",
@@ -387,8 +387,22 @@ def do_sub(do_full_vis: bool = False):
         myterial.salmon_darker,
     ]
     region_sizes = [391292, 55816]
+    region_sizes = [39000, 5500]
+    num_sampled = [79, 79]
+    simulation_kwargs = dict(
+        max_depth=1,
+        num_cpus=1,
+        num_iters=100
+    )
     plot_subset_vis(
-        names, ["VISp", "VISl"], region_sizes, colors=colors, do_full_vis=do_full_vis
+        names,
+        ["VISp", "VISl"],
+        region_sizes,
+        num_sampled,
+        colors=colors,
+        do_full_vis=do_full_vis,
+        do_probability=do_probability,
+        **simulation_kwargs,
     )
 
 
