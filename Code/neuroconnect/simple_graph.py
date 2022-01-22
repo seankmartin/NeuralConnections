@@ -14,6 +14,7 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.sparse import find, lil_matrix
+from time import perf_counter
 
 from .plot_graph import get_positions, get_colours
 from .connect_math import multi_2d_avg, window_2d_avg
@@ -31,37 +32,41 @@ def reverse(graph):
     return reverse_graph
 
 
-# TODO consider directly using lil scipy format
 def from_matrix(AB, BA, AA, BB, to_use=(True, True, True, True)):
     """Return a graph from matrix representation."""
     num_a, num_b = AB.shape
     graph = [[] for _ in range(num_a + num_b)]
+    finals = [[], []]
 
+    t1 = perf_counter()
     if to_use[0]:
-        nonzeros_row, nonzeros_col, _ = find(AB)
-        for x, y in zip(nonzeros_row, nonzeros_col):
-            graph[x].append(num_a + y)
+        nonzeros_row, nonzeros_col = AB.nonzero()
+        nonzeros_col = nonzeros_col + num_a
+        finals[0].append(nonzeros_row)
+        finals[1].append(nonzeros_col)
     if to_use[1]:
-        num_rows, num_cols = BA.shape
-        if (num_a != num_cols) or (num_rows != num_b):
-            raise ValueError("Rows and Columns don't match")
-        nonzeros_row, nonzeros_col, _ = find(BA)
-        for x, y in zip(nonzeros_row, nonzeros_col):
-            graph[num_a + x].append(y)
+        nonzeros_row, nonzeros_col = BA.nonzero()
+        nonzeros_row = nonzeros_row + num_a
+        finals[0].append(nonzeros_row)
+        finals[1].append(nonzeros_col)
     if to_use[2]:
-        num_rows = AA.shape[0]
-        if num_a != num_rows:
-            raise ValueError("Rows and Columns don't match")
-        nonzeros_row, nonzeros_col, _ = find(AA)
-        for x, y in zip(nonzeros_row, nonzeros_col):
-            graph[x].append(y)
+        nonzeros_row, nonzeros_col = AA.nonzero()
+        finals[0].append(nonzeros_row)
+        finals[1].append(nonzeros_col)
     if to_use[3]:
-        num_cols = BB.shape[0]
-        if num_cols != num_b:
-            raise ValueError("Rows and Columns don't match")
-        nonzeros_row, nonzeros_col, _ = find(BB)
-        for x, y in zip(nonzeros_row, nonzeros_col):
-            graph[num_a + x].append(num_a + y)
+        nonzeros_row, nonzeros_col = BB.nonzero()
+        nonzeros_row = nonzeros_row + num_a
+        nonzeros_col = nonzeros_col + num_a
+        finals[0].append(nonzeros_row)
+        finals[1].append(nonzeros_col)
+    final_rows = np.concatenate(finals[0])
+    final_cols = np.concatenate(finals[1])
+    for x, y in zip(final_rows, final_cols):
+        graph[x].append(y)
+
+    t2 = perf_counter()
+    tt = t2 - t1
+    print(f"Converted matrix in {tt:.2f} seconds")
 
     return graph
 
