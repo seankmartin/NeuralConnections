@@ -437,6 +437,7 @@ def plot_subset_vis(
     **simulation_kwargs,
 ):
     """Visualise recording device subsets."""
+    np.random.seed(42)
     result = {}
 
     A_name, B_name = region_names
@@ -481,7 +482,7 @@ def plot_subset_vis(
             result["graph" + end_piece] = res[0]
             result["mpf" + end_piece] = res[1]
 
-    if result is not None:
+    if do_probability:
         with open(os.path.join(here, "..", "results", "atlas_plot.txt"), "w") as f:
             pprint(result, width=120, stream=f)
 
