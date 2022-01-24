@@ -1090,11 +1090,35 @@ class MatrixConnectivity(ConnectionStrategy):
         only_A = subsampled_to_probes_A.compute_stats()
         only_B = subsampled_to_probes_B.compute_stats()
 
+        inter_probes = {}
+        # A in probe to rest of A
+        if self.to_use[2]:
+            aa_subbed = self.aa[A_idx, :]
+            a_sum = np.squeeze(np.array(aa_subbed.sum(axis=1).astype(np.int64)))
+            dist = np.bincount(a_sum)
+            total = a_sum.shape[0]
+            inter_connections_start = OrderedDict()
+            for i in range(int(np.amin(a_sum)), int(np.amax(a_sum) + 1)):
+                inter_connections_start[i] = dist[i] / float(total)
+            inter_probes["start_probe_to_outside"] = inter_connections_start
+
+        # rest of B to B in probe
+        if self.to_use[3]:
+            bb_subbed = self.bb[:, B_idx]
+            b_sum = np.squeeze(np.array(bb_subbed.sum(axis=1).astype(np.int64)))
+            dist = np.bincount(b_sum)
+            total = b_sum.shape[0]
+            inter_connections_start = OrderedDict()
+            for i in range(int(np.amin(b_sum)), int(np.amax(b_sum) + 1)):
+                inter_connections_start[i] = dist[i] / float(total)
+            inter_probes["end_outside_to_probe"] = inter_connections_start
+
         results = dict(
             probes=subsampled_to_probes_only,
             A=subsampled_to_probes_A,
             B=subsampled_to_probes_B,
             stats=only_probes,
+            inter=inter_probes,
             A_stats=only_A,
             B_stats=only_B,
         )
