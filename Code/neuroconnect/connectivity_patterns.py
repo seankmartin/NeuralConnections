@@ -858,14 +858,31 @@ class MeanRecurrentConnectivity(RecurrentConnectivity):
                     else num_connections
                 )
 
+                num_senders_from_A_to_Bprobe = kwargs.get("num_senders_B", num_senders)
+
+                inter_connects_start_probe_dist = kwargs.get(
+                    "start_probe_to_outside", None
+                )
+                inter_connects_start_probe = (
+                    get_dist_mean(inter_connects_start_probe_dist)
+                    if inter_connects_start_probe_dist is not None
+                    else inter_connections_start
+                )
+                inter_connects_end_probe_dist = kwargs.get("end_outside_to_probe", None)
+                inter_connects_end_probe = (
+                    get_dist_mean(inter_connects_end_probe_dist)
+                    if inter_connects_end_probe_dist is not None
+                    else inter_connections_end
+                )
+
                 # AAB
                 aa_sampled = expected_unique(
-                    num_start, total_samples * inter_connections_start
+                    num_start, total_samples * inter_connects_start_probe
                 )
                 aa_new = expected_non_overlapping(num_start, total_samples, aa_sampled)
                 aa_senders = expected_overlapping(
                     num_start,
-                    max(num_senders - num_sender_samples, 0),
+                    max(num_senders_from_A_to_Bprobe - num_sender_samples, 0),
                     aa_new,
                 )
                 aab_total = expected_unique(
@@ -879,12 +896,14 @@ class MeanRecurrentConnectivity(RecurrentConnectivity):
                 ab_full = expected_unique(
                     num_end, num_sender_samples * num_connections_from_Aprobe_to_B
                 )
-                abb_total = expected_unique(num_end, ab_full * inter_connections_end)
-                abb_in_probe = expected_overlapping(num_end, num_end_probe, abb_total)
+                abb_in_probe = expected_unique(
+                    num_end_probe, ab_full * inter_connects_end_probe
+                )
+                # abb_in_probe = expected_overlapping(num_end, num_end_probe, abb_total)
                 abb_less_prev = expected_non_overlapping(
                     num_end_probe, final, abb_in_probe
                 )
-                plist.append(abb_total)
+                plist.append(abb_in_probe)
                 final = final + abb_less_prev
 
             if max_depth >= 3:

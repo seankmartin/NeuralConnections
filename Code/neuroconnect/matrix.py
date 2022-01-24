@@ -163,12 +163,16 @@ def mpf_probe_connectome(
     sub_args_dict = probe_stats["B_stats"]
     for k, v in sub_args_dict.items():
         args_dict[f"{k}_B"] = v
+    sub_args_dict = probe_stats["inter"]
+    for k, v in sub_args_dict.items():
+        args_dict[k] = v
 
     args_dict["max_depth"] = max_depth
     args_dict["total_samples"] = num_sampled[0]
     args_dict["static_verbose"] = False
     args_dict["clt_start"] = clt_start
     args_dict["mean_estimate"] = mean_estimate
+
     if force_no_mean:
         args_dict["use_mean"] = False
 
