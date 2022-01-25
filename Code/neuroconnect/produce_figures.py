@@ -386,13 +386,17 @@ def do_sub(do_full_vis: bool = False, do_probability: bool = True):
         myterial.indigo_dark,
         myterial.salmon_darker,
     ]
-    region_sizes = [391292, 55816]
-    region_sizes = [39000, 5500]
+    # This is for right hemi
+    # region_sizes = [391292, 55816]
+    # This is for left hemi
+    region_sizes = [333055, 49569]
     num_sampled = [79, 79]
+    # region_sizes = [39000, 5500]
+    # num_sampled = [10, 7]
     simulation_kwargs = dict(
         max_depth=1,
         num_cpus=1,
-        num_iters=100
+        num_iters=10000
     )
     plot_subset_vis(
         names,

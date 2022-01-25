@@ -4,6 +4,7 @@ import os
 import time
 from pprint import pprint
 from skm_pyutils.py_profile import profileit
+from skm_pyutils.py_table import list_to_df, df_to_file
 
 import numpy as np
 from .atlas import gen_graph_for_regions, visualise_probe_cells
@@ -383,12 +384,11 @@ def prob_connect_probe(
     b_indices,
     full_stats,
     reverse_graph=None,
-    **simulation_kwargs
+    **simulation_kwargs,
 ):
     num_iters = simulation_kwargs.get("num_iters", 1000)
     max_depth = simulation_kwargs.get("max_depth", 1)
     num_cpus = simulation_kwargs.get("num_cpus", 1)
-
 
     graph = mc.graph
     if reverse_graph is None:
@@ -416,7 +416,7 @@ def prob_connect_probe(
         b_indices,
         max_depth,
         full_stats,
-        mean_estimate=False,
+        mean_estimate=True,
         force_no_mean=False,
         sr=0.01,
         clt_start=10,
@@ -455,8 +455,13 @@ def plot_subset_vis(
     if do_probability:
         mc.create_connections()
 
+    if do_probability:
+        final_res_list = []
+        cols = ["Number of connected neurons", "Probability", "Calculation", "Shifted"]
+
     for shift in (True, False):
         end_piece = "_shifted" if shift else ""
+        end = "shifted" if shift else "original"
         region_pts = visualise_probe_cells(
             region_names,
             number_of_cells_in_regions,
@@ -482,25 +487,38 @@ def plot_subset_vis(
             result["graph" + end_piece] = res[0]
             result["mpf" + end_piece] = res[1]
 
+            for k, v in res[0]["dist"].items():
+                final_res_list.append([k, v, "Monte Carlo simulation", end])
+
+            for k, v in res[1]["total"].items():
+                final_res_list.append([k, v, "Statistical estimation", end])
+
     if do_probability:
         with open(os.path.join(here, "..", "results", "atlas_plot.txt"), "w") as f:
             pprint(result, width=120, stream=f)
 
+    df = list_to_df(final_res_list, headers=cols)
+    fname = f"sub_{region_names[0]}_{region_names[1]}_depth_{max_depth}.csv"
+    fname = os.path.join(here, "..", "results", fname)
+    print("Saved dataframe results to {}".format(fname))
+    df_to_file(df, fname, index=False)
+
     return result
+
 
 if __name__ == "__main__":
     np.random.seed(42)
     A_name = "VISp"
     B_name = "VISl"
-    region_sizes = [10000, 5000]
+    region_sizes = [10000, 10000]
     atlas_name = "allen_mouse_25um"
     session_id = None
     hemisphere = "left"
-    profile = False
+    profile = True
     num_sampled = [10, 7]
     max_depth = 2
     num_iters = 10000
-    load = True
+    load = False
 
     if profile:
 
