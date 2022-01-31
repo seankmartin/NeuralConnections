@@ -498,6 +498,7 @@ def plot_subset_vis(
             pprint(result, width=120, stream=f)
 
     df = list_to_df(final_res_list, headers=cols)
+    max_depth = simulation_kwargs.get("max_depth", 1)
     fname = f"sub_{region_names[0]}_{region_names[1]}_depth_{max_depth}.csv"
     fname = os.path.join(here, "..", "results", fname)
     print("Saved dataframe results to {}".format(fname))
