@@ -364,420 +364,420 @@ class RecurrentConnectivity(ConnectionStrategy):
     def static_expected_connections(**kwargs):
         """Return connection distribution."""
         # Parse out the relevant parameters
-        max_depth = kwargs.get("max_depth", 3)
-
-        if max_depth > 3:
-            raise ValueError("max_depth must be less than 4 currently.")
+        max_depth = kwargs.get("max_depth", 1)
 
         use_mean = kwargs.get("use_mean", True)
         if use_mean and (max_depth > 1):
             return MeanRecurrentConnectivity.static_expected_connections(**kwargs)
-        else:
-            if max_depth >= 1:
-                num_end = kwargs.get("N")
-                out_connections_dist = kwargs.get("out_connections_dist")
-                num_start = kwargs.get("num_start")
-                num_senders = kwargs.get("num_senders")
+        if max_depth > 2:
+            raise ValueError(
+                "max_depth must be less than 3 currently for recurrent no mean."
+            )
+        if max_depth >= 1:
+            num_end = kwargs.get("N")
+            out_connections_dist = kwargs.get("out_connections_dist")
+            num_start = kwargs.get("num_start")
+            num_senders = kwargs.get("num_senders")
 
-                total_samples = kwargs.get("total_samples")
-                clt_start = kwargs.get("clt_start", 30)
-                sub = kwargs.get("subsample_rate", 0.01)
+            total_samples = kwargs.get("total_samples")
+            clt_start = kwargs.get("clt_start", 30)
+            sub = kwargs.get("subsample_rate", 0.01)
 
-                # Used to specify stats in relation to the recording device(s).
-                num_start_probe = kwargs.get("num_start_probe", num_start)
-                num_senders_probe = kwargs.get("num_senders_probe", num_senders)
-                out_connections_dist_probe = kwargs.get(
-                    "out_connections_dist_probe", out_connections_dist
-                )
-                num_end_probe = kwargs.get("num_end_probe", num_end)
+            # Used to specify stats in relation to the recording device(s).
+            num_start_probe = kwargs.get("num_start_probe", num_start)
+            num_senders_probe = kwargs.get("num_senders_probe", num_senders)
+            out_connections_dist_probe = kwargs.get(
+                "out_connections_dist_probe", out_connections_dist
+            )
+            num_end_probe = kwargs.get("num_end_probe", num_end)
 
-                # Setup required regardless of the depth of the connection
-                def fn_to_apply(k):
-                    # Ideally, here would use float if large var dist, and int otherwise.
-                    # Not a huge difference though
-                    # return expected_unique(num_end, k, do_round=False)
-                    return expected_unique(num_end_probe, k, do_round=True)
+            # Setup required regardless of the depth of the connection
+            def fn_to_apply(k):
+                # Ideally, here would use float if large var dist, and int otherwise.
+                # Not a huge difference though
+                # return expected_unique(num_end, k, do_round=False)
+                return expected_unique(num_end_probe, k, do_round=True)
 
-                # Gives dist of num outgoing connections from A
-                # This tends towards normal distribution by CLT in most cases
-                ab_dist = random_draw_dist(
-                    total_samples,
-                    out_connections_dist_probe,
-                    num_end_probe,
-                    apply_fn=False,
-                    keep_all=True,
-                    clt_start=clt_start,
-                    sub=sub,
-                )
+            # Gives dist of num outgoing connections from A
+            # This tends towards normal distribution by CLT in most cases
+            ab_dist = random_draw_dist(
+                total_samples,
+                out_connections_dist_probe,
+                num_end_probe,
+                apply_fn=False,
+                keep_all=True,
+                clt_start=clt_start,
+                sub=sub,
+            )
 
-                ab_un_dist = OrderedDict()
-                for k, v in ab_dist.items():
-                    ab_un_dist[k] = apply_fn_to_dist(v, fn_to_apply, sub=sub)
-                final_dist = ab_un_dist
+            ab_un_dist = OrderedDict()
+            for k, v in ab_dist.items():
+                ab_un_dist[k] = apply_fn_to_dist(v, fn_to_apply, sub=sub)
+            final_dist = ab_un_dist
 
-            if max_depth >= 2:
-                final_dist = OrderedDict()
-                start_inter_dist = kwargs.get("start_inter_dist")
-                end_inter_dist = kwargs.get("end_inter_dist")
-                ab_dist_from_probe = kwargs.get("out_connections_dist_A")
+        if max_depth >= 2:
+            final_dist = OrderedDict()
+            start_inter_dist = kwargs.get("start_inter_dist")
+            end_inter_dist = kwargs.get("end_inter_dist")
+            ab_dist_from_probe = kwargs.get("out_connections_dist_A")
 
-                start_mean = get_dist_mean(out_connections_dist)
-                start_var = get_dist_var(out_connections_dist)
-                ABprobe_mean = get_dist_mean(ab_dist_from_probe)
-                ABprobe_var = get_dist_var(ab_dist_from_probe)
+            start_mean = get_dist_mean(out_connections_dist)
+            start_var = get_dist_var(out_connections_dist)
+            ABprobe_mean = get_dist_mean(ab_dist_from_probe)
+            ABprobe_var = get_dist_var(ab_dist_from_probe)
 
-                start_inter_mean = get_dist_mean(start_inter_dist)
-                start_inter_var = get_dist_var(start_inter_dist)
-                end_inter_mean = get_dist_mean(end_inter_dist)
-                end_inter_var = get_dist_var(end_inter_dist)
+            start_inter_mean = get_dist_mean(start_inter_dist)
+            start_inter_var = get_dist_var(start_inter_dist)
+            end_inter_mean = get_dist_mean(end_inter_dist)
+            end_inter_var = get_dist_var(end_inter_dist)
 
-                # Raw AB cache
-                ab_cache = OrderedDict()
-                ab_cache[0] = OrderedDict()
-                ab_cache[0][0] = 1.0
-                start_max_val = max(list(out_connections_dist.keys()))
-                for i in range(1, num_senders + 1):
-                    if i < clt_start:
-                        ab_cache[i] = convolution(
-                            out_connections_dist, ab_cache[i - 1], sub=sub
-                        )
-                    else:
-                        ab_cache[i] = create_normal(
-                            range((start_max_val * i) + 1),
-                            start_mean * i,
-                            start_var * i,
-                            sub=sub,
-                            interp_after=True,
-                        )
-
-                # Probe AB cache
-                ab_cache_from_a = OrderedDict()
-                ab_cache_from_a[0] = OrderedDict()
-                ab_cache_from_a[0][0] = 1.0
-                start_max_val_a = max(list(ab_dist_from_probe.keys()))
-                for i in range(1, num_senders_probe + 1):
-                    if i < clt_start:
-                        ab_cache_from_a[i] = convolution(
-                            ab_dist_from_probe, ab_cache_from_a[i - 1], sub=sub
-                        )
-                    else:
-                        ab_cache_from_a[i] = create_normal(
-                            range((start_max_val_a * i) + 1),
-                            ABprobe_mean * i,
-                            ABprobe_var * i,
-                            sub=sub,
-                            interp_after=True,
-                        )
-
-                # Raw BB cache
-                bb_cache = OrderedDict()
-                bb_cache[0] = OrderedDict()
-                bb_cache[0][0] = 1.0
-                end_inter_max_val = max(list(end_inter_dist.keys()))
-                for i in range(1, num_end + 1):
-                    if i < clt_start:
-                        bb_cache[i] = convolution(
-                            end_inter_dist, bb_cache[i - 1], sub=sub
-                        )
-                    else:
-                        bb_cache[i] = create_normal(
-                            range((end_inter_max_val * i) + 1),
-                            end_inter_mean * i,
-                            end_inter_var * i,
-                            sub=sub,
-                            interp_after=True,
-                        )
-
-                # AAB calculation
-                if total_samples < clt_start:
-                    aa_dist = nfold_conv([start_inter_dist] * total_samples, sub=sub)
+            # Raw AB cache
+            ab_cache = OrderedDict()
+            ab_cache[0] = OrderedDict()
+            ab_cache[0][0] = 1.0
+            start_max_val = max(list(out_connections_dist.keys()))
+            for i in range(1, num_senders + 1):
+                if i < clt_start:
+                    ab_cache[i] = convolution(
+                        out_connections_dist, ab_cache[i - 1], sub=sub
+                    )
                 else:
-                    max_val = max(list(start_inter_dist.keys()))
-                    aa_dist = create_normal(
-                        range((max_val * total_samples) + 1),
-                        start_inter_mean * total_samples,
-                        start_inter_var * total_samples,
+                    ab_cache[i] = create_normal(
+                        range((start_max_val * i) + 1),
+                        start_mean * i,
+                        start_var * i,
                         sub=sub,
                         interp_after=True,
                     )
-                aa_sender_dist = OrderedDict()
 
-                aab_dist = OrderedDict()
-                abb_dist = OrderedDict()
-
-                for i in range(total_samples + 1):
-
-                    def inside_fn(x):
-                        aa_sampled = expected_unique(num_start, x)
-                        aa_new = expected_non_overlapping(
-                            num_start, total_samples, aa_sampled
-                        )
-                        aa_senders = expected_overlapping(
-                            num_start,
-                            num_senders - i,
-                            aa_new,
-                        )
-                        return int(round(aa_senders))
-
-                    aa_sender_dist[i] = apply_fn_to_dist(aa_dist, inside_fn, sub=sub)
-
-                    aab_dist[i] = combine_dists(
-                        range((start_max_val * num_senders) + 1),
-                        ab_cache,
-                        aa_sender_dist[i],
-                        sub=None,
+            # Probe AB cache
+            ab_cache_from_a = OrderedDict()
+            ab_cache_from_a[0] = OrderedDict()
+            ab_cache_from_a[0][0] = 1.0
+            start_max_val_a = max(list(ab_dist_from_probe.keys()))
+            for i in range(1, num_senders_probe + 1):
+                if i < clt_start:
+                    ab_cache_from_a[i] = convolution(
+                        ab_dist_from_probe, ab_cache_from_a[i - 1], sub=sub
                     )
-                    # NOTE this needs to be extended to consider abbb dist for e.g.
-                    abb_dist[i] = combine_dists(
-                        range((end_inter_max_val * num_end) + 1),
-                        bb_cache,
-                        ab_cache_from_a[i],
-                        sub=None,
+                else:
+                    ab_cache_from_a[i] = create_normal(
+                        range((start_max_val_a * i) + 1),
+                        ABprobe_mean * i,
+                        ABprobe_var * i,
+                        sub=sub,
+                        interp_after=True,
                     )
-                    aab_dist[i] = apply_fn_to_dist(aab_dist[i], fn_to_apply, sub=sub)
-                    abb_dist[i] = apply_fn_to_dist(abb_dist[i], fn_to_apply, sub=sub)
 
-                    aab_cache = OrderedDict()
-                    abb_cache = OrderedDict()
-
-                    for j in range(num_end_probe + 1):
-
-                        def to_app(x):
-                            return min(
-                                j
-                                + round(expected_non_overlapping(num_end_probe, j, x)),
-                                num_end_probe,
-                            )
-
-                        if j == num_end_probe:
-                            to_add = OrderedDict()
-                            to_add[num_end_probe] = 1
-                            aab_cache[j] = to_add
-                            abb_cache[j] = to_add
-                        else:
-                            aab_cache[j] = apply_fn_to_dist(
-                                aab_dist[i], to_app, sub=sub
-                            )
-                            abb_cache[j] = apply_fn_to_dist(
-                                abb_dist[i], to_app, sub=sub
-                            )
-
-                    in_prog = OrderedDict()
-                    in_prog = combine_dists(
-                        range(num_end_probe + 1), aab_cache, ab_un_dist[i], sub=None
+            # Raw BB cache
+            bb_cache = OrderedDict()
+            bb_cache[0] = OrderedDict()
+            bb_cache[0][0] = 1.0
+            end_inter_max_val = max(list(end_inter_dist.keys()))
+            for i in range(1, num_end + 1):
+                if i < clt_start:
+                    bb_cache[i] = convolution(
+                        end_inter_dist, bb_cache[i - 1], sub=sub
                     )
-                    in_prog = combine_dists(
-                        range(num_end_probe + 1), abb_cache, in_prog, sub=None
+                else:
+                    bb_cache[i] = create_normal(
+                        range((end_inter_max_val * i) + 1),
+                        end_inter_mean * i,
+                        end_inter_var * i,
+                        sub=sub,
+                        interp_after=True,
                     )
-                    final_dist[i] = in_prog
 
-            if max_depth >= 3:
-                recurrent_connections_dist = kwargs.get("recurrent_connections_dist")
-                num_recurrent = kwargs.get("num_recurrent")
-                end_mean = get_dist_mean(recurrent_connections_dist)
-                end_var = get_dist_var(recurrent_connections_dist)
-
-                aaab_dist = OrderedDict()
-                aabb_dist = OrderedDict()
-                abbb_dist = OrderedDict()
-                abab_dist = OrderedDict()
-
-                aaab_cache = OrderedDict()
-                aabb_cache = OrderedDict()
-                abbb_cache = OrderedDict()
-                abab_cache = OrderedDict()
-
-                aa_cache = OrderedDict()
-                aa_cache[0] = OrderedDict()
-                aa_cache[0][0] = 1.0
-                start_inter_max_val = max(list(start_inter_dist.keys()))
-                for i in range(1, num_start + 1):
-                    if i < clt_start:
-                        aa_cache[i] = convolution(
-                            start_inter_dist, aa_cache[i - 1], sub=sub
-                        )
-                    else:
-                        aa_cache[i] = create_normal(
-                            range((start_inter_max_val * i) + 1),
-                            start_inter_mean * i,
-                            start_inter_var * i,
-                            sub=sub,
-                            interp_after=True,
-                        )
-
-                ba_cache = OrderedDict()
-                ba_cache[0] = OrderedDict()
-                ba_cache[0][0] = 1.0
-                end_max_val = max(list(recurrent_connections_dist.keys()))
-                for i in range(1, num_recurrent + 1):
-                    if i < clt_start:
-                        ba_cache[i] = convolution(
-                            recurrent_connections_dist, ba_cache[i - 1], sub=sub
-                        )
-                    else:
-                        ba_cache[i] = create_normal(
-                            range((end_max_val * i) + 1),
-                            end_mean * i,
-                            end_var * i,
-                            sub=sub,
-                            interp_after=True,
-                        )
-
-                ab_sender_dist = OrderedDict()
-
-                def new_fn(x):
-                    return int(round(expected_overlapping(num_end, num_recurrent, x)))
-
-                for k, v in ab_un_dist.items():
-                    ab_sender_dist[k] = apply_fn_to_dist(v, new_fn, sub=sub)
-
-                aaa_sender_dist = OrderedDict()
-
-                def new_fn(x):
-                    return int(round(expected_unique(num_start, x)))
-
-                aa_un_dist = apply_fn_to_dist(aa_dist, new_fn, sub=sub)
-                aaa_dist = combine_dists(
-                    range((num_start * start_inter_max_val * start_inter_max_val) + 1),
-                    aa_cache,
-                    aa_un_dist,
-                    sub=None,
+            # AAB calculation
+            if total_samples < clt_start:
+                aa_dist = nfold_conv([start_inter_dist] * total_samples, sub=sub)
+            else:
+                max_val = max(list(start_inter_dist.keys()))
+                aa_dist = create_normal(
+                    range((max_val * total_samples) + 1),
+                    start_inter_mean * total_samples,
+                    start_inter_var * total_samples,
+                    sub=sub,
+                    interp_after=True,
                 )
+            aa_sender_dist = OrderedDict()
 
-                aba_dist = OrderedDict()
-                aba_sender_dist = OrderedDict()
-
-                for i in range(total_samples + 1):
-
-                    def inside_fn(x):
-                        aaa_sampled = expected_unique(num_start, x)
-                        aaa_new = expected_non_overlapping(
-                            num_start,
-                            total_samples + get_dist_mean(aa_un_dist),
-                            aaa_sampled,
-                        )
-                        aaa_senders = expected_overlapping(
-                            num_start,
-                            num_senders - get_dist_mean(aa_sender_dist[i]) - i,
-                            aaa_new,
-                        )
-                        return int(round(aaa_senders))
-
-                    def new_fn_k(x):
-                        aba_sampled = expected_unique(num_start, x)
-                        aba_new = expected_non_overlapping(
-                            num_start,
-                            total_samples
-                            + get_dist_mean(aa_un_dist)
-                            + get_dist_mean(aaa_dist),
-                            aba_sampled,
-                        )
-                        aba_senders = expected_overlapping(
-                            num_start,
-                            num_senders
-                            - get_dist_mean(aa_sender_dist[i])
-                            - get_dist_mean(aaa_sender_dist[i])
-                            - i,
-                            aba_new,
-                        )
-                        return int(round(aba_senders))
-
-                    aaa_sender_dist[i] = apply_fn_to_dist(aaa_dist, inside_fn, sub=sub)
-
-                    aba_dist[i] = combine_dists(
-                        range((num_recurrent * end_max_val) + 1),
-                        ba_cache,
-                        ab_sender_dist[i],
-                        sub=None,
-                    )
-                    aba_sender_dist[i] = apply_fn_to_dist(
-                        aba_dist[i], new_fn_k, sub=sub
-                    )
-
-                    aaab_dist[i] = combine_dists(
-                        range((start_max_val * num_senders) + 1),
-                        ab_cache,
-                        aaa_sender_dist[i],
-                        sub=None,
-                    )
-                    abab_dist[i] = combine_dists(
-                        range((start_max_val * num_senders) + 1),
-                        ab_cache,
-                        aba_sender_dist[i],
-                        sub=None,
-                    )
-                    aabb_dist[i] = combine_dists(
-                        range((end_inter_max_val * num_end) + 1),
-                        bb_cache,
-                        aab_dist[i],
-                        sub=None,
-                    )
-                    abbb_dist[i] = combine_dists(
-                        range((end_inter_max_val * num_end) + 1),
-                        bb_cache,
-                        abb_dist[i],
-                        sub=None,
-                    )
-
-                    for j in range(num_end + 1):
-
-                        def to_app(x):
-                            return min(
-                                j + round(expected_non_overlapping(num_end, j, x)),
-                                num_end,
-                            )
-
-                        if j == num_end:
-                            to_add = OrderedDict()
-                            to_add[num_end] = 1
-                            aaab_cache[j] = to_add
-                            aabb_cache[j] = to_add
-                            abab_cache[j] = to_add
-                            abbb_cache[j] = to_add
-                        else:
-                            aaab_cache[j] = apply_fn_to_dist(
-                                aaab_dist[i], to_app, sub=sub
-                            )
-                            aabb_cache[j] = apply_fn_to_dist(
-                                aabb_dist[i], to_app, sub=sub
-                            )
-                            abab_cache[j] = apply_fn_to_dist(
-                                abab_dist[i], to_app, sub=sub
-                            )
-                            abbb_cache[j] = apply_fn_to_dist(
-                                abbb_dist[i], to_app, sub=sub
-                            )
-
-                    in_prog = OrderedDict()
-                    in_prog = combine_dists(
-                        range(num_end + 1), aaab_cache, final_dist[i], sub=None
-                    )
-                    in_prog = combine_dists(
-                        range(num_end + 1), aabb_cache, in_prog, sub=None
-                    )
-                    in_prog = combine_dists(
-                        range(num_end + 1), abab_cache, in_prog, sub=None
-                    )
-                    in_prog = combine_dists(
-                        range(num_end + 1), abbb_cache, in_prog, sub=None
-                    )
-                    final_dist[i] = in_prog
-
-            # PMF of num senders sampled
-            prob_a_senders = OrderedDict()
+            aab_dist = OrderedDict()
+            abb_dist = OrderedDict()
 
             for i in range(total_samples + 1):
-                prob_a_senders[i] = float(
-                    hypergeometric_pmf(
-                        num_start_probe, num_senders_probe, total_samples, i
-                    )
-                )
 
-            weighted_dist = combine_dists(
-                range(num_end_probe + 1), final_dist, prob_a_senders, sub=None
+                def inside_fn(x):
+                    aa_sampled = expected_unique(num_start, x)
+                    aa_new = expected_non_overlapping(
+                        num_start, total_samples, aa_sampled
+                    )
+                    aa_senders = expected_overlapping(
+                        num_start,
+                        num_senders - i,
+                        aa_new,
+                    )
+                    return int(round(aa_senders))
+
+                aa_sender_dist[i] = apply_fn_to_dist(aa_dist, inside_fn, sub=sub)
+
+                aab_dist[i] = combine_dists(
+                    range((start_max_val * num_senders) + 1),
+                    ab_cache,
+                    aa_sender_dist[i],
+                    sub=None,
+                )
+                # NOTE this needs to be extended to consider abbb dist for e.g.
+                abb_dist[i] = combine_dists(
+                    range((end_inter_max_val * num_end) + 1),
+                    bb_cache,
+                    ab_cache_from_a[i],
+                    sub=None,
+                )
+                aab_dist[i] = apply_fn_to_dist(aab_dist[i], fn_to_apply, sub=sub)
+                abb_dist[i] = apply_fn_to_dist(abb_dist[i], fn_to_apply, sub=sub)
+
+                aab_cache = OrderedDict()
+                abb_cache = OrderedDict()
+
+                for j in range(num_end_probe + 1):
+
+                    def to_app(x):
+                        return min(
+                            j
+                            + round(expected_non_overlapping(num_end_probe, j, x)),
+                            num_end_probe,
+                        )
+
+                    if j == num_end_probe:
+                        to_add = OrderedDict()
+                        to_add[num_end_probe] = 1
+                        aab_cache[j] = to_add
+                        abb_cache[j] = to_add
+                    else:
+                        aab_cache[j] = apply_fn_to_dist(
+                            aab_dist[i], to_app, sub=sub
+                        )
+                        abb_cache[j] = apply_fn_to_dist(
+                            abb_dist[i], to_app, sub=sub
+                        )
+
+                in_prog = OrderedDict()
+                in_prog = combine_dists(
+                    range(num_end_probe + 1), aab_cache, ab_un_dist[i], sub=None
+                )
+                in_prog = combine_dists(
+                    range(num_end_probe + 1), abb_cache, in_prog, sub=None
+                )
+                final_dist[i] = in_prog
+
+        # if max_depth >= 3:
+        #     recurrent_connections_dist = kwargs.get("recurrent_connections_dist")
+        #     num_recurrent = kwargs.get("num_recurrent")
+        #     end_mean = get_dist_mean(recurrent_connections_dist)
+        #     end_var = get_dist_var(recurrent_connections_dist)
+
+        #     aaab_dist = OrderedDict()
+        #     aabb_dist = OrderedDict()
+        #     abbb_dist = OrderedDict()
+        #     abab_dist = OrderedDict()
+
+        #     aaab_cache = OrderedDict()
+        #     aabb_cache = OrderedDict()
+        #     abbb_cache = OrderedDict()
+        #     abab_cache = OrderedDict()
+
+        #     aa_cache = OrderedDict()
+        #     aa_cache[0] = OrderedDict()
+        #     aa_cache[0][0] = 1.0
+        #     start_inter_max_val = max(list(start_inter_dist.keys()))
+        #     for i in range(1, num_start + 1):
+        #         if i < clt_start:
+        #             aa_cache[i] = convolution(
+        #                 start_inter_dist, aa_cache[i - 1], sub=sub
+        #             )
+        #         else:
+        #             aa_cache[i] = create_normal(
+        #                 range((start_inter_max_val * i) + 1),
+        #                 start_inter_mean * i,
+        #                 start_inter_var * i,
+        #                 sub=sub,
+        #                 interp_after=True,
+        #             )
+
+        #     ba_cache = OrderedDict()
+        #     ba_cache[0] = OrderedDict()
+        #     ba_cache[0][0] = 1.0
+        #     end_max_val = max(list(recurrent_connections_dist.keys()))
+        #     for i in range(1, num_recurrent + 1):
+        #         if i < clt_start:
+        #             ba_cache[i] = convolution(
+        #                 recurrent_connections_dist, ba_cache[i - 1], sub=sub
+        #             )
+        #         else:
+        #             ba_cache[i] = create_normal(
+        #                 range((end_max_val * i) + 1),
+        #                 end_mean * i,
+        #                 end_var * i,
+        #                 sub=sub,
+        #                 interp_after=True,
+        #             )
+
+        #     ab_sender_dist = OrderedDict()
+
+        #     def new_fn(x):
+        #         return int(round(expected_overlapping(num_end, num_recurrent, x)))
+
+        #     for k, v in ab_un_dist.items():
+        #         ab_sender_dist[k] = apply_fn_to_dist(v, new_fn, sub=sub)
+
+        #     aaa_sender_dist = OrderedDict()
+
+        #     def new_fn(x):
+        #         return int(round(expected_unique(num_start, x)))
+
+        #     aa_un_dist = apply_fn_to_dist(aa_dist, new_fn, sub=sub)
+        #     aaa_dist = combine_dists(
+        #         range((num_start * start_inter_max_val * start_inter_max_val) + 1),
+        #         aa_cache,
+        #         aa_un_dist,
+        #         sub=None,
+        #     )
+
+        #     aba_dist = OrderedDict()
+        #     aba_sender_dist = OrderedDict()
+
+        #     for i in range(total_samples + 1):
+
+        #         def inside_fn(x):
+        #             aaa_sampled = expected_unique(num_start, x)
+        #             aaa_new = expected_non_overlapping(
+        #                 num_start,
+        #                 total_samples + get_dist_mean(aa_un_dist),
+        #                 aaa_sampled,
+        #             )
+        #             aaa_senders = expected_overlapping(
+        #                 num_start,
+        #                 num_senders - get_dist_mean(aa_sender_dist[i]) - i,
+        #                 aaa_new,
+        #             )
+        #             return int(round(aaa_senders))
+
+        #         def new_fn_k(x):
+        #             aba_sampled = expected_unique(num_start, x)
+        #             aba_new = expected_non_overlapping(
+        #                 num_start,
+        #                 total_samples
+        #                 + get_dist_mean(aa_un_dist)
+        #                 + get_dist_mean(aaa_dist),
+        #                 aba_sampled,
+        #             )
+        #             aba_senders = expected_overlapping(
+        #                 num_start,
+        #                 num_senders
+        #                 - get_dist_mean(aa_sender_dist[i])
+        #                 - get_dist_mean(aaa_sender_dist[i])
+        #                 - i,
+        #                 aba_new,
+        #             )
+        #             return int(round(aba_senders))
+
+        #         aaa_sender_dist[i] = apply_fn_to_dist(aaa_dist, inside_fn, sub=sub)
+
+        #         aba_dist[i] = combine_dists(
+        #             range((num_recurrent * end_max_val) + 1),
+        #             ba_cache,
+        #             ab_sender_dist[i],
+        #             sub=None,
+        #         )
+        #         aba_sender_dist[i] = apply_fn_to_dist(
+        #             aba_dist[i], new_fn_k, sub=sub
+        #         )
+
+        #         aaab_dist[i] = combine_dists(
+        #             range((start_max_val * num_senders) + 1),
+        #             ab_cache,
+        #             aaa_sender_dist[i],
+        #             sub=None,
+        #         )
+        #         abab_dist[i] = combine_dists(
+        #             range((start_max_val * num_senders) + 1),
+        #             ab_cache,
+        #             aba_sender_dist[i],
+        #             sub=None,
+        #         )
+        #         aabb_dist[i] = combine_dists(
+        #             range((end_inter_max_val * num_end) + 1),
+        #             bb_cache,
+        #             aab_dist[i],
+        #             sub=None,
+        #         )
+        #         abbb_dist[i] = combine_dists(
+        #             range((end_inter_max_val * num_end) + 1),
+        #             bb_cache,
+        #             abb_dist[i],
+        #             sub=None,
+        #         )
+
+        #         for j in range(num_end + 1):
+
+        #             def to_app(x):
+        #                 return min(
+        #                     j + round(expected_non_overlapping(num_end, j, x)),
+        #                     num_end,
+        #                 )
+
+        #             if j == num_end:
+        #                 to_add = OrderedDict()
+        #                 to_add[num_end] = 1
+        #                 aaab_cache[j] = to_add
+        #                 aabb_cache[j] = to_add
+        #                 abab_cache[j] = to_add
+        #                 abbb_cache[j] = to_add
+        #             else:
+        #                 aaab_cache[j] = apply_fn_to_dist(
+        #                     aaab_dist[i], to_app, sub=sub
+        #                 )
+        #                 aabb_cache[j] = apply_fn_to_dist(
+        #                     aabb_dist[i], to_app, sub=sub
+        #                 )
+        #                 abab_cache[j] = apply_fn_to_dist(
+        #                     abab_dist[i], to_app, sub=sub
+        #                 )
+        #                 abbb_cache[j] = apply_fn_to_dist(
+        #                     abbb_dist[i], to_app, sub=sub
+        #                 )
+
+        #         in_prog = OrderedDict()
+        #         in_prog = combine_dists(
+        #             range(num_end + 1), aaab_cache, final_dist[i], sub=None
+        #         )
+        #         in_prog = combine_dists(
+        #             range(num_end + 1), aabb_cache, in_prog, sub=None
+        #         )
+        #         in_prog = combine_dists(
+        #             range(num_end + 1), abab_cache, in_prog, sub=None
+        #         )
+        #         in_prog = combine_dists(
+        #             range(num_end + 1), abbb_cache, in_prog, sub=None
+        #         )
+        #         final_dist[i] = in_prog
+
+        # PMF of num senders sampled
+        prob_a_senders = OrderedDict()
+
+        for i in range(total_samples + 1):
+            prob_a_senders[i] = float(
+                hypergeometric_pmf(
+                    num_start_probe, num_senders_probe, total_samples, i
+                )
             )
 
-            return ab_un_dist, weighted_dist
+        weighted_dist = combine_dists(
+            range(num_end_probe + 1), final_dist, prob_a_senders, sub=None
+        )
+
+        return ab_un_dist, weighted_dist
 
     @staticmethod
     def nfmt(start, *args):
