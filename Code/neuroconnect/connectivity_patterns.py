@@ -880,12 +880,14 @@ class MeanRecurrentConnectivity(RecurrentConnectivity):
                     max(num_senders_from_A_to_Bprobe - num_sender_direct, 0),
                     aa_new,
                 )
-                aab_total = expected_unique(
+                aab_in_probe = expected_unique(
                     num_end_probe, aa_senders * num_connections_from_A_to_Bprobe
                 )
-                aab_less_ab = expected_non_overlapping(num_end_probe, final, aab_total)
-                plist.append(aab_total)
-                final = final + aab_less_ab
+                aab_less_ab_in_probe = expected_non_overlapping(
+                    num_end_probe, final, aab_in_probe
+                )
+                plist.append(aab_in_probe)
+                final = final + aab_less_ab_in_probe
 
                 # ABB
                 ab_full = expected_unique(
@@ -909,46 +911,68 @@ class MeanRecurrentConnectivity(RecurrentConnectivity):
                 aaa_new = expected_non_overlapping(
                     num_start, aa_new + total_samples, aaa_sampled
                 )
+                num_senders_new_aaa = (
+                    num_senders_from_A_to_Bprobe - aa_senders - num_sender_samples
+                )
                 aaa_senders = expected_overlapping(
                     num_start,
-                    max(num_senders - (aa_senders + num_sender_samples), 0),
+                    max(num_senders_new_aaa, 0),
                     aaa_new,
                 )
-                aaab_total = expected_unique(num_end, aaa_senders * num_connections)
-                aaab_less_prev = expected_non_overlapping(num_end, final, aaab_total)
+                aaab_total = expected_unique(
+                    num_end_probe, aaa_senders * num_connections_from_A_to_Bprobe
+                )
+                aaab_less_prev = expected_non_overlapping(
+                    num_end_probe, final, aaab_total
+                )
                 plist.append(aaab_total)
                 final = final + aaab_less_prev
 
                 # AABB
-                aabb_total = expected_unique(
-                    num_end, aab_less_ab * inter_connections_end
+                aab_total = expected_unique(num_end, aa_senders * num_connections)
+                aab_less_ab = expected_non_overlapping(num_end, ab_full, aab_total)
+                aabb_in_probe = expected_unique(
+                    num_end_probe, aab_less_ab * inter_connects_end_probe
                 )
-                aabb_less_prev = expected_non_overlapping(num_end, final, aabb_total)
-                plist.append(aabb_total)
+                aabb_less_prev = expected_non_overlapping(
+                    num_end_probe, final, aabb_in_probe
+                )
+                plist.append(aabb_in_probe)
                 final = final + aabb_less_prev
 
                 # ABAB
-                ab_recurrent = expected_overlapping(num_end, num_recurrent, ab)
+                ab_recurrent = expected_overlapping(num_end, num_recurrent, ab_full)
                 aba = expected_unique(num_start, ab_recurrent * num_recurrent_synapses)
                 aba_new = expected_non_overlapping(
                     num_start, aaa_new + aa_new + total_samples, aba
                 )
+                aba_senders_probe = num_senders_from_A_to_Bprobe - (
+                    aaa_senders + aa_senders + num_sender_samples
+                )
                 aba_send_connections = expected_overlapping(
                     num_start,
-                    num_senders - (aaa_senders + aa_senders + num_sender_samples),
+                    max(aba_senders_probe, 0),
                     aba_new,
                 )
                 abab_total = expected_unique(
-                    num_end, aba_send_connections * num_connections
+                    num_end_probe,
+                    aba_send_connections * num_connections_from_A_to_Bprobe,
                 )
-                abab_less_prev = expected_non_overlapping(num_end, final, abab_total)
+                abab_less_prev = expected_non_overlapping(
+                    num_end_probe, final, abab_total
+                )
                 plist.append(abab_total)
                 final = final + abab_less_prev
 
                 # ABBB
-                abb_new = expected_non_overlapping(num_end, aab_less_ab, abb_less_prev)
-                abbb_total = expected_unique(num_end, abb_new * inter_connections_end)
-                abbb_less_prev = expected_non_overlapping(num_end, final, abbb_total)
+                abb_total = expected_unique(num_end, ab_full * inter_connections_end)
+                abb_new = expected_non_overlapping(num_end, aab_total, abb_total)
+                abbb_total = expected_unique(
+                    num_end_probe, abb_new * inter_connects_end_probe
+                )
+                abbb_less_prev = expected_non_overlapping(
+                    num_end_probe, final, abbb_total
+                )
                 plist.append(abbb_total)
                 final = final + abbb_less_prev
 
