@@ -830,6 +830,7 @@ class MeanRecurrentConnectivity(RecurrentConnectivity):
                 num_start_probe = kwargs.get("num_start_probe", num_start)
                 num_senders_probe = kwargs.get("num_senders_probe", num_senders)
                 out_connects = kwargs.get("out_connections_dist_probe", None)
+                num_senders_Aprobe_to_B = kwargs.get("num_senders_A", num_senders)
                 num_connections_probe = (
                     get_dist_mean(out_connects)
                     if out_connects is not None
@@ -839,7 +840,7 @@ class MeanRecurrentConnectivity(RecurrentConnectivity):
 
                 # AB
                 num_sender_direct = expected_overlapping(
-                    num_start_probe, num_senders_probe, num_sender_samples
+                    num_senders_Aprobe_to_B, num_senders_probe, num_sender_samples
                 )
                 ab = expected_unique(
                     num_end_probe, num_sender_direct * num_connections_probe
@@ -861,7 +862,6 @@ class MeanRecurrentConnectivity(RecurrentConnectivity):
                     else num_connections
                 )
 
-                num_senders_Aprobe_to_B = kwargs.get("num_senders_A", num_senders)
                 num_senders_from_A_to_Bprobe = kwargs.get("num_senders_B", num_senders)
 
                 inter_connects_start_probe_dist = kwargs.get(
@@ -967,23 +967,15 @@ class MeanRecurrentConnectivity(RecurrentConnectivity):
         # Sums the above distributions to get the marginal
         prob_a_senders = OrderedDict()
 
-        if max_depth == 1:
-            for i in range(total_samples + 1):
-                prob_a_senders[i] = float(
-                    hypergeometric_pmf(
-                        num_start_probe, num_senders_probe, total_samples, i
-                    )
+        for i in range(total_samples + 1):
+            prob_a_senders[i] = float(
+                hypergeometric_pmf(
+                    num_start_probe,
+                    num_senders_Aprobe_to_B,
+                    total_samples,
+                    i,
                 )
-        else:
-            for i in range(total_samples + 1):
-                prob_a_senders[i] = float(
-                    hypergeometric_pmf(
-                        num_start_probe,
-                        num_senders_Aprobe_to_B,
-                        total_samples,
-                        i,
-                    )
-                )
+            )
 
         weighted_dist = combine_dists(range(num_end_probe + 1), dists, prob_a_senders)
 
