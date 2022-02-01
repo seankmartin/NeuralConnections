@@ -505,10 +505,10 @@ def connect_prob_large_matrix():
     num_sampled = [79, 79]
     max_depth = 1
     to_use = [True, True, True, True]
-    mean_estimate=True
-    force_no_mean=False
-    sr=0.01
-    clt_start=10
+    mean_estimate = False
+    force_no_mean = False
+    sr = None
+    clt_start = 30
     main_dir = Path(__file__).resolve().parent.parent
     pickle1 = main_dir / "pickles" / "region_points.pkl"
     pickle2 = main_dir / "pickles" / "stats.pkl"
@@ -520,6 +520,12 @@ def connect_prob_large_matrix():
     if os.path.isfile(pickle1):
         a_indices, b_indices = pickle.load(open(pickle1, "rb"))
         args_dict = pickle.load(open(pickle2, "rb"))
+        print(
+            "{} - {}, {} - {}".format(
+                A_name, B_name, args_dict["num_start"], args_dict["num_end"]
+            )
+        )
+        print("inside of probe are {} - {}".format(len(a_indices), len(b_indices)))
     else:
         convert_mouse_data(A_name, B_name)
         mc, args_dict = load_matrix_data(to_use, A_name, B_name)
@@ -549,25 +555,24 @@ def connect_prob_large_matrix():
         sub_args_dict = probe_stats["inter"]
         for k, v in sub_args_dict.items():
             args_dict[k] = v
-
-        args_dict["max_depth"] = max_depth
         args_dict["total_samples"] = num_sampled[0]
-        args_dict["static_verbose"] = False
-        args_dict["clt_start"] = clt_start
-        args_dict["mean_estimate"] = mean_estimate
         args_dict["num_senders"] = sub_mc.num_senders
-
-        if force_no_mean:
-            args_dict["use_mean"] = False
-
-        if max_depth > 1:
-            sr = None
-        if mean_estimate is True:
-            sr = None
 
         pickle.dump((a_indices, b_indices), file=open(pickle1, "wb"))
         pickle.dump(args_dict, file=open(pickle2, "wb"))
+        print("inside of probe are {} - {}".format(len(a_indices), len(b_indices)))
 
+    args_dict["static_verbose"] = True
+    args_dict["max_depth"] = max_depth
+    args_dict["clt_start"] = clt_start
+    args_dict["mean_estimate"] = mean_estimate
+    if max_depth > 1:
+        sr = 0.01
+    if mean_estimate is True:
+        sr = None
+    
+    if force_no_mean:
+        args_dict["use_mean"] = False
     cp = CombProb(
         args_dict["num_start_probe"],
         num_sampled[0],
@@ -579,7 +584,6 @@ def connect_prob_large_matrix():
         subsample_rate=sr,
         **args_dict,
     )
-
 
     # print(sys.getsizeof(args_dict))
     # print(sys.getsizeof(region_pts))
