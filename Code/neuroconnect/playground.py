@@ -486,8 +486,122 @@ def vis_graph_as_matrix():
     # TODO add in the connect matrix strat in block
 
 
+def connect_prob_large_matrix():
+    from .matrix import convert_mouse_data, load_matrix_data
+    from .atlas import gen_graph_for_regions
+    from .mpf_connection import CombProb
+    from .connectivity_patterns import MatrixConnectivity
+    from pathlib import Path
+    import pickle
+    import sys
+    import numpy as np
+    from pprint import pprint
+    from time import perf_counter
+
+    np.random.seed(42)
+    here = os.path.dirname(os.path.abspath(__file__))
+    A_name, B_name = ["VISp", "VISl"]
+    region_sizes = [333055, 49569]
+    num_sampled = [79, 79]
+    max_depth = 1
+    to_use = [True, True, True, True]
+    mean_estimate=True
+    force_no_mean=False
+    sr=0.01
+    clt_start=10
+    main_dir = Path(__file__).resolve().parent.parent
+    pickle1 = main_dir / "pickles" / "region_points.pkl"
+    pickle2 = main_dir / "pickles" / "stats.pkl"
+
+    pickle1.parent.mkdir(exist_ok=True)
+
+    t1 = perf_counter()
+
+    if os.path.isfile(pickle1):
+        a_indices, b_indices = pickle.load(open(pickle1, "rb"))
+        args_dict = pickle.load(open(pickle2, "rb"))
+    else:
+        convert_mouse_data(A_name, B_name)
+        mc, args_dict = load_matrix_data(to_use, A_name, B_name)
+        print("{} - {}, {} - {}".format(A_name, B_name, mc.num_a, mc.num_b))
+
+        region_pts = gen_graph_for_regions(
+            (A_name, B_name), region_sizes, sort_=True, shift=True
+        )[0]
+        a_indices = region_pts[0][1]
+        b_indices = region_pts[1][1]
+
+        ## This is mpf_probe_connectome
+        probe_stats = mc.compute_probe_stats(
+            a_indices,
+            b_indices,
+        )
+        sub_mc = probe_stats["probes"]
+        sub_args_dict = probe_stats["stats"]
+        for k, v in sub_args_dict.items():
+            args_dict[f"{k}_probe"] = v
+        sub_args_dict = probe_stats["A_stats"]
+        for k, v in sub_args_dict.items():
+            args_dict[f"{k}_A"] = v
+        sub_args_dict = probe_stats["B_stats"]
+        for k, v in sub_args_dict.items():
+            args_dict[f"{k}_B"] = v
+        sub_args_dict = probe_stats["inter"]
+        for k, v in sub_args_dict.items():
+            args_dict[k] = v
+
+        args_dict["max_depth"] = max_depth
+        args_dict["total_samples"] = num_sampled[0]
+        args_dict["static_verbose"] = False
+        args_dict["clt_start"] = clt_start
+        args_dict["mean_estimate"] = mean_estimate
+        args_dict["num_senders"] = sub_mc.num_senders
+
+        if force_no_mean:
+            args_dict["use_mean"] = False
+
+        if max_depth > 1:
+            sr = None
+        if mean_estimate is True:
+            sr = None
+
+        pickle.dump((a_indices, b_indices), file=open(pickle1, "wb"))
+        pickle.dump(args_dict, file=open(pickle2, "wb"))
+
+    cp = CombProb(
+        args_dict["num_start_probe"],
+        num_sampled[0],
+        args_dict["num_senders_probe"],
+        args_dict["num_end_probe"],
+        num_sampled[1],
+        MatrixConnectivity.static_expected_connections,
+        verbose=True,
+        subsample_rate=sr,
+        **args_dict,
+    )
+
+
+    # print(sys.getsizeof(args_dict))
+    # print(sys.getsizeof(region_pts))
+    t2 = perf_counter()
+    t_taken = t2 - t1
+    print(f"Took {t_taken:.2f} seconds")
+
+    result = {
+        "expected": cp.expected_connections(),
+        "total": cp.get_all_prob(),
+        "each_expected": {k: cp.expected_total(k) for k in range(num_sampled[0] + 1)},
+    }
+
+    with open(os.path.join(here, "..", "results", "test_prob.txt"), "w") as f:
+        pprint(result, width=120, stream=f)
+
+
 if __name__ == "__main__":
     # Hypergeometric again right?
+    connect_prob_large_matrix()
+    exit(-1)
+
     arr = [
         405389,
         375280,
