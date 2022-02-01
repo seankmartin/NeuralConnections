@@ -476,9 +476,7 @@ class RecurrentConnectivity(ConnectionStrategy):
             end_inter_max_val = max(list(end_inter_dist.keys()))
             for i in range(1, num_end + 1):
                 if i < clt_start:
-                    bb_cache[i] = convolution(
-                        end_inter_dist, bb_cache[i - 1], sub=sub
-                    )
+                    bb_cache[i] = convolution(end_inter_dist, bb_cache[i - 1], sub=sub)
                 else:
                     bb_cache[i] = create_normal(
                         range((end_inter_max_val * i) + 1),
@@ -544,8 +542,7 @@ class RecurrentConnectivity(ConnectionStrategy):
 
                     def to_app(x):
                         return min(
-                            j
-                            + round(expected_non_overlapping(num_end_probe, j, x)),
+                            j + round(expected_non_overlapping(num_end_probe, j, x)),
                             num_end_probe,
                         )
 
@@ -555,12 +552,8 @@ class RecurrentConnectivity(ConnectionStrategy):
                         aab_cache[j] = to_add
                         abb_cache[j] = to_add
                     else:
-                        aab_cache[j] = apply_fn_to_dist(
-                            aab_dist[i], to_app, sub=sub
-                        )
-                        abb_cache[j] = apply_fn_to_dist(
-                            abb_dist[i], to_app, sub=sub
-                        )
+                        aab_cache[j] = apply_fn_to_dist(aab_dist[i], to_app, sub=sub)
+                        abb_cache[j] = apply_fn_to_dist(abb_dist[i], to_app, sub=sub)
 
                 in_prog = OrderedDict()
                 in_prog = combine_dists(
@@ -768,9 +761,7 @@ class RecurrentConnectivity(ConnectionStrategy):
 
         for i in range(total_samples + 1):
             prob_a_senders[i] = float(
-                hypergeometric_pmf(
-                    num_start_probe, num_senders_probe, total_samples, i
-                )
+                hypergeometric_pmf(num_start_probe, num_senders_probe, total_samples, i)
             )
 
         weighted_dist = combine_dists(
