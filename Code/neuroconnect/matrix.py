@@ -181,6 +181,10 @@ def mpf_probe_connectome(
     if mean_estimate is True:
         sr = None
 
+    # This comb prob is for depth =-1
+    # If you call senders dist it only works for dpeth = 1
+    # Inside of the detla function static_expected_connections
+    # Ti instead works correctly for dpth != 1
     cp = CombProb(
         sub_mc.num_a,
         num_sampled[0],
