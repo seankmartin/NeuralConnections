@@ -85,6 +85,8 @@ def expected_unique(N, k, do_round=True):
 
 def expected_overlapping(total, good, draws):
     """Calculates the expected overlapping draws from total of good."""
+    if total == 0:
+        return 0
     drawn = int(round(draws * (good / total)))
     return min(max(drawn, 0), int(round(good)))
 
