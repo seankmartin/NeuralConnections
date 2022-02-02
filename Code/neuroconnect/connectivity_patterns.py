@@ -870,11 +870,14 @@ class MeanRecurrentConnectivity(RecurrentConnectivity):
         # Do the actual calculation
         for num_sender_samples in range(total_samples + 1):
             final = 0
-            if max_depth >= 1:
-                # AB
+            if max_depth == 1:
+                num_sender_direct = num_sender_samples
+            else:
                 num_sender_direct = expected_overlapping(
                     num_senders_Aprobe_to_B, num_senders_probe, num_sender_samples
                 )
+            if max_depth >= 1:
+                # AB
                 ab = expected_unique(
                     num_end_probe, num_sender_direct * num_connections_probe
                 )
@@ -995,15 +998,26 @@ class MeanRecurrentConnectivity(RecurrentConnectivity):
         # Sums the above distributions to get the marginal
         prob_a_senders = OrderedDict()
 
-        for i in range(total_samples + 1):
-            prob_a_senders[i] = float(
-                hypergeometric_pmf(
-                    num_start_probe,
-                    num_senders_Aprobe_to_B,
-                    total_samples,
-                    i,
+        if max_depth == 1:
+            for i in range(total_samples + 1):
+                prob_a_senders[i] = float(
+                    hypergeometric_pmf(
+                        num_start_probe,
+                        num_senders_probe,
+                        total_samples,
+                        i,
+                    )
                 )
-            )
+        if max_depth > 1:
+            for i in range(total_samples + 1):
+                prob_a_senders[i] = float(
+                    hypergeometric_pmf(
+                        num_start_probe,
+                        num_senders_Aprobe_to_B,
+                        total_samples,
+                        i,
+                    )
+                )
 
         weighted_dist = combine_dists(range(num_end_probe + 1), dists, prob_a_senders)
 
