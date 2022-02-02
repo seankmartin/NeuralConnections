@@ -542,7 +542,6 @@ def connect_prob_large_matrix():
             a_indices,
             b_indices,
         )
-        sub_mc = probe_stats["probes"]
         sub_args_dict = probe_stats["stats"]
         for k, v in sub_args_dict.items():
             args_dict[f"{k}_probe"] = v
@@ -556,7 +555,6 @@ def connect_prob_large_matrix():
         for k, v in sub_args_dict.items():
             args_dict[k] = v
         args_dict["total_samples"] = num_sampled[0]
-        args_dict["num_senders"] = sub_mc.num_senders
 
         pickle.dump((a_indices, b_indices), file=open(pickle1, "wb"))
         pickle.dump(args_dict, file=open(pickle2, "wb"))
@@ -566,11 +564,12 @@ def connect_prob_large_matrix():
     args_dict["max_depth"] = max_depth
     args_dict["clt_start"] = clt_start
     args_dict["mean_estimate"] = mean_estimate
+    args_dict["total_samples"] = num_sampled[0]
     if max_depth > 1:
         sr = 0.01
     if mean_estimate is True:
         sr = None
-    
+
     if force_no_mean:
         args_dict["use_mean"] = False
     cp = CombProb(
@@ -600,6 +599,17 @@ def connect_prob_large_matrix():
     with open(os.path.join(here, "..", "results", "test_prob.txt"), "w") as f:
         pprint(result, width=120, stream=f)
 
+    l = []
+    for k, v in result["total"].items():
+        l.append([k, v, "Statistical estimation"])
+    df = list_to_df(
+        l, headers=["Number of connected neurons", "Probability", "Calculation"]
+    )
+    df_to_file(df, os.path.join(here, "..", "results", "test_csv.csv"))
+
+    to_load = os.path.join(here, "..", "results", "test_pmf.csv")
+    if os.path.isfile(to_load):
+        plot_pmf_accuracy(df_from_file(to_load), "test_pmf.pdf")
 
 if __name__ == "__main__":
     # Hypergeometric again right?
