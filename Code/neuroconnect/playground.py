@@ -8,6 +8,7 @@ python -m neuroconnect.playground
 
 import os
 from collections import OrderedDict
+from cv2 import mean
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -491,6 +492,8 @@ def connect_prob_large_matrix():
     from .atlas import gen_graph_for_regions
     from .mpf_connection import CombProb
     from .connectivity_patterns import MatrixConnectivity
+    from .plot import plot_pmf_accuracy
+    from skm_pyutils.py_table import list_to_df, df_to_file, df_from_file
     from pathlib import Path
     import pickle
     import sys
@@ -502,12 +505,12 @@ def connect_prob_large_matrix():
     here = os.path.dirname(os.path.abspath(__file__))
     A_name, B_name = ["VISp", "VISl"]
     region_sizes = [333055, 49569]
-    num_sampled = [79, 79]
-    max_depth = 1
+    num_sampled = [2, 2]
+    max_depth = 2
     to_use = [True, True, True, True]
     mean_estimate = False
-    force_no_mean = False
-    sr = None
+    force_no_mean = True
+    sr = 0.01
     clt_start = 30
     main_dir = Path(__file__).resolve().parent.parent
     pickle1 = main_dir / "pickles" / "region_points.pkl"
@@ -611,9 +614,81 @@ def connect_prob_large_matrix():
     if os.path.isfile(to_load):
         plot_pmf_accuracy(df_from_file(to_load), "test_pmf.pdf")
 
+
+def test_depth_2():
+    from .connectivity_patterns import RecurrentConnectivity, MatrixConnectivity
+    from .simple_graph import create_graph, reverse, to_matrix
+    from .matrix import graph_connectome, mpf_probe_connectome
+    from pprint import pprint
+    import numpy as np
+
+    np.random.seed(42)
+
+    region_sizes = [600, 800]
+    num_sampled = [6, 8]
+    max_depth = 3
+    mean_estimate = True
+
+    out_kwargs = dict(
+        num_senders=180,
+        min_inter=0.02,
+        max_inter=0.07,
+        min_forward=4,
+        max_forward=10,
+    )
+
+    recur_kwargs = dict(
+        num_senders=200,
+        min_inter=0.01,
+        max_inter=0.05,
+        min_forward=3,
+        max_forward=8,
+    )
+
+    connectivity_params = [out_kwargs, recur_kwargs]
+
+    g_graph, g_connected = create_graph(
+        region_sizes, RecurrentConnectivity, connectivity_params
+    )
+    r_graph = reverse(g_graph)
+
+    a_indices = [i for i in range(70)]
+    b_indices = [i for i in range(10, 45)]
+
+    full_res = {}
+
+    full_res["graph"] = graph_connectome(
+        num_sampled, 
+        max_depth,
+        num_iters=10000,
+        graph=g_graph,
+        reverse_graph=r_graph,
+        to_write=region_sizes,
+        a_indices=a_indices,
+        b_indices=b_indices,
+    )
+
+    AB, BA, AA, BB = to_matrix(g_graph, *region_sizes)
+    mc = MatrixConnectivity(ab=AB, ba=BA, bb=BB, aa=AA)
+    full_res["stats"] = mpf_probe_connectome(
+        mc,
+        num_sampled,
+        a_indices,
+        b_indices,
+        max_depth,
+        args_dict=mc.compute_stats(),
+        mean_estimate=mean_estimate,
+        force_no_mean=mean_estimate,
+        sr=None,
+    )
+
+    pprint(full_res)
+
+
 if __name__ == "__main__":
     # Hypergeometric again right?
-    connect_prob_large_matrix()
+    # connect_prob_large_matrix()
+    test_depth_2()
     exit(-1)
 
     arr = [
