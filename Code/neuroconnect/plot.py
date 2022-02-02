@@ -7,6 +7,7 @@ import pandas as pd
 from matplotlib.ticker import MaxNLocator
 
 here = os.path.dirname(os.path.realpath(__file__))
+OUTPUT_DIR = "figures"
 PALETTE = "dark"
 LABELSIZE = 12
 
@@ -51,7 +52,7 @@ def set_m():
 
 def save(fig, out_name):
     """Save the figure to figures/out_name."""
-    out_path = os.path.abspath(os.path.join(here, "..", "figures", out_name))
+    out_path = os.path.abspath(os.path.join(here, "..", OUTPUT_DIR, out_name))
     print("Saving figure to {}".format(out_path))
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
     if fig is not None:
