@@ -1074,6 +1074,10 @@ class MatrixConnectivity(ConnectionStrategy):
         args_dict["N"] = self.num_b
         args_dict["num_start"] = self.num_a
         args_dict["num_end"] = self.num_b
+
+        zero_dist = OrderedDict()
+        zero_dist[0] = 1.0
+
         if self.to_use[0]:
             ab_sum = np.squeeze(np.array(self.ab.sum(axis=1).astype(np.int64)))
             self.num_senders = np.count_nonzero(ab_sum)
@@ -1086,6 +1090,9 @@ class MatrixConnectivity(ConnectionStrategy):
                 ):
                     self.num_connections[i] = dist[i] / float(self.num_senders)
                 args_dict["out_connections_dist"] = self.num_connections
+            else:
+                args_dict["num_senders"] = 0
+                args_dict["out_connections_dist"] = zero_dist
         if self.to_use[1]:
             ba_sum = np.squeeze(np.array(self.ba.sum(axis=1).astype(np.int64)))
             self.num_recurrent = np.count_nonzero(ba_sum)
@@ -1100,6 +1107,9 @@ class MatrixConnectivity(ConnectionStrategy):
                         self.num_recurrent
                     )
                 args_dict["recurrent_connections_dist"] = self.num_recurrent_connections
+            else:
+                args_dict["num_recurrent"] = 0
+                args_dict["recurrent_connections_dist"] = zero_dist
         if self.to_use[2]:
             aa_sum = np.squeeze(np.array(self.aa.sum(axis=1).astype(np.int64)))
             dist = np.bincount(aa_sum)
