@@ -143,12 +143,12 @@ def do_mouse(do_mat_vis=True, do_comp=True, do_exp=True):
 
 @app.command()
 def do_accuracy(
-    do_samples=True,
-    do_pmf=True,
-    do_regions=True,
-    do_mouse_acc=True,
-    do_exp=True,
-    do_growth=True,
+    do_samples: bool=True,
+    do_pmf: bool=True,
+    do_regions: bool=False,
+    do_mouse_acc: bool=False,
+    do_exp: bool=True,
+    do_growth: bool=False,
 ):
     """Produce figures related to method accuracy."""
     print("Plotting figures related to accuracy")
@@ -390,13 +390,13 @@ def do_sub(do_full_vis: bool = False, do_probability: bool = True):
     # region_sizes = [391292, 55816]
     # This is for left hemi
     region_sizes = [333055, 49569]
-    num_sampled = [79, 79]
+    num_sampled = [2, 2]
     # region_sizes = [39000, 5500]
     # num_sampled = [10, 7]
     simulation_kwargs = dict(
-        max_depth=1,
+        max_depth=2,
         num_cpus=1,
-        num_iters=10000
+        num_iters=100
     )
     plot_subset_vis(
         names,
