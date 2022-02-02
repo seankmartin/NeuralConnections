@@ -367,12 +367,12 @@ class RecurrentConnectivity(ConnectionStrategy):
         max_depth = kwargs.get("max_depth", 1)
 
         use_mean = kwargs.get("use_mean", True)
-        if use_mean and (max_depth > 1):
-            return MeanRecurrentConnectivity.static_expected_connections(**kwargs)
-        if max_depth > 2:
+        if max_depth > 3:
             raise ValueError(
-                "max_depth must be less than 3 currently for recurrent no mean."
+                "max_depth must be less than 4 currently for recurrent no mean."
             )
+        if (max_depth == 3) or (use_mean and (max_depth > 1)):
+            return MeanRecurrentConnectivity.static_expected_connections(**kwargs)
         if max_depth >= 1:
             num_end = kwargs.get("N")
             out_connections_dist = kwargs.get("out_connections_dist")
@@ -419,7 +419,9 @@ class RecurrentConnectivity(ConnectionStrategy):
             final_dist = OrderedDict()
             start_inter_dist = kwargs.get("start_inter_dist")
             end_inter_dist = kwargs.get("end_inter_dist")
-            ab_dist_from_probe = kwargs.get("out_connections_dist_A")
+            ab_dist_from_probe = kwargs.get(
+                "out_connections_dist_A", out_connections_dist_probe
+            )
 
             start_mean = get_dist_mean(out_connections_dist)
             start_var = get_dist_var(out_connections_dist)
@@ -468,6 +470,13 @@ class RecurrentConnectivity(ConnectionStrategy):
                         sub=sub,
                         interp_after=True,
                     )
+
+            def fn_un_b(k):
+                return expected_unique(num_end, k)
+
+            ab_from_a_un = OrderedDict()
+            for k, v in ab_cache_from_a.items():
+                ab_from_a_un[k] = apply_fn_to_dist(v, fn_un_b, sub=sub)
 
             # Raw BB cache
             bb_cache = OrderedDict()
@@ -529,7 +538,7 @@ class RecurrentConnectivity(ConnectionStrategy):
                 abb_dist[i] = combine_dists(
                     range((end_inter_max_val * num_end) + 1),
                     bb_cache,
-                    ab_cache_from_a[i],
+                    ab_from_a_un[i],
                     sub=None,
                 )
                 aab_dist[i] = apply_fn_to_dist(aab_dist[i], fn_to_apply, sub=sub)
@@ -779,7 +788,6 @@ class RecurrentConnectivity(ConnectionStrategy):
 
         return start
 
-
 class MeanRecurrentConnectivity(RecurrentConnectivity):
     """
     Similar to RecurrentConnectivity, but uses the mean instead of full dists.
@@ -815,20 +823,54 @@ class MeanRecurrentConnectivity(RecurrentConnectivity):
             raise ValueError("max_depth must be less than 4 currently.")
 
         dists = OrderedDict()
+
+        # Parse config information
+        if max_depth >= 1:
+            num_start_probe = kwargs.get("num_start_probe", num_start)
+            num_senders_probe = kwargs.get("num_senders_probe", num_senders)
+            out_connects = kwargs.get("out_connections_dist_probe", None)
+            num_senders_Aprobe_to_B = kwargs.get("num_senders_A", num_senders)
+            num_connections_probe = (
+                get_dist_mean(out_connects)
+                if out_connects is not None
+                else num_connections
+            )
+            num_end_probe = kwargs.get("num_end_probe", num_end)
+        if max_depth >= 2:
+            out_connects_B = kwargs.get("out_connections_dist_B", None)
+            num_connections_from_A_to_Bprobe = (
+                get_dist_mean(out_connects_B)
+                if out_connects_B is not None
+                else num_connections
+            )
+            out_connects_A = kwargs.get("out_connections_dist_A", None)
+            num_connections_from_Aprobe_to_B = (
+                get_dist_mean(out_connects_A)
+                if out_connects_A is not None
+                else num_connections
+            )
+
+            num_senders_from_A_to_Bprobe = kwargs.get("num_senders_B", num_senders)
+
+            inter_connects_start_probe_dist = kwargs.get(
+                "start_probe_to_outside", None
+            )
+            inter_connects_start_probe = (
+                get_dist_mean(inter_connects_start_probe_dist)
+                if inter_connects_start_probe_dist is not None
+                else inter_connections_start
+            )
+            inter_connects_end_probe_dist = kwargs.get("end_outside_to_probe", None)
+            inter_connects_end_probe = (
+                get_dist_mean(inter_connects_end_probe_dist)
+                if inter_connects_end_probe_dist is not None
+                else inter_connections_end
+            )
+
+        # Do the actual calculation
         for num_sender_samples in range(total_samples + 1):
             final = 0
             if max_depth >= 1:
-                num_start_probe = kwargs.get("num_start_probe", num_start)
-                num_senders_probe = kwargs.get("num_senders_probe", num_senders)
-                out_connects = kwargs.get("out_connections_dist_probe", None)
-                num_senders_Aprobe_to_B = kwargs.get("num_senders_A", num_senders)
-                num_connections_probe = (
-                    get_dist_mean(out_connects)
-                    if out_connects is not None
-                    else num_connections
-                )
-                num_end_probe = kwargs.get("num_end_probe", num_end)
-
                 # AB
                 num_sender_direct = expected_overlapping(
                     num_senders_Aprobe_to_B, num_senders_probe, num_sender_samples
@@ -840,35 +882,6 @@ class MeanRecurrentConnectivity(RecurrentConnectivity):
                 final = final + ab
 
             if max_depth >= 2:
-                out_connects_B = kwargs.get("out_connections_dist_B", None)
-                num_connections_from_A_to_Bprobe = (
-                    get_dist_mean(out_connects_B)
-                    if out_connects_B is not None
-                    else num_connections
-                )
-                out_connects_A = kwargs.get("out_connections_dist_A", None)
-                num_connections_from_Aprobe_to_B = (
-                    get_dist_mean(out_connects_A)
-                    if out_connects_A is not None
-                    else num_connections
-                )
-
-                num_senders_from_A_to_Bprobe = kwargs.get("num_senders_B", num_senders)
-
-                inter_connects_start_probe_dist = kwargs.get(
-                    "start_probe_to_outside", None
-                )
-                inter_connects_start_probe = (
-                    get_dist_mean(inter_connects_start_probe_dist)
-                    if inter_connects_start_probe_dist is not None
-                    else inter_connections_start
-                )
-                inter_connects_end_probe_dist = kwargs.get("end_outside_to_probe", None)
-                inter_connects_end_probe = (
-                    get_dist_mean(inter_connects_end_probe_dist)
-                    if inter_connects_end_probe_dist is not None
-                    else inter_connections_end
-                )
 
                 # AAB
                 aa_sampled = expected_unique(
