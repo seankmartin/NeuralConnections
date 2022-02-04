@@ -418,8 +418,8 @@ def prob_connect_probe(
         full_stats,
         mean_estimate=True,
         force_no_mean=False,
-        sr=0.01,
-        clt_start=10,
+        sr=None,
+        clt_start=15,
     )
 
     return graph_res, mpf_res
