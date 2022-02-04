@@ -492,6 +492,7 @@ def plot_subset_vis(
 
         # Probability here
         if do_probability:
+            simulation_kwargs["max_depth"] = max_depth
             res = prob_connect_probe(
                 mc, num_sampled, a_indices, b_indices, full_stats, **simulation_kwargs
             )
