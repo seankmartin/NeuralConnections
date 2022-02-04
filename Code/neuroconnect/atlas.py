@@ -493,7 +493,7 @@ def get_bounding_probes(region_names, session_id=None, shift=False):
                 points["ccf_lr"] = points["ccf_lr"] - (points["ccf_lr"] / 10)
                 points["ccf_ap"] = points["ccf_ap"] + (points["ccf_ap"] / 15)
                 points["ccf_dv"] = points["ccf_dv"] + (points["ccf_dv"] / 4)
-            
+
             brain_regions = points["allen_ontology"].values
             cont = True
             for region_name in region_names:
@@ -772,6 +772,68 @@ def visualise_probe_cells(
     return point_locations
 
 
+def place_probes_at_com(
+    region_names, atlas_name=None, hemisphere="left", colors=None, style="cartoon"
+):
+    """Place probes in regions_names at the centre of mass"""
+    np.random.seed(42)
+
+    brainrender.settings.SHADER_STYLE = style
+    brainrender.settings.SHOW_AXES = False
+    brainrender.settings.SCREENSHOT_SCALE = 2
+    screenshots_folder = os.path.join(here, "..", "figures", "brainrender")
+    scene = brainrender.Scene(screenshots_folder=screenshots_folder, inset=False)
+
+    brain_region_meshes = get_brain_region_meshes(
+        region_names, atlas_name, hemisphere=hemisphere
+    )
+
+    if colors is None:
+        cm = ColorManager(num_colors=len(region_names) * 2, method="sns")
+        colors = cm.colors
+    iter_color = iter(colors)
+
+    # com = centre of mass
+    coms = np.zeros((len(region_names), 3))
+
+    for i, mesh in enumerate(brain_region_meshes):
+        bounds = mesh.bounds()
+        print(bounds)
+        arr1 = np.array([bounds[0], bounds[2], bounds[4]])
+        arr2 = np.array([bounds[1], bounds[3], bounds[5]])
+        com = (arr2 + arr1) / 2.0
+        coms[i] = com
+        print(com)
+
+    for name, mesh in zip(region_names, brain_region_meshes):
+        region_color = next(iter_color)
+        brain_mesh = brainrender.actor.Actor(
+            mesh, name=name, br_class="brain region", color=region_color, alpha=0.3
+        )
+        scene.add(brain_mesh)
+        scene.add_silhouette(brain_mesh, lw=2)
+
+    n_pixel_micron_radius = 100
+    for com in coms:
+        region_color = next(iter_color)
+        mesh = vedo.shapes.Cylinder(
+            pos=com, height=2000, r=n_pixel_micron_radius, axis=(0, 1, 0), alpha=0.3
+        )
+        cylinder = brainrender.actor.Actor(
+            mesh,
+            name="Cylinder",
+            br_class="Cylinder",
+            color=region_color,
+            alpha=0.4,
+        )
+        scene.add(cylinder)
+
+    scene.render()
+    scene.close()
+
+    return coms
+
+
 if __name__ == "__main__":
     ### Testing smaller functions
     # show_atlases()
@@ -786,14 +848,17 @@ if __name__ == "__main__":
 
     #### Visualise probes and cells
     # for style in ("cartoon", "metallic", "plastic", "shiny", "glossy"):
-    style = "cartoon"
-    colors = ColorManager(4, method="sns", sns_style="deep").colors
-    visualise_probe_cells(
-        ["VISp", "VISl"],
-        [30000, 10000],
-        atlas_name="allen_mouse_25um",
-        session_id=None,
-        hemisphere="left",
-        colors=colors,
-        style=style,
-    )
+    # style = "cartoon"
+    # colors = ColorManager(4, method="sns", sns_style="deep").colors
+    # visualise_probe_cells(
+    #     ["VISp", "VISl"],
+    #     [30000, 10000],
+    #     atlas_name="allen_mouse_25um",
+    #     session_id=None,
+    #     hemisphere="left",
+    #     colors=colors,
+    #     style=style,
+    # )
+
+    #### Visualise COMs
+    place_probes_at_com(["ILA", "PL"])
