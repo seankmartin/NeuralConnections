@@ -462,7 +462,12 @@ def plot_subset_vis(
         final_res_list = []
         cols = ["Number of connected neurons", "Probability", "Calculation", "Shifted"]
         final_res_list2 = []
-        cols2 = ["Number of connected neurons", "Probability", "Max distance", "Shifted"]
+        cols2 = [
+            "Number of connected neurons",
+            "Probability",
+            "Max distance",
+            "Shifted",
+        ]
 
     max_depth = simulation_kwargs.get("max_depth", 1)
     for shift in (True, False):
@@ -502,8 +507,14 @@ def plot_subset_vis(
             for depth in [1, 2, 3]:
                 simulation_kwargs["max_depth"] = depth
                 res = prob_connect_probe(
-                    mc, num_sampled, a_indices, b_indices, full_stats, **simulation_kwargs
-                    )
+                    mc,
+                    num_sampled,
+                    a_indices,
+                    b_indices,
+                    full_stats,
+                    do_graph=False,
+                    **simulation_kwargs,
+                )
                 for k, v in res[1]["total"].items():
                     final_res_list2.append([k, v, depth, end])
 
