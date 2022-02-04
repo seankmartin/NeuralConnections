@@ -384,29 +384,32 @@ def prob_connect_probe(
     b_indices,
     full_stats,
     reverse_graph=None,
+    do_graph=True,
     **simulation_kwargs,
 ):
     num_iters = simulation_kwargs.get("num_iters", 1000)
     max_depth = simulation_kwargs.get("max_depth", 1)
     num_cpus = simulation_kwargs.get("num_cpus", 1)
 
-    graph = mc.graph
-    if reverse_graph is None:
-        reverse_graph = reverse(mc.graph)
-    to_write = [mc.num_a, mc.num_b]
+    graph_res = None
+    if do_graph:
+        graph = mc.graph
+        if reverse_graph is None:
+            reverse_graph = reverse(mc.graph)
+        to_write = [mc.num_a, mc.num_b]
 
-    # 3. Monte carlo simulation on these points
-    graph_res = graph_connectome(
-        num_sampled,
-        max_depth,
-        num_iters,
-        graph,
-        reverse_graph,
-        to_write,
-        num_cpus,
-        a_indices,
-        b_indices,
-    )
+        # 3. Monte carlo simulation on these points
+        graph_res = graph_connectome(
+            num_sampled,
+            max_depth,
+            num_iters,
+            graph,
+            reverse_graph,
+            to_write,
+            num_cpus,
+            a_indices,
+            b_indices,
+        )
 
     # 4. Mathematical calculation on these points
     mpf_res = mpf_probe_connectome(
@@ -458,7 +461,10 @@ def plot_subset_vis(
     if do_probability:
         final_res_list = []
         cols = ["Number of connected neurons", "Probability", "Calculation", "Shifted"]
+        final_res_list2 = []
+        cols2 = ["Number of connected neurons", "Probability", "Max distance", "Shifted"]
 
+    max_depth = simulation_kwargs.get("max_depth", 1)
     for shift in (True, False):
         end_piece = "_shifted" if shift else ""
         end = "shifted" if shift else "original"
@@ -493,13 +499,26 @@ def plot_subset_vis(
             for k, v in res[1]["total"].items():
                 final_res_list.append([k, v, "Statistical estimation", end])
 
+            for depth in [1, 2, 3]:
+                simulation_kwargs["max_depth"] = depth
+                res = prob_connect_probe(
+                    mc, num_sampled, a_indices, b_indices, full_stats, **simulation_kwargs
+                    )
+                for k, v in res[1]["total"].items():
+                    final_res_list2.append([k, v, depth, end])
+
     if do_probability:
         with open(os.path.join(here, "..", "results", "atlas_plot.txt"), "w") as f:
             pprint(result, width=120, stream=f)
 
     df = list_to_df(final_res_list, headers=cols)
-    max_depth = simulation_kwargs.get("max_depth", 1)
     fname = f"sub_{region_names[0]}_{region_names[1]}_depth_{max_depth}.csv"
+    fname = os.path.join(here, "..", "results", fname)
+    print("Saved dataframe results to {}".format(fname))
+    df_to_file(df, fname, index=False)
+
+    df = list_to_df(final_res_list2, headers=cols2)
+    fname = f"sub_{region_names[0]}_{region_names[1]}_stats_all_ds.csv"
     fname = os.path.join(here, "..", "results", fname)
     print("Saved dataframe results to {}".format(fname))
     df_to_file(df, fname, index=False)
