@@ -522,6 +522,7 @@ def plot_subset_vis(
         with open(os.path.join(here, "..", "results", "atlas_plot.txt"), "w") as f:
             pprint(result, width=120, stream=f)
 
+    simulation_kwargs["max_depth"] = max_depth
     df = list_to_df(final_res_list, headers=cols)
     fname = f"sub_{region_names[0]}_{region_names[1]}_depth_{max_depth}.csv"
     fname = os.path.join(here, "..", "results", fname)

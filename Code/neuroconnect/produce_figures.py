@@ -32,6 +32,7 @@ from .plot import (
     plot_pmf,
     plot_exp_comp,
     plot_pmf_comp,
+    plot_visp_visl_shift
 )
 from .stats_convergence_rate import (
     test_network_convergence,
@@ -402,6 +403,7 @@ def do_sub(do_full_vis: bool = False, do_probability: bool = True):
         do_probability=do_probability,
         **simulation_kwargs,
     )
+    plot_visp_visl_shift()
 
 
 @app.command()
