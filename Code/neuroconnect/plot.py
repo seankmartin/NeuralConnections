@@ -7,7 +7,7 @@ import pandas as pd
 from matplotlib.ticker import MaxNLocator
 
 here = os.path.dirname(os.path.realpath(__file__))
-OUTPUT_DIR = "figures"
+OUTPUT_DIR = "test"
 PALETTE = "dark"
 LABELSIZE = 12
 
@@ -49,6 +49,25 @@ def set_m():
         rc={"lines.linewidth": 1.5},
     )
 
+def plot_visp_visl_shift():
+    df = load_df("sub_VISp_VISl_depth_1.csv")
+    nshifted = df[df["Shifted"] == "original"]
+    shifted = df[df["Shifted"] == "shifted"]
+
+    o_name = "original-visp-visl-stats.pdf"
+    plot_pmf_accuracy(nshifted, o_name)
+
+    o_name = "shifted-visp-visl-stats.pdf"
+    plot_pmf_accuracy(shifted, o_name)
+
+    df = load_df("sub_VISp_VISl_stats_all_ds.csv")
+    nshifted = df[df["Shifted"] == "original"]
+    shifted = df[df["Shifted"] == "shifted"]
+    
+    o_name = "original-visp-visl-sub-all-depths.pdf"
+    plot_pmf_depth(nshifted, o_name)
+    o_name = "shifted-visp-visl-sub-all-depths.pdf"
+    plot_pmf_depth(shifted, o_name)
 
 def save(fig, out_name):
     """Save the figure to figures/out_name."""
@@ -99,6 +118,29 @@ def plot_pmf(df, out_name, full=False):
         ax.set_ylim([0, 1])
 
     ax.vlines(x, y_vals_min, y_vals_max, colors=colors)
+    plt.xlabel("Number of sampled connected neurons", fontsize=LABELSIZE)
+    plt.ylabel("Probability", fontsize=LABELSIZE)
+    despine()
+    save(fig, out_name)
+
+
+def plot_pmf_depth(df, out_name, full=False):
+    """Plot the pmf from the given dataframe."""
+    fig, ax = plt.subplots()
+    set_p()
+    sns.lineplot(
+        x="Number of connected neurons",
+        y="Probability",
+        hue="Max distance",
+        style="Max distance",
+        ci=None,
+        data=df,
+        ax=ax,
+    )
+
+    if full:
+        ax.set_ylim([0, 1])
+
     plt.xlabel("Number of sampled connected neurons", fontsize=LABELSIZE)
     plt.ylabel("Probability", fontsize=LABELSIZE)
     despine()
