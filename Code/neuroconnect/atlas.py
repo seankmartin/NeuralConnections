@@ -773,7 +773,12 @@ def visualise_probe_cells(
 
 
 def place_probes_at_com(
-    region_names, atlas_name=None, hemisphere="left", colors=None, style="cartoon"
+    region_names,
+    atlas_name=None,
+    hemisphere="left",
+    colors=None,
+    style="cartoon",
+    join=False,
 ):
     """Place probes in regions_names at the centre of mass"""
     np.random.seed(42)
@@ -814,19 +819,42 @@ def place_probes_at_com(
         scene.add_silhouette(brain_mesh, lw=2)
 
     n_pixel_micron_radius = 100
-    for com in coms:
-        region_color = next(iter_color)
-        mesh = vedo.shapes.Cylinder(
-            pos=com, height=2000, r=n_pixel_micron_radius, axis=(0, 1, 0), alpha=0.3
-        )
-        cylinder = brainrender.actor.Actor(
-            mesh,
-            name="Cylinder",
-            br_class="Cylinder",
-            color=region_color,
-            alpha=0.4,
-        )
-        scene.add(cylinder)
+
+    if join:
+        for i in range(len(coms) // 2):
+            c1 = coms[i]
+            c2 = coms[i + 1]
+
+            c1 = c1 - (c2 - c1)
+            c2 = c2 + (c2 - c1)
+            # c2 = c2 - abs((c1 - c2)) * 2
+            region_color = next(iter_color)
+            mesh = vedo.shapes.Cylinder(
+                pos=[c1, c2], r=n_pixel_micron_radius, axis=(0, 1, 0), alpha=0.3
+            )
+            cylinder = brainrender.actor.Actor(
+                mesh,
+                name="Cylinder",
+                br_class="Cylinder",
+                color=region_color,
+                alpha=0.4,
+            )
+            scene.add(cylinder)
+
+    else:
+        for com in coms:
+            region_color = next(iter_color)
+            mesh = vedo.shapes.Cylinder(
+                pos=com, height=4500, r=n_pixel_micron_radius, axis=(0, 1, 0), alpha=0.3
+            )
+            cylinder = brainrender.actor.Actor(
+                mesh,
+                name="Cylinder",
+                br_class="Cylinder",
+                color=region_color,
+                alpha=0.4,
+            )
+            scene.add(cylinder)
 
     scene.render()
     scene.close()
@@ -861,4 +889,5 @@ if __name__ == "__main__":
     # )
 
     #### Visualise COMs
-    place_probes_at_com(["ILA", "PL"])
+    # place_probes_at_com(["ILA", "PL"])
+    place_probes_at_com(["MOp", "SSp-ll"], join=True)
