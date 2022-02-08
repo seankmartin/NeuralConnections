@@ -29,10 +29,13 @@ here = os.path.dirname(os.path.realpath(__file__))
 pickle_loc = os.path.abspath(os.path.join(here, "..", "resources", "graph.pickle"))
 
 
-def convert_mouse_data(A_name, B_name):
+def convert_mouse_data(A_name, B_name, hemisphere="right"):
     """Convert general blue brain data into smaller data."""
     here = os.path.dirname(os.path.realpath(__file__))
-    resource_dir = os.path.join(here, "..", "resources")
+    if hemisphere == "right":
+        resource_dir = os.path.join(here, "..", "resources", "right_hemisphere")
+    elif hemisphere == "left":
+        resource_dir = os.path.join(here, "..", "resources", "left_hemisphere")
 
     def load_name(name):
         return os.path.join(resource_dir, name)
@@ -43,7 +46,7 @@ def convert_mouse_data(A_name, B_name):
     if os.path.isfile(
         os.path.join(resource_dir, "{}_to_{}.npz".format(A_name, B_name))
     ):
-        print("Already converted this mouse data")
+        print(f"Already converted this mouse data for {hemisphere} hemisphere")
         return
     print("Pulling out data from the mouse connectome")
 
@@ -76,7 +79,7 @@ def convert_mouse_data(A_name, B_name):
     return
 
 
-def load_matrix_data(to_use, A_name, B_name):
+def load_matrix_data(to_use, A_name, B_name, hemisphere="right"):
     """
     Load matrix data into a connectivity object.
 
@@ -87,7 +90,10 @@ def load_matrix_data(to_use, A_name, B_name):
 
     """
     here = os.path.dirname(os.path.realpath(__file__))
-    resource_dir = os.path.join(here, "..", "resources")
+    if hemisphere == "right":
+        resource_dir = os.path.join(here, "..", "resources", "right_hemisphere")
+    elif hemisphere == "left":
+        resource_dir = os.path.join(here, "..", "resources", "left_hemisphere")
 
     mc = MatrixConnectivity(
         ab=os.path.join(resource_dir, "{}_to_{}.npz".format(A_name, B_name)),
