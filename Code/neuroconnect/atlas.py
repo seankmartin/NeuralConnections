@@ -779,10 +779,10 @@ def place_probes_at_com(
     colors=None,
     style="cartoon",
     join=False,
+    interactive=True,
+    screenshot_name=None,
 ):
     """Place probes in regions_names at the centre of mass"""
-    np.random.seed(42)
-
     brainrender.settings.SHADER_STYLE = style
     brainrender.settings.SHOW_AXES = False
     brainrender.settings.SCREENSHOT_SCALE = 2
@@ -803,12 +803,10 @@ def place_probes_at_com(
 
     for i, mesh in enumerate(brain_region_meshes):
         bounds = mesh.bounds()
-        print(bounds)
         arr1 = np.array([bounds[0], bounds[2], bounds[4]])
         arr2 = np.array([bounds[1], bounds[3], bounds[5]])
         com = (arr2 + arr1) / 2.0
         coms[i] = com
-        print(com)
 
     for name, mesh in zip(region_names, brain_region_meshes):
         region_color = next(iter_color)
@@ -821,16 +819,26 @@ def place_probes_at_com(
     n_pixel_micron_radius = 100
 
     if join:
+        atlas = brainrender.Atlas(atlas_name)
+        root_mesh = vedo.load(str(atlas.meshfile_from_structure("root")))
+        top_of_brain = root_mesh.bounds()[2]
         for i in range(len(coms) // 2):
             c1 = coms[i]
             c2 = coms[i + 1]
 
-            c1 = c1 - (c2 - c1)
-            c2 = c2 + (c2 - c1)
-            # c2 = c2 - abs((c1 - c2)) * 2
+            top = c2
+            bottom = c1
+            if top[1] < bottom[1]:
+                top = c1
+                bottom = c2
+        
+            vec_in_dir = (top - bottom)
+            scale_top = (top_of_brain - top[1]) / vec_in_dir[1]
+            top = top + (1.5 * scale_top * vec_in_dir)
+            bottom = top - (4.0 * scale_top * vec_in_dir)
             region_color = next(iter_color)
             mesh = vedo.shapes.Cylinder(
-                pos=[c1, c2], r=n_pixel_micron_radius, axis=(0, 1, 0), alpha=0.3
+                pos=[c1, c2], r=n_pixel_micron_radius, alpha=0.3
             )
             cylinder = brainrender.actor.Actor(
                 mesh,
@@ -856,10 +864,27 @@ def place_probes_at_com(
             )
             scene.add(cylinder)
 
-    scene.render()
+    th = scene.add_brain_region(
+        "TH", alpha=0.3, silhouette=False, color=myterial.blue_grey_dark
+    )
+    th.wireframe()
+
+    camera = {
+        "pos": (-40394, -5346, -54832),
+        "viewup": (0, -1, 0),
+        "clippingRange": (53156, 88185),
+        "focalPoint": (6446, 4615, -5524),
+        "distance": 68734,
+    }
+
+    scene.render(zoom=3.5, camera=camera, interactive=interactive)
+
+    if not interactive:
+        scene.screenshot(name=screenshot_name, scale=2)
+
     scene.close()
 
-    return coms
+    return cylinder
 
 
 if __name__ == "__main__":
