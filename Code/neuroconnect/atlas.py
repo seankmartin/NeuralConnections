@@ -822,6 +822,7 @@ def place_probes_at_com(
         atlas = brainrender.Atlas(atlas_name)
         root_mesh = vedo.load(str(atlas.meshfile_from_structure("root")))
         top_of_brain = root_mesh.bounds()[2]
+        bottom_of_brain = root_mesh.bounds()[3]
         for i in range(len(coms) // 2):
             c1 = coms[i]
             c2 = coms[i + 1]
@@ -834,11 +835,12 @@ def place_probes_at_com(
         
             vec_in_dir = (top - bottom)
             scale_top = (top_of_brain - top[1]) / vec_in_dir[1]
-            top = top + (1.5 * scale_top * vec_in_dir)
-            bottom = top - (4.0 * scale_top * vec_in_dir)
+            top = top + (1.08 * scale_top * vec_in_dir)
+            scale_bottom = (bottom[1] - bottom_of_brain) / vec_in_dir[1]
+            bottom = bottom - (0.3 * scale_bottom * vec_in_dir)
             region_color = next(iter_color)
             mesh = vedo.shapes.Cylinder(
-                pos=[c1, c2], r=n_pixel_micron_radius, alpha=0.3
+                pos=[top, bottom], r=n_pixel_micron_radius, alpha=0.3
             )
             cylinder = brainrender.actor.Actor(
                 mesh,
