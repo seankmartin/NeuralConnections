@@ -18,6 +18,7 @@ from .compound import (
     mouse_region_exp,
     out_exp,
     explain_calc,
+    mouse_region_exp_probes,
 )
 from .matrix import main as mouse_main
 from .main import main as ctrl_main
@@ -32,7 +33,7 @@ from .plot import (
     plot_pmf,
     plot_exp_comp,
     plot_pmf_comp,
-    plot_visp_visl_shift
+    plot_visp_visl_shift,
 )
 from .stats_convergence_rate import (
     test_network_convergence,
@@ -392,6 +393,7 @@ def do_sub(do_full_vis: bool = False, do_probability: bool = True):
     num_sampled = [79, 79]
     # region_sizes = [39000, 5500]
     # num_sampled = [3, 4]
+    block_size = 10
     simulation_kwargs = dict(max_depth=1, num_cpus=1, num_iters=10000)
     plot_subset_vis(
         names,
@@ -401,9 +403,61 @@ def do_sub(do_full_vis: bool = False, do_probability: bool = True):
         colors=colors,
         do_full_vis=do_full_vis,
         do_probability=do_probability,
+        block_size_sub=block_size,
+        hemisphere="left",
         **simulation_kwargs,
     )
     plot_visp_visl_shift()
+
+
+@app.command()
+def do_mouse_regions(vis_only: bool = True):
+    """Mouse expected with probes through COM and 79 cells"""
+    regions = [
+        ("MOp", "SSp-ll"),
+        ("SSp-ll", "MOp"),
+        ("VISp", "VISl"),
+        ("VISl", "VISp"),
+        ("AUDp", "AUDpo"),
+        ("AUDpo", "AUDp"),
+        ("ILA", "PL"),
+        ("PL", "ILA"),
+    ]
+    colors = [myterial.blue_dark, myterial.pink_darker, myterial.deep_purple_darker]
+
+    num_samples = [79, 79]
+    interactive = True
+    block_size_sub = 10
+    simulation_kwargs = dict(max_depth=1, num_iters=2500, num_cpus=1)
+    mouse_region_exp_probes(
+        regions,
+        num_samples,
+        colors=colors,
+        interactive=interactive,
+        block_size_sub=block_size_sub,
+        vis_only=vis_only,
+        **simulation_kwargs,
+    )
+    plot_region_vals(
+        load_df("mouse_region_exp_probes.csv"),
+        "mouse_region_exp.pdf",
+        x_name="Regions",
+    )
+
+
+@app.command()
+def figure1():
+    do_explain()
+
+
+@app.command()
+def figure2():
+    do_sub(do_full_vis=True)
+
+
+@app.command()
+def figure3():
+    do_mouse_regions(vis_only=False)
 
 
 @app.command()
