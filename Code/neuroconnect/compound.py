@@ -8,15 +8,25 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 import pandas as pd
+from skm_pyutils.py_config import print_cfg
+from skm_pyutils.py_table import list_to_df, df_to_file, df_from_file
+from dictances.bhattacharyya import bhattacharyya
 
 from .experiment import do_full_experiment
 from .connectivity_patterns import get_by_name
 from .matrix import main as mouse_main
+from .matrix import convert_mouse_data, load_matrix_data, matrix_vis
 from .mpf_connection import CombProb
 from .connect_math import create_uniform
 from .stored_results import store_mouse_result
-from skm_pyutils.py_config import print_cfg
-from dictances.bhattacharyya import bhattacharyya
+from .atlas import (
+    place_probes_at_com,
+    get_n_random_points_in_region,
+    get_brain_region_meshes,
+    get_idx_of_points_in_meshes,
+)
+from .atlas_graph import prob_connect_probe
+
 
 here = os.path.dirname(os.path.realpath(__file__))
 
@@ -611,6 +621,122 @@ def mouse_region_exp(
     return df
 
 
+def mouse_region_exp_probes(
+    regions,
+    num_sampled,
+    colors=None,
+    style="cartoon",
+    interactive=False,
+    hemisphere="right",
+    vis_only=False,
+    block_size_sub=10,
+    **simulation_kwargs,
+):
+    """The expected value from different mouse brain regions with probes."""
+    np.random.seed(42)
+
+    cols = ["Number of connected neurons", "Probability", "Calculation", "Regions"]
+    for r in regions:
+        final_res_list = []
+
+        if vis_only:
+            name = f"{r[0]}_to_{r[1]}_render"
+            cylinder = place_probes_at_com(
+                r,
+                hemisphere="right",
+                colors=colors,
+                style=style,
+                join=True,
+                interactive=interactive,
+                screenshot_name=name,
+            )
+            continue
+
+        # Load mouse data
+        A_name, B_name = r
+        convert_mouse_data(A_name, B_name)
+        to_use = [True, True, True, True]
+        mc, full_stats = load_matrix_data(to_use, A_name, B_name, hemisphere=hemisphere)
+        print("{} - {}, {} - {}".format(A_name, B_name, mc.num_a, mc.num_b))
+        region_sizes = [mc.num_a, mc.num_b]
+        mc.create_connections()
+
+        # Find intersections of probes and cells
+        brain_region_meshes = get_brain_region_meshes(r, None, hemisphere=hemisphere)
+
+        region_pts = []
+        for region_mesh, region_size in zip(brain_region_meshes, region_sizes):
+            pts = get_n_random_points_in_region(region_mesh, region_size, sort_=True)
+            pts_idxs = np.sort(
+                get_idx_of_points_in_meshes(
+                    pts,
+                    [
+                        cylinder,
+                    ],
+                )
+            )
+            pts = pts[pts_idxs]
+            region_pts.append((pts, pts_idxs))
+
+        a_indices = region_pts[0][1]
+        b_indices = region_pts[1][1]
+        mc_sub = mc.subsample(a_indices, b_indices)
+        o_name = f"{r[0]}_to_{r[1]}_connection_matrix_subbed.pdf"
+        matrix_vis(mc_sub.ab, mc_sub.ba, mc_sub.aa, mc_sub.bb, block_size_sub, o_name)
+
+        # Probability calculation
+        res = prob_connect_probe(
+            mc, num_sampled, a_indices, b_indices, full_stats, **simulation_kwargs
+        )
+
+        r_str = f"{r[0]}_{r[1]}"
+        for k, v in res[0]["dist"].items():
+            final_res_list.append([k, v, "Monte Carlo simulation"], r_str)
+
+        for k, v in res[1]["total"].items():
+            final_res_list.append([k, v, "Statistical estimation"], r_str)
+
+        max_depth = simulation_kwargs["max_depth"]
+        df = list_to_df(final_res_list, headers=cols)
+        fname = f"sub_regions_{r[0]}_{r[1]}_depth_{max_depth}.csv"
+        fname = os.path.join(here, "..", "results", fname)
+        print("Saved dataframe results to {}".format(fname))
+        df_to_file(df, fname, index=False)
+
+    # Combine and save expected
+    if vis_only:
+        return
+
+    l = []
+    ["Number of connected neurons", "Probability", "Calculation", "Regions"]
+    for r in regions:
+        max_depth = simulation_kwargs["max_depth"]
+        fname = f"sub_regions_{r[0]}_{r[1]}_depth_{max_depth}.csv"
+        fname = os.path.join(here, "..", "results", fname)
+        df = df_from_file(final_res_list, headers=cols)
+
+        for calculation in ["Stats", "MC"]:
+            df_stats = df[df[cols[2]]== calculation]
+            expected = (df_stats[cols[0]] * df_stats[cols[1]]).sum()
+            expected_proportion = expected / num_sampled[1]
+            regions = df[cols[-1]][0]
+            l.append([expected, expected_proportion, regions, calculation])
+
+    cols = [
+        "Expected connected",
+        "Expected proportion connected",
+        "Regions",
+        "Calculation",
+    ]
+    new_df = list_to_df(l, headers=cols)
+    new_df.to_csv(
+        os.path.join(here, "..", "results", "mouse_region_exp_probes.csv"),
+        index=False,
+    )
+
+    return new_df
+
+
 def out_exp(config, out_name, depth, num_iters=1000):
     """The expected number of receiving neurons in region 2."""
     np.random.seed(42)
@@ -765,7 +891,7 @@ def explain_calc(config, out_name="explain", sr=0.01):
         subsample_rate=sr,
         N=region_sizes[1],
         verbose=False,
-        **delta_params
+        **delta_params,
     )
 
     data = cp.calculate_distribution_n_senders()
