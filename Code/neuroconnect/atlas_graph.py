@@ -437,6 +437,8 @@ def plot_subset_vis(
     style="cartoon",
     do_full_vis=True,
     do_probability=True,
+    block_size_sub=40,
+    hemisphere="left",
     **simulation_kwargs,
 ):
     """Visualise recording device subsets."""
@@ -446,7 +448,7 @@ def plot_subset_vis(
     A_name, B_name = region_names
     convert_mouse_data(A_name, B_name)
     to_use = [True, True, True, True]
-    mc, full_stats = load_matrix_data(to_use, A_name, B_name)
+    mc, full_stats = load_matrix_data(to_use, A_name, B_name, hemisphere=hemisphere)
     print("{} - {}, {} - {}".format(A_name, B_name, mc.num_a, mc.num_b))
     if do_full_vis:
         matrix_vis(mc.ab, mc.ba, mc.aa, mc.bb, 150, out_names[0])
@@ -454,7 +456,7 @@ def plot_subset_vis(
     if number_of_cells_in_regions[0] < mc.num_a:
         print(f"Subsampled regions to {number_of_cells_in_regions}")
         mc = mc.subsample(*number_of_cells_in_regions)
-        matrix_vis(mc.ab, mc.ba, mc.aa, mc.bb, 30, out_names[1])
+        matrix_vis(mc.ab, mc.ba, mc.aa, mc.bb, 40, out_names[1])
     if do_probability:
         mc.create_connections()
 
@@ -488,7 +490,7 @@ def plot_subset_vis(
         mc_sub = mc.subsample(a_indices, b_indices)
         parts = os.path.splitext(out_names[2])
         o_name = parts[0] + end_piece + parts[1]
-        matrix_vis(mc_sub.ab, mc_sub.ba, mc_sub.aa, mc_sub.bb, 10, o_name)
+        matrix_vis(mc_sub.ab, mc_sub.ba, mc_sub.aa, mc_sub.bb, block_size_sub, o_name)
 
         # Probability here
         if do_probability:
@@ -523,18 +525,18 @@ def plot_subset_vis(
         with open(os.path.join(here, "..", "results", "atlas_plot.txt"), "w") as f:
             pprint(result, width=120, stream=f)
 
-    simulation_kwargs["max_depth"] = max_depth
-    df = list_to_df(final_res_list, headers=cols)
-    fname = f"sub_{region_names[0]}_{region_names[1]}_depth_{max_depth}.csv"
-    fname = os.path.join(here, "..", "results", fname)
-    print("Saved dataframe results to {}".format(fname))
-    df_to_file(df, fname, index=False)
+        simulation_kwargs["max_depth"] = max_depth
+        df = list_to_df(final_res_list, headers=cols)
+        fname = f"sub_{region_names[0]}_{region_names[1]}_depth_{max_depth}.csv"
+        fname = os.path.join(here, "..", "results", fname)
+        print("Saved dataframe results to {}".format(fname))
+        df_to_file(df, fname, index=False)
 
-    df = list_to_df(final_res_list2, headers=cols2)
-    fname = f"sub_{region_names[0]}_{region_names[1]}_stats_all_ds.csv"
-    fname = os.path.join(here, "..", "results", fname)
-    print("Saved dataframe results to {}".format(fname))
-    df_to_file(df, fname, index=False)
+        df = list_to_df(final_res_list2, headers=cols2)
+        fname = f"sub_{region_names[0]}_{region_names[1]}_stats_all_ds.csv"
+        fname = os.path.join(here, "..", "results", fname)
+        print("Saved dataframe results to {}".format(fname))
+        df_to_file(df, fname, index=False)
 
     return result
 
