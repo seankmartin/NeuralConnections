@@ -426,9 +426,9 @@ def do_mouse_regions(vis_only: bool = True):
     colors = [myterial.blue_dark, myterial.pink_darker, myterial.deep_purple_darker]
 
     num_samples = [79, 79]
-    interactive = True
+    interactive = False
     block_size_sub = 10
-    simulation_kwargs = dict(max_depth=1, num_iters=2500, num_cpus=1)
+    simulation_kwargs = dict(max_depth=1, num_iters=250, num_cpus=1)
     mouse_region_exp_probes(
         regions,
         num_samples,
@@ -444,6 +444,11 @@ def do_mouse_regions(vis_only: bool = True):
         x_name="Regions",
     )
 
+@app.command()
+def do_hippocampus():
+    store_tetrode_results()
+    exit(-1)
+
 
 @app.command()
 def figure1():
@@ -458,6 +463,11 @@ def figure2():
 @app.command()
 def figure3():
     do_mouse_regions(vis_only=False)
+
+
+@app.command()
+def figure4():
+    do_hippocampus()
 
 
 @app.command()
