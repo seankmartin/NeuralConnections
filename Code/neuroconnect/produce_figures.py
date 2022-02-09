@@ -43,6 +43,7 @@ from .stats_convergence_rate import (
 from .stored_results import (
     store_region_results,
     store_tetrode_results,
+    store_tetrode_results_full,
     store_npix_results,
     store_sub_results,
 )
@@ -446,7 +447,7 @@ def do_mouse_regions(vis_only: bool = True):
 
 @app.command()
 def do_hippocampus():
-    store_tetrode_results()
+    store_tetrode_results_full()
     exit(-1)
 
 

@@ -227,11 +227,9 @@ class RecurrentConnectivity(ConnectionStrategy):
             graph, connected = self.gen_full_graph(choices, region_verts, box)
         else:
             if self.recursive:
-                graph, connected = self.gen_graph_recursive(
-                    choices, region_verts, box, **kwargs
-                )
+                graph, connected = self.gen_graph_recursive(choices, **kwargs)
             else:
-                graph, connected = self.gen_graph(choices, region_verts, **kwargs)
+                graph, connected = self.gen_graph(choices, **kwargs)
 
         return graph, connected
 
@@ -372,76 +370,88 @@ class RecurrentConnectivity(ConnectionStrategy):
 
         return graph, connected
 
-    def gen_graph(self, choices, region_verts, **kwargs):
+    def gen_graph(self, choices, **kwargs):
+        def d_minmax(dist):
+            vals = list(dist.items())
+            return vals[0][0], vals[-1][0]
+
         graph = []
 
+        region_verts = kwargs.get("region_verts")
         idx_inA = kwargs.get("idx_in_deviceA")
         idx_outA = list(set(region_verts) - set(idx_inA))
         idx_inB = kwargs.get("idx_in_deviceB")
         idx_outB = list(set(choices) - set(idx_inB))
-        ratio_senders_device = kwargs.get("ratio_senders_Adevice_to_Bdevice")
-        ratio_A_to_Bprobe = kwargs.get("ratio_senders_Afull_to_Bdevice")
-        ratio_senders_B = kwargs.get("device_ratio_senders_toB")
-        forward_dist_device = kwargs.get("device_forward_dist")
-        num_senders_device = ratio_senders_device * len(region_verts)
-        forwardA_to_Bprobe = kwargs.get("Afull_to_Bdevice_dist")
-        forwardAprobe_to_B = kwargs.get("Adevice_to_Bfull_dist")
-        start_probe_to_outside = kwargs.get("Adevice_to_Afull_dist")
+        num_senders_device = kwargs.get("num_senders_probe")
+        num_senders_A = kwargs.get("num_senders_A")
+        num_senders_B = kwargs.get("num_senders_B")
+        forward_dist_device = kwargs.get("out_connections_dist_probe")
+        forwardA_to_Bprobe = kwargs.get("out_connections_dist_B")
+        forwardAprobe_to_B = kwargs.get("out_connections_dist_A")
+        start_probe_to_outside = kwargs.get("start_probe_to_outside")
+
+        forward_dist_device_min, forward_dist_device_max = d_minmax(forward_dist_device)
+        forwardA_to_Bprobe_min, forwardA_to_Bprobe_max = d_minmax(forwardA_to_Bprobe)
+        forwardAprobe_to_B_min, forwardAprobe_to_B_max = d_minmax(forwardAprobe_to_B)
+        start_probe_to_outside_min, start_probe_to_outside_max = d_minmax(
+            start_probe_to_outside
+        )
 
         # A device to B device
         connected_device = np.random.choice(
             idx_inA, size=num_senders_device, replace=False
         )
         forward_connections_device = np.random.choice(
-            idx_inB, size=(num_senders_device, forward_dist_device[1]), replace=True
+            idx_inB, size=(num_senders_device, forward_dist_device_max), replace=True
         )
         num_choices_device = np.random.randint(
-            forward_dist_device[0],
-            forward_dist_device[1] + 1,
+            forward_dist_device_min,
+            forward_dist_device_max + 1,
             dtype=np.int32,
             size=num_senders_device,
         )
 
         # A device to B
-        num_senders_A = ratio_A_to_Bprobe * len(idx_inA)
         connected_Adevice = np.random.choice(idx_inA, size=num_senders_A, replace=False)
         forward_connections_Adevice_B = np.random.choice(
-            idx_outB, size=(num_senders_A, forwardAprobe_to_B[1]), replace=True
+            idx_outB, size=(num_senders_A, forwardAprobe_to_B_max), replace=True
         )
         num_choices_Adevice_B = np.random.randint(
-            forwardAprobe_to_B[0],
-            forwardAprobe_to_B[1] + 1,
+            forwardAprobe_to_B_min,
+            forwardAprobe_to_B_min + 1,
             dtype=np.int32,
             size=num_senders_A,
         )
 
         # A to B device
-        num_senders_B = ratio_senders_B * len(idx_outA)
-        connected_Bdevice = np.random.choice(
-            idx_outA, size=num_senders_B, replace=False
-        )
-        forward_connections_A_Bdevice = np.random.choice(
-            idx_inB, size=(num_senders_B, forwardA_to_Bprobe[1]), replace=True
-        )
-        num_choices_A_Bdevice = np.random.randint(
-            forwardA_to_Bprobe[0],
-            forwardA_to_Bprobe[1] + 1,
-            dtype=np.int32,
-            size=num_senders_B,
-        )
+        if len(idx_outA) == 0:
+            connected_Bdevice = []
+        else:
+            connected_Bdevice = np.random.choice(
+                idx_outA, size=num_senders_B, replace=False
+            )
+            forward_connections_A_Bdevice = np.random.choice(
+                idx_inB, size=(num_senders_B, forwardA_to_Bprobe_max), replace=True
+            )
+            num_choices_A_Bdevice = np.random.randint(
+                forwardA_to_Bprobe_min,
+                forwardA_to_Bprobe_max + 1,
+                dtype=np.int32,
+                size=num_senders_B,
+            )
 
         # A interconnections
         self_connects_Adevice = np.random.choice(
             region_verts,
             size=(
                 len(idx_inA),
-                int(round(start_probe_to_outside[1] * len(region_verts))),
+                int(round(start_probe_to_outside_max * len(region_verts))),
             ),
             replace=True,
         )
         num_choices_inter_device = np.random.randint(
-            int(round(start_probe_to_outside[0] * len(region_verts))),
-            int(round(start_probe_to_outside[1] * len(region_verts))) + 1,
+            int(round(start_probe_to_outside_min * len(region_verts))),
+            int(round(start_probe_to_outside_max * len(region_verts))) + 1,
             dtype=np.int32,
             size=len(idx_inA),
         )
@@ -517,12 +527,17 @@ class RecurrentConnectivity(ConnectionStrategy):
             else:
                 graph.append(self_connections.astype(np.int32))
 
-        return graph, list(
-            set(connected_device) + set(connected_Adevice) + set(connected_Bdevice)
+        return (
+            graph,
+            list(
+                set(connected_device) | set(connected_Adevice) | set(connected_Bdevice)
+            ),
         )
 
-    def gen_graph_recursive(self, choices, region_verts, box, **kwargs):
-        self.gen_full_graph(choices, region_verts, box)
+    def gen_graph_recursive(self, choices, **kwargs):
+        region_verts = kwargs.get("region_verts")
+        box = kwargs.get("box", False)  # for performance reasons
+        return self.gen_full_graph(choices, region_verts, box)
 
     @staticmethod
     def static_expected_connections(**kwargs):

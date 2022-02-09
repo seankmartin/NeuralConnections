@@ -562,6 +562,7 @@ def parse_args(
             "init_delta": True,
             "clt_start": clt_start,
             "use_mean": use_mean,
+            "use_full_region": use_full_region,
         }
 
     if not use_full_region:
