@@ -74,7 +74,7 @@ def store_tetrode_results():
     args = SimpleNamespace(
         max_depth=1,
         num_cpus=1,
-        cfg="tetrode_ca3_ca11",
+        cfg="tetrode_ca3_ca1",
         clt_start=30,
         subsample_rate=0,
         approx_hypergeo=False,
@@ -87,6 +87,28 @@ def store_tetrode_results():
     )
     df.to_csv(
         os.path.join(here, "..", "results", "tetrode_man.csv"),
+        index=False,
+    )
+
+
+def store_tetrode_results_full():
+    np.random.seed(42)
+    args = SimpleNamespace(
+        max_depth=1,
+        num_cpus=1,
+        cfg="tetrode_ca3_ca1_full",
+        clt_start=30,
+        subsample_rate=0,
+        approx_hypergeo=False,
+    )
+    result = ctrl_main(parse_cfg("tetrode_ca3_ca1_full.cfg"), args)
+
+    df = df_from_dict(
+        result["mpf"]["total"],
+        cols=["Number of sampled connected neurons", "Probability"],
+    )
+    df.to_csv(
+        os.path.join(here, "..", "results", "tetrode_full.csv"),
         index=False,
     )
 
