@@ -380,7 +380,7 @@ class RecurrentConnectivity(ConnectionStrategy):
         region_verts = kwargs.get("region_verts")
         idx_inA = kwargs.get("idx_in_deviceA")
         idx_outA = list(set(region_verts) - set(idx_inA))
-        idx_inB = kwargs.get("idx_in_deviceB")
+        idx_inB = kwargs.get("idx_in_deviceB") + len(region_verts)
         idx_outB = list(set(choices) - set(idx_inB))
         num_senders_device = kwargs.get("num_senders_probe")
         num_senders_A = kwargs.get("num_senders_A")
@@ -412,16 +412,21 @@ class RecurrentConnectivity(ConnectionStrategy):
         )
 
         # A device to B
-        connected_Adevice = np.random.choice(idx_inA, size=num_senders_A, replace=False)
-        forward_connections_Adevice_B = np.random.choice(
-            idx_outB, size=(num_senders_A, forwardAprobe_to_B_max), replace=True
-        )
-        num_choices_Adevice_B = np.random.randint(
-            forwardAprobe_to_B_min,
-            forwardAprobe_to_B_min + 1,
-            dtype=np.int32,
-            size=num_senders_A,
-        )
+        if len(idx_outB) == 0:
+            connected_Adevice = []
+        else:
+            connected_Adevice = np.random.choice(
+                idx_inA, size=num_senders_A, replace=False
+            )
+            forward_connections_Adevice_B = np.random.choice(
+                idx_outB, size=(num_senders_A, forwardAprobe_to_B_max), replace=True
+            )
+            num_choices_Adevice_B = np.random.randint(
+                forwardAprobe_to_B_min,
+                forwardAprobe_to_B_min + 1,
+                dtype=np.int32,
+                size=num_senders_A,
+            )
 
         # A to B device
         if len(idx_outA) == 0:
