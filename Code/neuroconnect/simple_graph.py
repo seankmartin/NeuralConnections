@@ -112,7 +112,7 @@ def find_path(graph, start, end, path=None):
     return None
 
 
-def create_graph(region_sizes, connection_strategy, connectivity_params):
+def create_graph(region_sizes, connection_strategy, connectivity_params, **kwargs):
     """Create a graph using a connectivity pattern from connectivity_patterns."""
     graph = []
     region_verts = []
@@ -127,7 +127,7 @@ def create_graph(region_sizes, connection_strategy, connectivity_params):
         if i == len(region_sizes) - 1:
             connect_inst = connection_strategy(**connectivity_params[i], recursive=True)
             connections, _ = connect_inst.create_connections(
-                region_verts[0], region_verts=region_verts[i]
+                region_verts[0], region_verts=region_verts[i], **kwargs
             )
 
         # Regular connections
@@ -136,7 +136,7 @@ def create_graph(region_sizes, connection_strategy, connectivity_params):
                 **connectivity_params[i], recursive=False
             )
             connections, connected = connect_inst.create_connections(
-                region_verts[i + 1], region_verts=region_verts[i]
+                region_verts[i + 1], region_verts=region_verts[i], **kwargs
             )
         graph = graph + connections
 

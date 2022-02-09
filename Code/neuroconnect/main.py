@@ -3,6 +3,7 @@
 import json
 import os
 from pprint import pprint
+from configparser import NoSectionError
 
 import numpy as np
 import seaborn as sns
@@ -55,6 +56,12 @@ def main(config, args, already_parsed=False):
         )
         do_mat_vis = config.getboolean("Setup", "do_mat_vis", fallback=False)
         save_dir = os.path.join(here, "..", "results")
+        use_full_region = config.getboolean("Setup", "use_full_region", fallback=True)
+        try:
+            region_sub_params = json.loads(config.get("Stats", "region_sub_params"))
+        except NoSectionError:
+            region_sub_params = {}
+
     else:
         region_sizes = config["default"]["region_sizes"]
         num_samples = config["default"]["num_samples"]
@@ -84,6 +91,8 @@ def main(config, args, already_parsed=False):
         gen_graph_each_iter = config["Setup"]["gen_graph_each_iter"]
         do_mat_vis = False
         save_dir = config["Setup"]["save_dir"]
+        use_full_region = config["Setup"]["use_full_region"]
+        region_sub_params = config["Stats"]["region_sub_params"]
 
     result = do_full_experiment(
         region_sizes,
@@ -104,6 +113,8 @@ def main(config, args, already_parsed=False):
         clt_start=args.clt_start,
         subsample_rate=args.subsample_rate,
         approx_hypergeo=args.approx_hypergeo,
+        use_full_region=use_full_region,
+        **region_sub_params
     )
     if ("graph" in result.keys()) and ("mpf" in result.keys()):
         result["difference"] = dist_difference(

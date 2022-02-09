@@ -1,12 +1,11 @@
 """Defining a full experiment of simulating recording neurons."""
 
 import os
-from time import time
+from time import perf_counter
 from datetime import datetime
 
 import numpy as np
 import matplotlib.pyplot as plt
-from mpmath import mpf
 import tqdm
 
 from .mpf_connection import CombProb
@@ -58,6 +57,8 @@ def do_full_experiment(
     subsample_rate=0.01,
     approx_hypergeo=False,
     use_mean=True,
+    use_full_region=True,
+    **region_sub_params,
 ):
     """
     Run mpf, simple graphs, and networkx graphs.
@@ -67,7 +68,21 @@ def do_full_experiment(
     """
 
     results = {}
-    overall_start_time = time()
+    overall_start_time = perf_counter()
+
+    delta_params, source_vert_list, target_vert_list = parse_args(
+        connection_strategy,
+        connectivity_params,
+        region_sizes,
+        num_sampled,
+        (do_fixed != -1),
+        max_depth,
+        clt_start,
+        use_mean,
+        use_full_region,
+        **region_sub_params,
+    )
+
     if do_mpf:
         result = mpf_control(
             region_sizes,
@@ -76,7 +91,7 @@ def do_full_experiment(
             num_sampled,
             do_only_none,
             max_depth,
-            clt_start,
+            delta_params,
             verbose=(do_fixed != -1),
             subsample_rate=subsample_rate,
             approx_hypergeo=approx_hypergeo,
@@ -98,12 +113,14 @@ def do_full_experiment(
                     do_vis_graph,
                     do_nx_vis,
                     num_cpus=num_cpus,
-                    max_depth=max_depth,
                     fixed_samples=i,
                     gen_graph_each_iter=gen_graph_each_iter,
                     do_mat_vis=False,
                     save_every=1,
                     quiet=True,
+                    source_vert_list=source_vert_list,
+                    target_vert_list=target_vert_list,
+                    **delta_params,
                 )
                 results["g_{}".format(i)] = result
         else:
@@ -116,16 +133,20 @@ def do_full_experiment(
                 do_vis_graph,
                 do_nx_vis,
                 num_cpus=num_cpus,
-                max_depth=max_depth,
                 fixed_samples=-1,
                 do_mat_vis=do_mat_vis,
                 gen_graph_each_iter=gen_graph_each_iter,
                 save_every=save_every,
                 quiet=quiet,
+                source_vert_list=source_vert_list,
+                target_vert_list=target_vert_list,
+                **delta_params,
             )
             results["graph"] = result
 
     if do_nx:
+        if not use_full_region:
+            raise ValueError("NX graph does not support not full region.")
         do_nx_vis = (not do_graph) and do_vis_graph
         result = nx_control(
             region_sizes,
@@ -140,6 +161,8 @@ def do_full_experiment(
         )
         results["nx"] = result
     elif do_vis_graph:
+        if not use_full_region:
+            raise ValueError("NX graph does not support not full region.")
         nx_control(
             region_sizes,
             connection_strategy,
@@ -151,6 +174,8 @@ def do_full_experiment(
         )
 
     if (not do_mpf) and (not do_graph) and (not do_nx) and (not do_vis_graph):
+        if not use_full_region:
+            raise ValueError("NX graph does not support not full region.")
         compare_simple_nx(
             region_sizes,
             connection_strategy,
@@ -162,7 +187,9 @@ def do_full_experiment(
 
     if not quiet:
         print(
-            "Completed everything in {:.2f} seconds".format(time() - overall_start_time)
+            "Completed everything in {:.2f} seconds".format(
+                perf_counter() - overall_start_time
+            )
         )
     return results
 
@@ -174,52 +201,15 @@ def mpf_control(
     num_sampled,
     do_only_none,
     max_depth,
-    clt_start,
+    delta_params,
     verbose=False,
     subsample_rate=0.01,
     approx_hypergeo=False,
     use_mean=True,
 ):
     """Create an mpf CombProb object and perform stats calculations."""
-    start_time = time()
     if len(region_sizes) != 2:
         raise ValueError("MPF currently only supports 2 regions")
-
-    if (connection_strategy.__name__ == "RecurrentConnectivity") or (
-        connection_strategy.__name__ == "MeanRecurrentConnectivity"
-        or (connection_strategy.__name__ == "UniqueConnectivity")
-    ):
-        unif_out = create_uniform(
-            connectivity_params[0]["min_forward"], connectivity_params[0]["max_forward"]
-        )
-        unif_re = create_uniform(
-            connectivity_params[1]["min_forward"], connectivity_params[1]["max_forward"]
-        )
-        a, b = (
-            int(round(region_sizes[0] * connectivity_params[0]["min_inter"])),
-            int(round(region_sizes[0] * connectivity_params[0]["max_inter"])),
-        )
-        inter_a = create_uniform(a, b)
-        a, b = (
-            int(round(region_sizes[1] * connectivity_params[1]["min_inter"])),
-            int(round(region_sizes[1] * connectivity_params[1]["max_inter"])),
-        )
-        inter_b = create_uniform(a, b)
-        delta_params = {
-            "out_connections_dist": unif_out,
-            "recurrent_connections_dist": unif_re,
-            "num_senders": connectivity_params[0]["num_senders"],
-            "num_recurrent": connectivity_params[1]["num_senders"],
-            "num_start": region_sizes[0],
-            "total_samples": num_sampled[0],
-            "start_inter_dist": inter_a,
-            "end_inter_dist": inter_b,
-            "static_verbose": verbose,
-            "max_depth": max_depth,
-            "init_delta": True,
-            "clt_start": clt_start,
-            "use_mean": use_mean,
-        }
 
     if connection_strategy.__name__ == "MeanRecurrentConnectivity":
         subsample_rate = None
@@ -237,7 +227,7 @@ def mpf_control(
         approx_hypergeo=approx_hypergeo,
         N=region_sizes[1],
         verbose=verbose,
-        **delta_params
+        **delta_params,
     )
     if do_only_none:
         result = {"zero": connection_prob.connection_prob(0)}
@@ -261,12 +251,14 @@ def graph_control(
     do_vis_graph,
     do_nx_vis,
     num_cpus=1,
-    max_depth=5,
     fixed_samples=-1,
     do_mat_vis=False,
     gen_graph_each_iter=False,
     save_every=1,
     quiet=False,
+    source_vert_list=None,
+    target_vert_list=None,
+    **kwargs,
 ):
     """
     Create a simple graph and perform monte carlo.
@@ -275,12 +267,16 @@ def graph_control(
     neurons in region A that send forward connections to B,
     and consider all neurons in B to be target neurons.
     """
-    source_vert_list = [i for i in range(region_sizes[0])]
-    target_vert_list = [i for i in range(region_sizes[-1])]
+    max_depth = kwargs.get("max_depth", 1)
+
+    if source_vert_list is None:
+        source_vert_list = [i for i in range(region_sizes[0])]
+    if target_vert_list is None:
+        target_vert_list = [i for i in range(region_sizes[-1])]
 
     if not gen_graph_each_iter:
         g_graph, g_connected = create_graph(
-            region_sizes, connection_strategy, connectivity_params
+            region_sizes, connection_strategy, connectivity_params, **kwargs
         )
         g_reverse_graph = reverse(g_graph)
     else:
@@ -289,7 +285,7 @@ def graph_control(
     def random_var_gen(iter_val):
         if gen_graph_each_iter:
             graph, connected = create_graph(
-                region_sizes, connection_strategy, connectivity_params
+                region_sizes, connection_strategy, connectivity_params, **kwargs
             )
         else:
             graph, connected = g_graph, g_connected
@@ -518,3 +514,109 @@ def compare_simple_nx(
         print("All good, matching results.")
 
     return results
+
+
+def parse_args(
+    connection_strategy,
+    connectivity_params,
+    region_sizes,
+    num_sampled,
+    verbose,
+    max_depth,
+    clt_start,
+    use_mean,
+    use_full_region,
+    **region_sub_params,
+):
+    if (connection_strategy.__name__ == "RecurrentConnectivity") or (
+        connection_strategy.__name__ == "MeanRecurrentConnectivity"
+        or (connection_strategy.__name__ == "UniqueConnectivity")
+    ):
+        unif_out = create_uniform(
+            connectivity_params[0]["min_forward"], connectivity_params[0]["max_forward"]
+        )
+        unif_re = create_uniform(
+            connectivity_params[1]["min_forward"], connectivity_params[1]["max_forward"]
+        )
+        a, b = (
+            int(round(region_sizes[0] * connectivity_params[0]["min_inter"])),
+            int(round(region_sizes[0] * connectivity_params[0]["max_inter"])),
+        )
+        inter_a = create_uniform(a, b)
+        a, b = (
+            int(round(region_sizes[1] * connectivity_params[1]["min_inter"])),
+            int(round(region_sizes[1] * connectivity_params[1]["max_inter"])),
+        )
+        inter_b = create_uniform(a, b)
+        delta_params = {
+            "out_connections_dist": unif_out,
+            "recurrent_connections_dist": unif_re,
+            "num_senders": connectivity_params[0]["num_senders"],
+            "num_recurrent": connectivity_params[1]["num_senders"],
+            "num_start": region_sizes[0],
+            "total_samples": num_sampled[0],
+            "start_inter_dist": inter_a,
+            "end_inter_dist": inter_b,
+            "static_verbose": verbose,
+            "max_depth": max_depth,
+            "init_delta": True,
+            "clt_start": clt_start,
+            "use_mean": use_mean,
+        }
+
+    if not use_full_region:
+        vols = region_sub_params.get("device_volume_ratios")
+        ratio_senders = region_sub_params.get("ratio_senders_Adevice_to_Bdevice")
+        ratio_A_to_Bprobe = region_sub_params.get("ratio_senders_Afull_to_Bdevice")
+        ratio_senders_B = region_sub_params.get("ratio_senders_Adevice_toB")
+        forward_dist = region_sub_params.get("device_forward_dist")
+        forwardA_to_Bprobe = region_sub_params.get("Afull_to_Bdevice_dist")
+        forwardAprobe_to_B = region_sub_params.get("Adevice_to_Bfull_dist")
+        start_probe_to_outside = region_sub_params.get("Adevice_to_Afull_dist")
+        end_outside_to_probe = region_sub_params.get("Bfull_to_Bdevice_dist")
+
+        # Depth 1
+        delta_params["num_start_probe"] = vols[0] * delta_params["num_start"]
+        delta_params["num_senders_probe"] = (
+            ratio_senders * delta_params["num_start_probe"]
+        )
+        delta_params["out_connections_dist_probe"] = create_uniform(*forward_dist)
+        delta_params["num_senders_A"] = (
+            ratio_senders_B * delta_params["num_start_probe"]
+        )
+        delta_params["num_end_probe"] = vols[1] * region_sizes[1]
+
+        # Depth 2
+        delta_params["out_connections_dist_B"] = create_uniform(*forwardA_to_Bprobe)
+        delta_params["out_connections_dist_A"] = create_uniform(*forwardAprobe_to_B)
+        delta_params["num_senders_B"] = ratio_A_to_Bprobe * delta_params["num_start"]
+
+        a, b = (
+            int(round(region_sizes[0] * start_probe_to_outside[0])),
+            int(round(region_sizes[0] * start_probe_to_outside[1])),
+        )
+        delta_params["start_probe_to_outside"] = create_uniform(a, b)
+        a, b = (
+            int(round(delta_params["num_end_probe"] * end_outside_to_probe[0])),
+            int(round(delta_params["num_end_probe"] * end_outside_to_probe[1])),
+        )
+        delta_params["end_outside_to_probe"] = create_uniform(a, b)
+
+        # Cells in device area
+        amount_in_range = (np.array(region_sizes) * np.array(vols)).astype(int)
+        source_vert_list = np.arange(region_sizes[0], dtype=int)
+        source_vert_list = np.random.choice(
+            source_vert_list, size=amount_in_range[0], replace=False
+        )
+        target_vert_list = np.arange(region_sizes[-1], dtype=int)
+        target_vert_list = np.random.choice(
+            target_vert_list, size=amount_in_range[-1], replace=False
+        )
+    else:
+        source_vert_list = None
+        target_vert_list = None
+
+    delta_params["idx_in_deviceA"] = source_vert_list
+    delta_params["idx_in_deviceB"] = target_vert_list
+
+    return delta_params, source_vert_list, target_vert_list
