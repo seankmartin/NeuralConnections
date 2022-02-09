@@ -782,7 +782,11 @@ def place_probes_at_com(
     interactive=True,
     screenshot_name=None,
 ):
-    """Place probes in regions_names at the centre of mass"""
+    """
+    Place probes in regions_names at the centre of mass
+    
+    TODO: allow for manual adjustments.
+    """
     brainrender.settings.SHADER_STYLE = style
     brainrender.settings.SHOW_AXES = False
     brainrender.settings.SCREENSHOT_SCALE = 2
@@ -850,6 +854,18 @@ def place_probes_at_com(
                 alpha=0.4,
             )
             scene.add(cylinder)
+
+            mesh = vedo.shapes.Cylinder(
+                pos=[top, bottom], r=30, alpha=0.8
+            )
+            inside_cyl = brainrender.actor.Actor(
+                mesh,
+                name="inside",
+                br_class="Cylinder",
+                color=region_color,
+                alpha=0.8,
+            )
+            scene.add(inside_cyl)
 
     else:
         for com in coms:
