@@ -433,10 +433,12 @@ class RecurrentConnectivity(ConnectionStrategy):
             connected_Bdevice = []
         else:
             connected_Bdevice = np.random.choice(
-                idx_outA, size=num_senders_B, replace=False
+                idx_outA, size=num_senders_B - num_senders_device, replace=False
             )
             forward_connections_A_Bdevice = np.random.choice(
-                idx_inB, size=(num_senders_B, forwardA_to_Bprobe_max), replace=True
+                idx_inB,
+                size=(num_senders_B - num_senders_device, forwardA_to_Bprobe_max),
+                replace=True,
             )
             num_choices_A_Bdevice = np.random.randint(
                 forwardA_to_Bprobe_min,
@@ -450,13 +452,13 @@ class RecurrentConnectivity(ConnectionStrategy):
             region_verts,
             size=(
                 len(idx_inA),
-                int(round(start_probe_to_outside_max * len(region_verts))),
+                int(round(start_probe_to_outside_max)),
             ),
             replace=True,
         )
         num_choices_inter_device = np.random.randint(
-            int(round(start_probe_to_outside_min * len(region_verts))),
-            int(round(start_probe_to_outside_max * len(region_verts))) + 1,
+            int(round(start_probe_to_outside_min)),
+            int(round(start_probe_to_outside_max)) + 1,
             dtype=np.int32,
             size=len(idx_inA),
         )
@@ -479,17 +481,27 @@ class RecurrentConnectivity(ConnectionStrategy):
         a_idx = 0
         b_idx = 0
         c_idx = 0
+        d_idx = 0
+        e_idx = 0
         for i, vert in enumerate(region_verts):
-            if i in idx_inA:
+            if vert in idx_inA:
                 self_connections = np.array(
-                    list(set(self_connects_Adevice[i, : num_choices_inter_device[i]])),
+                    list(
+                        set(
+                            self_connects_Adevice[
+                                d_idx, : num_choices_inter_device[d_idx]
+                            ]
+                        )
+                    ),
                     dtype=np.int32,
                 )
+                d_idx = d_idx + 1
             else:
                 self_connections = np.array(
-                    list(set(self_connects_Arest[i, : num_choices_inter[i]])),
+                    list(set(self_connects_Arest[e_idx, : num_choices_inter[e_idx]])),
                     dtype=np.int32,
                 )
+                e_idx = e_idx + 1
 
             # Remove autaptic synapses
             self_connections = np.delete(

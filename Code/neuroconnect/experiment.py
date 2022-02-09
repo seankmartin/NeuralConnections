@@ -100,7 +100,7 @@ def do_full_experiment(
         results["mpf"] = result
 
     if do_graph:
-        do_nx_vis = do_nx
+        do_nx_vis = True
 
         if do_fixed != -1:
             for i in range(num_sampled[0] + 1):
@@ -161,17 +161,16 @@ def do_full_experiment(
         )
         results["nx"] = result
     elif do_vis_graph:
-        if not use_full_region:
-            raise ValueError("NX graph does not support not full region.")
-        nx_control(
-            region_sizes,
-            connection_strategy,
-            connectivity_params,
-            num_sampled,
-            num_iters,
-            False,
-            True,
-        )
+        if use_full_region:
+            nx_control(
+                region_sizes,
+                connection_strategy,
+                connectivity_params,
+                num_sampled,
+                num_iters,
+                False,
+                True,
+            )
 
     if (not do_mpf) and (not do_graph) and (not do_nx) and (not do_vis_graph):
         if not use_full_region:
@@ -217,15 +216,15 @@ def mpf_control(
         subsample_rate = None
 
     connection_prob = CombProb(
-        region_sizes[0],
+        delta_params["num_start_probe"],
         num_sampled[0],
-        connectivity_params[0]["num_senders"],
-        region_sizes[1],
+        delta_params["num_senders_probe"],
+        delta_params["num_end_probe"],
         num_sampled[1],
         connection_strategy.static_expected_connections,
         subsample_rate=subsample_rate,
         approx_hypergeo=approx_hypergeo,
-        N=region_sizes[1],
+        N=region_sizes[-1],
         verbose=verbose,
         **delta_params,
     )
@@ -350,14 +349,21 @@ def graph_control(
     if do_vis_graph:
         print("Starting graph visualisation")
         graph, sources, targets = random_var_gen(0)
-        reachable = find_connected(graph, sources, targets)
-        fig = vis_graph(graph, region_sizes, sources, targets, reachable=reachable)
-        fig.savefig("graph.png")
 
         if do_nx_vis:
             graph = nx_create_graph(graph)
-            reachable = nx_find_connected(graph, sources, targets)
-            nx_vis_graph(graph, region_sizes, sources, targets, reachable=reachable)
+            here = os.path.dirname(os.path.realpath(__file__))
+            os.makedirs(os.path.join(here, "..", "figures"), exist_ok=True)
+            now = datetime.now().strftime("%Y-%m-%d__%H-%M-%S")
+            name = os.path.join(here, "..", "figures", "nx_simple_{}.png".format(now))
+            print("Saving figure to {}".format(name))
+            nx_vis_force(
+                graph, source_vert_list, target_vert_list, sources, targets, name=name
+            )
+        else:
+            reachable = find_connected(graph, sources, targets)
+            fig = vis_graph(graph, region_sizes, sources, targets, reachable=reachable)
+            fig.savefig("graph.png")
 
     if do_mat_vis:
         print("Starting matrix visualisation")
@@ -577,7 +583,7 @@ def parse_args(
         end_outside_to_probe = region_sub_params.get("Bfull_to_Bdevice_dist")
 
         # Depth 1
-        delta_params["num_start_probe"] = vols[0] * delta_params["num_start"]
+        delta_params["num_start_probe"] = int(vols[0] * delta_params["num_start"])
         delta_params["num_senders_probe"] = (
             ratio_senders * delta_params["num_start_probe"]
         )
@@ -585,7 +591,7 @@ def parse_args(
         delta_params["num_senders_A"] = (
             ratio_senders_B * delta_params["num_start_probe"]
         )
-        delta_params["num_end_probe"] = vols[1] * region_sizes[1]
+        delta_params["num_end_probe"] = int(vols[1] * region_sizes[1])
 
         # Depth 2
         delta_params["out_connections_dist_B"] = create_uniform(*forwardA_to_Bprobe)
