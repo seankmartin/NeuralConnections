@@ -87,7 +87,6 @@ def do_full_experiment(
         result = mpf_control(
             region_sizes,
             connection_strategy,
-            connectivity_params,
             num_sampled,
             do_only_none,
             max_depth,
@@ -196,7 +195,6 @@ def do_full_experiment(
 def mpf_control(
     region_sizes,
     connection_strategy,
-    connectivity_params,
     num_sampled,
     do_only_none,
     max_depth,
@@ -215,11 +213,27 @@ def mpf_control(
     if (max_depth > 1) and use_mean:
         subsample_rate = None
 
+    if "num_start_probe" in delta_params:
+        N = delta_params["num_start_probe"]
+    else:
+        N = region_sizes[0]
+    
+    if "num_senders_probe" in delta_params:
+        a = delta_params["num_senders_probe"]
+    else:
+        a = delta_params["num_senders"]
+    
+    if "num_end_probe" in delta_params:
+        M = delta_params["num_end_probe"]
+    else:
+        M = region_sizes[-1]
+
+
     connection_prob = CombProb(
-        delta_params["num_start_probe"],
+        N,
         num_sampled[0],
-        delta_params["num_senders_probe"],
-        delta_params["num_end_probe"],
+        a,
+        M,
         num_sampled[1],
         connection_strategy.static_expected_connections,
         subsample_rate=subsample_rate,
