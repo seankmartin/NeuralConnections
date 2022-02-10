@@ -240,7 +240,7 @@ def plot_pmf_comp(dfs, names, out_name):
     save(fig, out_name)
 
 
-def plot_exp_comp(dfs, names, out_name, prop=False):
+def plot_exp_comp(dfs, names, out_name, prop=False, depth=False):
     """Plot the accuracy of the expected value."""
     df = None
     for df_i, name_i in zip(dfs, names):
@@ -253,13 +253,15 @@ def plot_exp_comp(dfs, names, out_name, prop=False):
         y_name = "Expected proportion connected"
     else:
         y_name = "Expected connected"
+
+    style = "Connectivity" if not depth else "Max distance"
     fig, ax = plt.subplots()
     set_p()
     sns.lineplot(
         x="Number of samples",
         y=y_name,
         data=df,
-        style="Connectivity",
+        style=style,
         hue="Connectivity",
         ax=ax,
     )
@@ -476,6 +478,8 @@ def main():
             "b_fin_eg.pdf",
         ],
     )
+
+    plot_samples_v_prop(load_df("samples_depth_ca3_ca1"), "ca3_ca1_samps_depth.pdf")
 
 
 if __name__ == "__main__":

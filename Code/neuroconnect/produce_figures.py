@@ -446,19 +446,76 @@ def do_mouse_regions(vis_only: bool = True):
         x_name="Regions",
     )
 
+
 @app.command()
-def do_hippocampus():
+def do_hippocampus(ca1_ca3: bool = True, ca1_sub: bool = True):
+    # CA3 CA1 figures
+
     # Uses tetrode_ca3_ca1_full
-    store_tetrode_results_depth()
-    plot_samples_v_prop(load_df("samples_depth_ca3_ca1"), "ca3_ca1_samps_depth.pdf")
+    if ca1_ca3:
+        store_tetrode_results_depth()
+        plot_samples_v_prop(load_df("samples_depth_ca3_ca1"), "ca3_ca1_samps_depth.pdf")
+
+        store_npix_results()
+        plot_pmf(load_df("npix_man.csv"), "npix_pmf.pdf")
+
+    # CA1 SUB figures
+    if ca1_sub:
+        kwargs = {
+            "num_iters": 1000,
+            "do_graph": False,
+            "use_mean": True,
+            "num_graphs": 0,
+            "sr": 0.01,
+            "clt_start": 10,
+            "fin_depth": 3,
+        }
+        connections_dependent_on_samples(
+            parse_cfg("ca1_sub_high.cfg"), "hc_high", **kwargs
+        )
+        connections_dependent_on_samples(
+            parse_cfg("ca1_sub_high_out.cfg"), "hc_high_out", **kwargs
+        )
+        connections_dependent_on_samples(
+            parse_cfg("ca1_sub_low.cfg"), "hc_low", **kwargs
+        )
+        connections_dependent_on_samples(
+            parse_cfg("ca1_sub_vhigh.cfg"), "hc_vhigh", **kwargs
+        )
+        df_list = [
+            load_df("connection_samples_hc_vhigh.csv"),
+            load_df("connection_samples_hc_high.csv"),
+            load_df("Connection_samples_hc_high_out.csv"),
+            load_df("connection_samples_hc_low.csv"),
+        ]
+        df_names = [
+            "2.8% (90% to 3.1%)",
+            "1.8% (90% to 2%)",
+            "1.8% (36% to 5%)",
+            "0.8% (70% to 1%)",
+        ]
+        plot_exp_comp(
+            df_list,
+            df_names,
+            "samples_hc_both.pdf",
+            prop=True,
+        )
+        store_sub_results()
+        dfs = [
+            load_df("20_sub_vhigh.csv"),
+            load_df("20_sub_high.csv"),
+            load_df("20_sub_out.csv"),
+            load_df("20_sub_low.csv"),
+        ]
+        plot_pmf_comp(dfs, df_names, "ca1_sub_tet_comp.pdf")
 
 
 @app.command()
 def produce_figures(
-    figure_1 : bool = True,
-    figure_2 : bool = True,
-    figure_3 : bool = True,
-    figure_4 : bool = True,
+    figure_1: bool = True,
+    figure_2: bool = True,
+    figure_3: bool = True,
+    figure_4: bool = True,
 ):
     if figure_1:
         figure1()
@@ -468,6 +525,7 @@ def produce_figures(
         figure3()
     if figure_4:
         figure4()
+
 
 @app.command()
 def figure1():
