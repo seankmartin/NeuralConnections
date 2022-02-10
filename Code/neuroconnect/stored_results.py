@@ -6,6 +6,8 @@ from types import SimpleNamespace
 
 import pandas as pd
 import numpy as np
+from skm_pyutils.py_table import list_to_df
+
 from dictances.bhattacharyya import bhattacharyya
 
 from .main import main as ctrl_main
@@ -109,6 +111,34 @@ def store_tetrode_results_full():
     )
     df.to_csv(
         os.path.join(here, "..", "results", "tetrode_full.csv"),
+        index=False,
+    )
+
+
+def store_tetrode_results_depth():
+    np.random.seed(42)
+    num_samples_range = np.arange(60)
+    res_list = []
+    headers = ["Number of samples", "Proportion of connections", "Max distance"]
+    for depth in (1, 2, 3):
+        for s in num_samples_range:
+            args = SimpleNamespace(
+                max_depth=depth,
+                num_cpus=1,
+                cfg="tetrode_ca3_ca1_full_stats",
+                clt_start=30,
+                subsample_rate=0,
+                approx_hypergeo=False,
+            )
+            cfg = parse_cfg("tetrode_ca3_ca1_full.cfg")
+            cfg["default"]["num_samples"] = f"[{s}, {s}]"
+            result = ctrl_main(cfg, args)
+            exp = result["mpf"]["expected"] / s
+            res_list.append([s, exp, depth])
+
+    df = list_to_df(res_list, headers=headers)
+    df.to_csv(
+        os.path.join(here, "..", "results", "samples_depth_ca3_ca1.csv"),
         index=False,
     )
 
