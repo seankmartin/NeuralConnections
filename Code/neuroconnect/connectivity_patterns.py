@@ -553,8 +553,102 @@ class RecurrentConnectivity(ConnectionStrategy):
 
     def gen_graph_recursive(self, choices, **kwargs):
         region_verts = kwargs.get("region_verts")
-        box = kwargs.get("box", False)  # for performance reasons
-        return self.gen_full_graph(choices, region_verts, box)
+        idx_inB = kwargs.get("idx_in_deviceB") + len(choices)
+        idx_outB = list(set(choices) - set(idx_inB))
+        outside_dist_inter = kwargs.get("end_outside_to_probe")
+        vals = list(outside_dist_inter.items())
+        min_inter = vals[0][0]
+        max_inter = vals[-1][0]
+
+        graph = []
+        connected = np.random.choice(region_verts, size=self.num_senders, replace=False)
+        forward_connections = np.random.choice(
+            choices, size=(self.num_senders, self.max_forward), replace=True
+        )
+        num_choices = np.random.randint(
+            self.min_forward,
+            self.max_forward + 1,
+            dtype=np.int32,
+            size=self.num_senders,
+        )
+
+        f_idx = 0
+        # Create connections between neurons in the same region
+        if self.max_inter > 0:
+
+            self_connects_outside = np.random.choice(
+                idx_outB,
+                size=(
+                    len(region_verts),
+                    int(round(self.max_inter * len(region_verts))),
+                ),
+                replace=True,
+            )
+            num_choices_inter_outside = np.random.randint(
+                int(round(self.min_inter * len(region_verts))),
+                int(round(self.max_inter * len(region_verts))) + 1,
+                dtype=np.int32,
+                size=len(region_verts),
+            )
+
+            self_connects_inside = np.random.choice(
+                idx_inB,
+                size=(
+                    len(region_verts),
+                    int(round(max_inter * len(region_verts))),
+                ),
+                replace=True,
+            )
+            num_choices_inter_inside = np.random.randint(
+                int(round(min_inter * len(region_verts))),
+                int(round(max_inter * len(region_verts))) + 1,
+                dtype=np.int32,
+                size=len(region_verts),
+            )
+
+        # Create forward_connections and inter_connections
+        for i, vert in enumerate(region_verts):
+            if self.max_inter > 0:
+                self_connections = np.array(
+                    list(set(self_connects_outside[i, : num_choices_inter_outside[i]])),
+                    dtype=np.int32,
+                )
+                self_connections = np.append(
+                    self_connections,
+                    np.array(
+                        list(
+                            set(self_connects_inside[i, : num_choices_inter_inside[i]])
+                        ),
+                        dtype=np.int32,
+                    ),
+                )
+
+                # Remove autaptic synapses
+                self_connections = np.delete(
+                    self_connections, np.where(self_connections == vert)
+                )
+                for val in self_connections:
+                    if isinstance(val, float):
+                        print(val, self_connections)
+                        exit(-1)
+
+            else:
+                self_connections = np.array([], dtype=np.int32)
+
+            # Create forward_connections
+            if vert in connected:
+                forward_connection = forward_connections[f_idx, : num_choices[f_idx]]
+                self_connections = np.append(
+                    self_connections, list(set(forward_connection))
+                )
+                f_idx = f_idx + 1
+
+            if isinstance(self_connections, np.int32):
+                graph.append(np.array([self_connections], dtype=np.int32))
+            else:
+                graph.append(self_connections.astype(np.int32))
+
+        return graph, connected
 
     @staticmethod
     def static_expected_connections(**kwargs):

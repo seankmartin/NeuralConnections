@@ -584,11 +584,11 @@ def parse_args(
 
         # Depth 1
         delta_params["num_start_probe"] = int(vols[0] * delta_params["num_start"])
-        delta_params["num_senders_probe"] = (
+        delta_params["num_senders_probe"] = int(
             ratio_senders * delta_params["num_start_probe"]
         )
         delta_params["out_connections_dist_probe"] = create_uniform(*forward_dist)
-        delta_params["num_senders_A"] = (
+        delta_params["num_senders_A"] = int(
             ratio_senders_B * delta_params["num_start_probe"]
         )
         delta_params["num_end_probe"] = int(vols[1] * region_sizes[1])
@@ -596,7 +596,9 @@ def parse_args(
         # Depth 2
         delta_params["out_connections_dist_B"] = create_uniform(*forwardA_to_Bprobe)
         delta_params["out_connections_dist_A"] = create_uniform(*forwardAprobe_to_B)
-        delta_params["num_senders_B"] = ratio_A_to_Bprobe * delta_params["num_start"]
+        delta_params["num_senders_B"] = int(
+            ratio_A_to_Bprobe * delta_params["num_start"]
+        )
 
         a, b = (
             int(round(region_sizes[0] * start_probe_to_outside[0])),
