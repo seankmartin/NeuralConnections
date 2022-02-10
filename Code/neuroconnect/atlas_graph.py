@@ -451,14 +451,22 @@ def plot_subset_vis(
     mc, full_stats = load_matrix_data(to_use, A_name, B_name, hemisphere=hemisphere)
     print("{} - {}, {} - {}".format(A_name, B_name, mc.num_a, mc.num_b))
     if do_full_vis:
+        t = time.perf_counter()
+        print("Plotting matrix visualisation")
         matrix_vis(mc.ab, mc.ba, mc.aa, mc.bb, 150, out_names[0])
+        t2 = time.perf_counter() - t
+        print(f"Finished matrix visualisation in {t2:.2f}s")
 
     if number_of_cells_in_regions[0] < mc.num_a:
         print(f"Subsampled regions to {number_of_cells_in_regions}")
         mc = mc.subsample(*number_of_cells_in_regions)
         matrix_vis(mc.ab, mc.ba, mc.aa, mc.bb, 40, out_names[1])
     if do_probability:
+        t = time.perf_counter()
+        print("Creating graph")
         mc.create_connections()
+        t2 = time.perf_counter() - t
+        print(f"Finished graph creation in {t2:.2f}s")
 
     if do_probability:
         final_res_list = []
@@ -472,6 +480,8 @@ def plot_subset_vis(
         ]
 
     max_depth = simulation_kwargs.get("max_depth", 1)
+    t = time.perf_counter()
+    print("Running simulation")
     for shift in (True, False):
         end_piece = "_shifted" if shift else ""
         end = "shifted" if shift else "original"
@@ -520,6 +530,8 @@ def plot_subset_vis(
                 )
                 for k, v in res[1]["total"].items():
                     final_res_list2.append([k, v, depth, end])
+    t2 = time.perf_counter() - t
+    print(f"Finished simulation in {t2:.2f}s")
 
     if do_probability:
         with open(os.path.join(here, "..", "results", "atlas_plot.txt"), "w") as f:

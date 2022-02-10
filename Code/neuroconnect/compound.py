@@ -3,6 +3,7 @@
 import os
 from configparser import ConfigParser
 import json
+import time
 
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -659,11 +660,18 @@ def mouse_region_exp_probes(
         mc, full_stats = load_matrix_data(to_use, A_name, B_name, hemisphere=hemisphere)
         print("{} - {}, {} - {}".format(A_name, B_name, mc.num_a, mc.num_b))
         region_sizes = [mc.num_a, mc.num_b]
+
+        t = time.perf_counter()
+        print("Creating graph")
         mc.create_connections()
+        t2 = time.perf_counter() - t
+        print(f"Finished graph creation in {t2:.2f}s")
 
         # Find intersections of probes and cells
         brain_region_meshes = get_brain_region_meshes(r, None, hemisphere=hemisphere)
 
+        t = time.perf_counter()
+        print("Placing cells in device")
         region_pts = []
         for region_mesh, region_size in zip(brain_region_meshes, region_sizes):
             pts = get_n_random_points_in_region(region_mesh, region_size, sort_=True)
@@ -677,17 +685,28 @@ def mouse_region_exp_probes(
             )
             pts = pts[pts_idxs]
             region_pts.append((pts, pts_idxs))
+        t2 = time.perf_counter() - t
+        print(f"Finished cells creation in {t2:.2f}s")
 
         a_indices = region_pts[0][1]
         b_indices = region_pts[1][1]
+
+        t = time.perf_counter()
+        print("Visualsing matrix")
         mc_sub = mc.subsample(a_indices, b_indices)
         o_name = f"{r[0]}_to_{r[1]}_connection_matrix_subbed.pdf"
         matrix_vis(mc_sub.ab, mc_sub.ba, mc_sub.aa, mc_sub.bb, block_size_sub, o_name)
+        t2 = time.perf_counter() - t
+        print(f"Finished matrix vis in {t2:.2f}s")
 
         # Probability calculation
+        t = time.perf_counter()
+        print("Running simulation")
         res = prob_connect_probe(
             mc, num_sampled, a_indices, b_indices, full_stats, **simulation_kwargs
         )
+        t2 = time.perf_counter() - t
+        print(f"Finished simulation in {t2:.2f}s")
 
         r_str = f"{r[0]}_{r[1]}"
         for k, v in res[0]["dist"].items():
@@ -716,7 +735,7 @@ def mouse_region_exp_probes(
         df = df_from_file(final_res_list, headers=cols)
 
         for calculation in ["Stats", "MC"]:
-            df_stats = df[df[cols[2]]== calculation]
+            df_stats = df[df[cols[2]] == calculation]
             expected = (df_stats[cols[0]] * df_stats[cols[1]]).sum()
             expected_proportion = expected / num_sampled[1]
             regions = df[cols[-1]][0]
