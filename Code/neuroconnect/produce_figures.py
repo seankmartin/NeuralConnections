@@ -44,6 +44,7 @@ from .stored_results import (
     store_region_results,
     store_tetrode_results,
     store_tetrode_results_full,
+    store_tetrode_results_depth,
     store_npix_results,
     store_sub_results,
 )
@@ -447,9 +448,26 @@ def do_mouse_regions(vis_only: bool = True):
 
 @app.command()
 def do_hippocampus():
-    store_tetrode_results_full()
-    exit(-1)
+    # Uses tetrode_ca3_ca1_full
+    store_tetrode_results_depth()
+    plot_samples_v_prop(load_df("samples_depth_ca3_ca1"), "ca3_ca1_samps_depth.pdf")
 
+
+@app.command()
+def produce_figures(
+    figure_1 : bool = True,
+    figure_2 : bool = True,
+    figure_3 : bool = True,
+    figure_4 : bool = True,
+):
+    if figure_1:
+        figure1()
+    if figure_2:
+        figure2()
+    if figure_3:
+        figure3()
+    if figure_4:
+        figure4()
 
 @app.command()
 def figure1():
