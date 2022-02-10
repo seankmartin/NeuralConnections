@@ -537,9 +537,9 @@ def get_n_random_points_in_region(region_mesh, N, s=None, sort_=False):
     ipts = region_mesh.insidePoints(pts).points()
 
     if N <= ipts.shape[0]:
-        ipts = ipts[np.random.choice(ipts.shape[0], N, replace=False), :]
+        ipts = ipts[:N]
     else:
-        ipts = get_n_random_points_in_region(region_mesh, N, s=int(N * 4))
+        ipts = get_n_random_points_in_region(region_mesh, N, s=int(s * 2))
 
     if sort_:
         hilbert_dim = int(np.floor(np.log10(np.max(ipts)) / np.log10(2)) + 1)

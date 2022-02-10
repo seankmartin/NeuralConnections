@@ -675,14 +675,8 @@ def mouse_region_exp_probes(
         region_pts = []
         for region_mesh, region_size in zip(brain_region_meshes, region_sizes):
             pts = get_n_random_points_in_region(region_mesh, region_size, sort_=True)
-            pts_idxs = np.sort(
-                get_idx_of_points_in_meshes(
-                    pts,
-                    [
-                        cylinder,
-                    ],
-                )
-            )
+            meshes = [cylinder]
+            pts_idxs = np.sort(get_idx_of_points_in_meshes(pts, meshes))
             pts = pts[pts_idxs]
             region_pts.append((pts, pts_idxs))
         t2 = time.perf_counter() - t
