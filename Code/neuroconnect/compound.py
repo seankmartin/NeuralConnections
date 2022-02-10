@@ -640,17 +640,17 @@ def mouse_region_exp_probes(
     for r in regions:
         final_res_list = []
 
+        name = f"{r[0]}_to_{r[1]}_render"
+        cylinder = place_probes_at_com(
+            r,
+            hemisphere=hemisphere,
+            colors=colors,
+            style=style,
+            join=True,
+            interactive=interactive,
+            screenshot_name=name,
+        )
         if vis_only:
-            name = f"{r[0]}_to_{r[1]}_render"
-            cylinder = place_probes_at_com(
-                r,
-                hemisphere="right",
-                colors=colors,
-                style=style,
-                join=True,
-                interactive=interactive,
-                screenshot_name=name,
-            )
             continue
 
         # Load mouse data
