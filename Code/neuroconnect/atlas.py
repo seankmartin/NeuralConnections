@@ -432,8 +432,7 @@ def get_idx_of_points_in_meshes(points, meshes, N=None):
 
     set_of_points = set()
     for pt in ipts:
-        for p in pt:
-            set_of_points.add(p)
+        set_of_points.update(pt)
     ipts = list(set_of_points)
 
     if N is not None:
@@ -843,17 +842,17 @@ def place_probes_at_com(
             scale_bottom = (bottom[1] - bottom_of_brain) / vec_in_dir[1]
             bottom = bottom - (0.3 * scale_bottom * vec_in_dir)
             region_color = next(iter_color)
-            mesh = vedo.shapes.Cylinder(
+            cylinder = vedo.shapes.Cylinder(
                 pos=[top, bottom], r=n_pixel_micron_radius, alpha=0.3
             )
-            cylinder = brainrender.actor.Actor(
+            cyl_br = brainrender.actor.Actor(
                 mesh,
                 name="Cylinder",
                 br_class="Cylinder",
                 color=region_color,
                 alpha=0.4,
             )
-            scene.add(cylinder)
+            scene.add(cyl_br)
 
             mesh = vedo.shapes.Cylinder(
                 pos=[top, bottom], r=30, alpha=0.8
