@@ -637,6 +637,7 @@ def mouse_region_exp_probes(
     np.random.seed(42)
 
     cols = ["Number of connected neurons", "Probability", "Calculation", "Regions"]
+
     for r in regions:
         final_res_list = []
 
@@ -721,17 +722,19 @@ def mouse_region_exp_probes(
         return
 
     l = []
-    ["Number of connected neurons", "Probability", "Calculation", "Regions"]
     for r in regions:
         max_depth = simulation_kwargs["max_depth"]
         fname = f"sub_regions_{r[0]}_{r[1]}_depth_{max_depth}.csv"
         fname = os.path.join(here, "..", "results", fname)
-        df = df_from_file(final_res_list, headers=cols)
+        df = df_from_file(fname)
 
         for calculation in ["Stats", "MC"]:
             df_stats = df[df[cols[2]] == calculation]
             expected = (df_stats[cols[0]] * df_stats[cols[1]]).sum()
-            expected_proportion = expected / num_sampled[1]
+            if num_sampled[1] == 0:
+                expected_proportion = 0
+            else:
+                expected_proportion = expected / num_sampled[1]
             regions = df[cols[-1]][0]
             l.append([expected, expected_proportion, regions, calculation])
 

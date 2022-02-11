@@ -133,7 +133,10 @@ def store_tetrode_results_depth():
             cfg = parse_cfg("tetrode_ca3_ca1_full.cfg")
             cfg["default"]["num_samples"] = f"[{s}, {s}]"
             result = ctrl_main(cfg, args)
-            exp = result["mpf"]["expected"] / s
+            if s == 0:
+                exp = 0
+            else:
+                exp = result["mpf"]["expected"] / s
             res_list.append([s, exp, depth])
 
     df = list_to_df(res_list, headers=headers)
