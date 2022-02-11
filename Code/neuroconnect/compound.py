@@ -704,10 +704,10 @@ def mouse_region_exp_probes(
 
         r_str = f"{r[0]}_{r[1]}"
         for k, v in res[0]["dist"].items():
-            final_res_list.append([k, v, "Monte Carlo simulation"], r_str)
+            final_res_list.append([k, v, "Monte Carlo simulation", r_str])
 
         for k, v in res[1]["total"].items():
-            final_res_list.append([k, v, "Statistical estimation"], r_str)
+            final_res_list.append([k, v, "Statistical estimation", r_str])
 
         max_depth = simulation_kwargs["max_depth"]
         df = list_to_df(final_res_list, headers=cols)
