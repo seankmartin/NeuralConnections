@@ -292,6 +292,11 @@ def load_steinmetz_locations(cache_dir=None):
         cache_dir = (
             r"E:\OpenNeuroData\Steinmetz2019\Steinmetz_et_al_2019_9974357\9974357"
         )
+        if not os.path.isdir(cache_dir):
+            cache_dir = os.path.join(
+                here, "..", "resources", "Steinmetz_et_al_2019_9974357"
+            )
+
     one = One(cache_dir=cache_dir)  # The location of the unarchived data
     sessions = one.search(dataset="trials")
     # session = sessions[0]  # take the first session
@@ -376,6 +381,11 @@ def vis_steinmetz_with_regions(region_names, colors=None):
 
             p1 = points[["ccf_ap", "ccf_dv", "ccf_lr"]].values[0]
             p2 = points[["ccf_ap", "ccf_dv", "ccf_lr"]].values[-1]
+
+            distance_vec = p2 - p1
+            distance = np.sqrt(np.sum(np.square(distance_vec)))
+            print(f"Npixels probe is {distance:.2f} units long")
+
             mesh = vedo.shapes.Cylinder(pos=[p1, p2], c=colors[-2], r=100, alpha=0.3)
             cylinder = brainrender.actor.Actor(
                 mesh, name="Cylinder", br_class="Cylinder"
