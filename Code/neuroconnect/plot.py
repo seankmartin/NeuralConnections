@@ -7,7 +7,7 @@ import pandas as pd
 from matplotlib.ticker import MaxNLocator
 
 here = os.path.dirname(os.path.realpath(__file__))
-OUTPUT_DIR = "test"
+OUTPUT_DIR = "figures"
 PALETTE = "dark"
 LABELSIZE = 12
 

@@ -6,7 +6,6 @@ from pprint import pprint
 from configparser import NoSectionError
 
 import numpy as np
-import seaborn as sns
 import matplotlib.pyplot as plt
 
 from .experiment import do_full_experiment
