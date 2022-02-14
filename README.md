@@ -58,6 +58,10 @@ cd ..
 
 Please place in the Code\resources folder everything from [our OSF repository](https://osf.io/u396f/).
 
+### Steinmetz et al. dataset
+
+Download from https://figshare.com/articles/dataset/Distributed_coding_of_choice_action_and_engagement_across_the_mouse_brain/9974357
+
 ### Reproducing all the figures
 
 To reproduce all the figures, it will probably take about half a day on a decent computer.
@@ -65,8 +69,60 @@ To do so, run the following command after downloading all the blue brain resourc
 
 ```
 cd Code
-python -m neuroconnect.produce_figures do-all
+python -m neuroconnect.produce_figures produce-figures
 ```
+
+### Figure 1
+
+#### Inputs
+
+1. `configs\recurrent_fig.cfg`
+2. `configs\recurrent_fig1.cfg`
+
+#### Outputs
+
+1. `results\explain_fig2_1.txt`
+2. `results\explain_fig2_1.pdf`
+3. `figures\nx_simple_{FIRST_TIME}.png` this is for recurrent_fig.
+4. `figures\nx_simple_{SECOND_TIME}.png` this is for recurrent_fig1.
+5. `figures\explain_fig_pmf.pdf`
+
+### Figure 2
+
+#### Inputs
+
+Note use of regular expressions below:
+
+1. `resources\left_hemisphere\VISl_.*\.npz`
+2. `resources\left_hemisphere\VISp_.*\.npz`
+3. `resources\Steinmetz_et_al_2019_9974357`
+
+#### Outputs
+
+1. `figures\brainrender\brainrender_visl_visp.png`
+2. `figures\brainrender\brainrender_visl_visp_shifted.png`
+3. `figures\full_matrix_vis_VISl_VISp.pdf`
+4. `figures\probe_matrix_vis_visl_VISp.pdf`
+5. `figures\probe_matrix_vis_visl_VISp_shifted.pdf`
+6. `results\atlas_plot.txt`
+7. `results\sub_VISp_VISl_stats_all_ds.csv`
+8. `results\sub_VISp_VISl_depth_1.csv`
+9. `results\original-visp-visl-stats.pdf`
+10. `results\shifted-visp-visl-stats.pdf`
+11. `results\original-visp-visl-sub-all-depths.pdf`
+12. `results\shifted-visp-visl-sub-all-depths.pdf`
+
+
+### Figure 3
+
+#### Inputs
+
+1. `resources\right_hemisphere\.*\.npz` regular expression for all neocortical regions in OSF.
+
+#### Outputs
+
+1. `figures\brainrender\{Region1}_to_{Region2}_render.png` for all brain region pairs.
+2. `figures\`
 
 ### Profiling the code
 

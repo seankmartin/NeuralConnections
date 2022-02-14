@@ -8,6 +8,8 @@ from configparser import ConfigParser
 from types import SimpleNamespace
 
 import typer
+import pandas as pd
+import myterial
 
 from .compound import (
     connections_dependent_on_samples,
@@ -49,7 +51,6 @@ from .stored_results import (
     store_sub_results,
 )
 from .atlas_graph import plot_subset_vis
-import myterial
 
 here = os.path.dirname(os.path.realpath(__file__))
 app = typer.Typer()
@@ -346,14 +347,24 @@ def do_explain(do_vis=True, do_pmf=True, do_dist=True):
             subsample_rate=0.01,
             approx_hypergeo=False,
         )
-        ctrl_main(parse_cfg("recurrent_fig1.cfg"), args)
+        res = ctrl_main(parse_cfg("recurrent_fig1.cfg"), args)
+        dist = res["mpf"]["total"]
+        vals = []
+        for k, v in dist.items():
+            vals.append([k, v])
+
+        cols = ["Number of sampled connected neurons", "Probability"]
+        df = pd.DataFrame(vals, columns=cols)
+        output_location = os.path.join(here, "..", "results", "explain_fig2.csv")
+        df.to_csv(output_location, index=False)
+
+        df = pd.read_csv(output_location)
+        plot_pmf(df, "explain_fig_pmf.pdf")
 
     if do_pmf:
         proportion(
             parse_cfg("recurrent_fig1.cfg"),
-            depths=[
-                1,
-            ],
+            depths=[1],
         )
 
     if do_dist:
@@ -393,10 +404,8 @@ def do_sub(do_full_vis: bool = False, do_probability: bool = True):
     # This is for left hemi
     region_sizes = [333055, 49569]
     num_sampled = [79, 79]
-    # region_sizes = [39000, 5500]
-    # num_sampled = [3, 4]
     block_size = 10
-    simulation_kwargs = dict(max_depth=1, num_cpus=1, num_iters=10000)
+    simulation_kwargs = dict(max_depth=1, num_cpus=1, num_iters=50000)
     plot_subset_vis(
         names,
         ["VISp", "VISl"],
@@ -425,12 +434,15 @@ def do_mouse_regions(vis_only: bool = True):
         ("ILA", "PL"),
         ("PL", "ILA"),
     ]
+    probe_kwargs = [
+        None
+    ] * 8
     colors = [myterial.blue_dark, myterial.pink_darker, myterial.deep_purple_darker]
 
     num_samples = [79, 79]
     interactive = False
     block_size_sub = 10
-    simulation_kwargs = dict(max_depth=1, num_iters=250, num_cpus=1)
+    simulation_kwargs = dict(max_depth=1, num_iters=10000, num_cpus=1)
     mouse_region_exp_probes(
         regions,
         num_samples,
@@ -577,4 +589,6 @@ def do_all(
 
 
 if __name__ == "__main__":
-    app()
+    # app()
+    do_mouse_regions(True)
+    
