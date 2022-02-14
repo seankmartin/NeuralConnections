@@ -454,7 +454,9 @@ def do_hippocampus(ca1_ca3: bool = True, ca1_sub: bool = True):
     # Uses tetrode_ca3_ca1_full
     if ca1_ca3:
         store_tetrode_results_depth()
-        plot_samples_v_prop(load_df("samples_depth_ca3_ca1"), "ca3_ca1_samps_depth.pdf")
+        plot_samples_v_prop(
+            load_df("samples_depth_ca3_ca1.csv"), "ca3_ca1_samps_depth.pdf"
+        )
 
         store_npix_results()
         plot_pmf(load_df("npix_man.csv"), "npix_pmf.pdf")
