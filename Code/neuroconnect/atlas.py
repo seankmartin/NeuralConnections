@@ -11,6 +11,7 @@ from bg_atlasapi import BrainGlobeAtlas, show_atlases
 from skm_pyutils.py_plot import ColorManager
 from one.api import One
 from hilbertcurve.hilbertcurve import HilbertCurve
+from scipy.spatial.transform import Rotation as R
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -787,20 +788,26 @@ def place_probes_at_com(
     hemisphere="left",
     colors=None,
     style="cartoon",
-    join=False,
     interactive=True,
     screenshot_name=None,
+    probe_kwargs=None,
 ):
     """
     Place probes in regions_names at the centre of mass
-    
-    TODO: allow for manual adjustments.
+
+    probe_kwargs allows for manual adjustment of parameters.
+
     """
     brainrender.settings.SHADER_STYLE = style
     brainrender.settings.SHOW_AXES = False
     brainrender.settings.SCREENSHOT_SCALE = 2
     screenshots_folder = os.path.join(here, "..", "figures", "brainrender")
     scene = brainrender.Scene(screenshots_folder=screenshots_folder, inset=False)
+    scene.close()
+    scene = brainrender.Scene(screenshots_folder=screenshots_folder, inset=False)
+
+    if probe_kwargs is None:
+        probe_kwargs = {}
 
     brain_region_meshes = get_brain_region_meshes(
         region_names, atlas_name, hemisphere=hemisphere
@@ -814,14 +821,13 @@ def place_probes_at_com(
     # com = centre of mass
     coms = np.zeros((len(region_names), 3))
 
-    for i, mesh in enumerate(brain_region_meshes):
+    for i, (name, mesh) in enumerate(zip(region_names, brain_region_meshes)):
         bounds = mesh.bounds()
         arr1 = np.array([bounds[0], bounds[2], bounds[4]])
         arr2 = np.array([bounds[1], bounds[3], bounds[5]])
         com = (arr2 + arr1) / 2.0
         coms[i] = com
 
-    for name, mesh in zip(region_names, brain_region_meshes):
         region_color = next(iter_color)
         brain_mesh = brainrender.actor.Actor(
             mesh, name=name, br_class="brain region", color=region_color, alpha=0.3
@@ -831,44 +837,75 @@ def place_probes_at_com(
 
     n_pixel_micron_radius = 100
 
-    if join:
-        atlas = brainrender.Atlas(atlas_name)
-        root_mesh = vedo.load(str(atlas.meshfile_from_structure("root")))
-        top_of_brain = root_mesh.bounds()[2]
-        bottom_of_brain = root_mesh.bounds()[3]
-        for i in range(len(coms) // 2):
-            c1 = coms[i]
-            c2 = coms[i + 1]
+    if isinstance(probe_kwargs, dict):
+        probe_kwargs = [probe_kwargs]
 
-            top = c2
-            bottom = c1
-            if top[1] < bottom[1]:
-                top = c1
-                bottom = c2
-        
-            vec_in_dir = (top - bottom)
+    atlas = brainrender.Atlas(atlas_name)
+    root_mesh = vedo.load(str(atlas.meshfile_from_structure("root")))
+    top_of_brain = root_mesh.bounds()[2]
+
+    for i in range(len(coms) // 2):
+        c1 = coms[i]
+        c2 = coms[i + 1]
+
+        centre_top = c1
+        centre_bottom = c2
+        if centre_top[1] > centre_bottom[1]:
+            centre_top = c2
+            centre_bottom = c1
+
+        scene.add(
+            brainrender.actors.Points(
+                np.array([centre_top, centre_bottom]),
+                name="",
+                colors=["b", "k"],
+                radius=50,
+            )
+        )
+
+    for i in range(len(coms) // 2):
+        region_color = next(iter_color)
+        for probe_dict in probe_kwargs:
+            top_scale = probe_dict.get("top_scale", 1.0)
+            angles_top = probe_dict.get("angles_top", [0, 0, 0])
+            angles_bottom = probe_dict.get("angles_bottom", [0, 0, 0])
+
+            ## Rotate the top
+            r = R.from_euler("zyx", angles_top, degrees=True)
+            rotated_top = r.apply(centre_bottom)
+            top = rotated_top + (centre_top - centre_bottom)
+
+            ## Rotate the bottom
+            r = R.from_euler("zyx", angles_bottom, degrees=True)
+            rotated_bottom = r.apply(centre_top)
+            bottom = rotated_bottom + (centre_bottom - centre_top)
+
+            ## Move to top
+            vec_in_dir = top - bottom
             scale_top = (top_of_brain - top[1]) / vec_in_dir[1]
-            top = top + (1.08 * scale_top * vec_in_dir)
-            scale_bottom = (bottom[1] - bottom_of_brain) / vec_in_dir[1]
-            bottom = bottom - (0.3 * scale_bottom * vec_in_dir)
-            region_color = next(iter_color)
+            top = top + (top_scale * scale_top * vec_in_dir)
+            vec_in_dir = bottom - top
+            vec_in_dir_norm = vec_in_dir / np.linalg.norm(vec_in_dir)
+            bottom = top + (vec_in_dir_norm * 3820)
+
             cylinder = vedo.shapes.Cylinder(
-                pos=[top, bottom], r=n_pixel_micron_radius, alpha=0.3
+                pos=[top, bottom], r=n_pixel_micron_radius, alpha=0.35
+            )
+            cyl_for_br = vedo.shapes.Cylinder(
+                pos=[top, bottom], r=n_pixel_micron_radius, alpha=0.35
             )
             cyl_br = brainrender.actor.Actor(
-                mesh,
+                cyl_for_br,
                 name="Cylinder",
                 br_class="Cylinder",
                 color=region_color,
-                alpha=0.4,
+                alpha=0.35,
             )
             scene.add(cyl_br)
 
-            mesh = vedo.shapes.Cylinder(
-                pos=[top, bottom], r=30, alpha=0.8
-            )
+            cyl_mesh = vedo.shapes.Cylinder(pos=[top, bottom], r=30, alpha=0.8)
             inside_cyl = brainrender.actor.Actor(
-                mesh,
+                cyl_mesh,
                 name="inside",
                 br_class="Cylinder",
                 color=region_color,
@@ -876,20 +913,11 @@ def place_probes_at_com(
             )
             scene.add(inside_cyl)
 
-    else:
-        for com in coms:
-            region_color = next(iter_color)
-            mesh = vedo.shapes.Cylinder(
-                pos=com, height=4500, r=n_pixel_micron_radius, axis=(0, 1, 0), alpha=0.3
+            scene.add(
+                brainrender.actors.Points(
+                    np.array([top, bottom]), name="", colors=["r", "g"], radius=50
+                )
             )
-            cylinder = brainrender.actor.Actor(
-                mesh,
-                name="Cylinder",
-                br_class="Cylinder",
-                color=region_color,
-                alpha=0.4,
-            )
-            scene.add(cylinder)
 
     th = scene.add_brain_region(
         "TH", alpha=0.3, silhouette=False, color=myterial.blue_grey_dark
@@ -942,4 +970,39 @@ if __name__ == "__main__":
 
     #### Visualise COMs
     # place_probes_at_com(["ILA", "PL"])
-    place_probes_at_com(["MOp", "SSp-ll"], join=True)
+    # place_probes_at_com(["MOp", "SSp-ll"], join=True)
+    interactive = True
+    
+
+    probe_kwargs = [
+        {},
+        dict(top_scale=0.8, angles_top=[0, 0, 5], angles_bottom=[0, 0, -5]),
+    ]
+
+    place_probes_at_com(
+        ["MOp", "SSp-ll"],
+        probe_kwargs=probe_kwargs,
+        hemisphere="right",
+        interactive=interactive,
+    )
+
+    probe_kwargs = [
+        {},
+        dict(top_scale=0.8, angles_top=[0, 0, 5], angles_bottom=[0, 0, -5]),
+    ]
+
+    place_probes_at_com(
+        ["SSp-ll", "MOp"],
+        probe_kwargs=probe_kwargs,
+        hemisphere="right",
+        interactive=interactive,
+    )
+
+    place_probes_at_com(
+        ["SSp-ll", "MOp"],
+        probe_kwargs=probe_kwargs,
+        hemisphere="right",
+        interactive=interactive,
+    )
+
+    # vis_steinmetz_with_regions(["ILA", "CA1"])
