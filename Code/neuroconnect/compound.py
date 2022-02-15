@@ -631,6 +631,7 @@ def mouse_region_exp_probes(
     hemisphere="right",
     vis_only=False,
     block_size_sub=10,
+    probe_kwargs=None,
     **simulation_kwargs,
 ):
     """The expected value from different mouse brain regions with probes."""
@@ -638,7 +639,10 @@ def mouse_region_exp_probes(
 
     cols = ["Number of connected neurons", "Probability", "Calculation", "Regions"]
 
-    for r in regions:
+    if probe_kwargs is None:
+        probe_kwargs = [None] * len(regions)
+
+    for r, pk in zip(regions, probe_kwargs):
         final_res_list = []
 
         name = f"{r[0]}_to_{r[1]}_render"
@@ -647,9 +651,9 @@ def mouse_region_exp_probes(
             hemisphere=hemisphere,
             colors=colors,
             style=style,
-            join=True,
             interactive=interactive,
             screenshot_name=name,
+            probe_kwargs=pk,
         )
         if vis_only:
             continue

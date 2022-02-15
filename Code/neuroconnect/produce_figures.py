@@ -434,13 +434,19 @@ def do_mouse_regions(vis_only: bool = True):
         ("ILA", "PL"),
         ("PL", "ILA"),
     ]
+    # Rotation order is zyx
+    # This means the first angle moves left (+), right (-)
+    # The second angle moves left (+), right (-)
+    # The third angle moves up (+), down (-)
     probe_kwargs = [
-        None
-    ] * 8
+        dict(top_scale=1.0, angles_top=[0, 0, 10], angles_bottom=[0, 0, -10])
+    ]
+    
+    probe_kwargs = probe_kwargs + [None] * 7
     colors = [myterial.blue_dark, myterial.pink_darker, myterial.deep_purple_darker]
 
     num_samples = [79, 79]
-    interactive = False
+    interactive = True # TODO TEMP CHANGE
     block_size_sub = 10
     simulation_kwargs = dict(max_depth=1, num_iters=10000, num_cpus=1)
     mouse_region_exp_probes(
@@ -450,6 +456,7 @@ def do_mouse_regions(vis_only: bool = True):
         interactive=interactive,
         block_size_sub=block_size_sub,
         vis_only=vis_only,
+        probe_kwargs=probe_kwargs,
         **simulation_kwargs,
     )
     plot_region_vals(
