@@ -37,8 +37,8 @@ def set_p():
     # )
     sns.set_context(
         "paper",
-        font_scale=1.4,
-        rc={"lines.linewidth": 3.2},
+        font_scale=1.5,
+        rc={"lines.linewidth": 3.6},
     )
 
 
@@ -46,7 +46,7 @@ def set_m():
     sns.set_context(
         "paper",
         font_scale=1.4,
-        rc={"lines.linewidth": 1.5},
+        rc={"lines.linewidth": 1.8},
     )
 
 def plot_visp_visl_shift():
@@ -427,7 +427,54 @@ def main():
     """Defines the plots performed in produce_figures - without performing analysis."""
     print("Starting main plotting")
 
-    # Mouse plots
+    # Figure 1
+    plot_pmf(load_df("explain_fig2.csv"), "explain_fig_pmf.pdf")
+
+    # Figure 2
+    plot_visp_visl_shift()
+
+    # Figure 3
+    plot_region_vals(
+        load_df("mouse_region_exp_probes.csv"),
+        "mouse_region_exp.pdf",
+        x_name="Regions",
+        scale=(12, 5)
+    )
+
+    # Figure 4
+    plot_samples_v_prop(
+            load_df("samples_depth_ca3_ca1.csv"), "ca3_ca1_samps_depth.pdf"
+        )
+    plot_pmf(load_df("npix_man.csv"), "npix_pmf.pdf")
+    df_list = [
+        load_df("connection_samples_hc_vhigh.csv"),
+        load_df("connection_samples_hc_high.csv"),
+        load_df("Connection_samples_hc_high_out.csv"),
+        load_df("connection_samples_hc_low.csv"),
+    ]
+    df_names = [
+        "2.8% (90% to 3.1%)",
+        "1.8% (90% to 2%)",
+        "1.8% (36% to 5%)",
+        "0.8% (70% to 1%)",
+    ]
+    plot_exp_comp(
+        df_list,
+        df_names,
+        "samples_hc_both.pdf",
+        prop=True,
+    )
+    dfs = [
+        load_df("20_sub_vhigh.csv"),
+        load_df("20_sub_high.csv"),
+        load_df("20_sub_out.csv"),
+        load_df("20_sub_low.csv"),
+    ]
+    plot_pmf_comp(dfs, df_names, "ca1_sub_tet_comp.pdf")
+
+    ## Extra figures
+
+    # Mouse plots for full regions
     plot_samples_v_prop(load_df("MOp_to_SSP-ll_depth.csv"), "mouse_samps.pdf")
     plot_region_vals(
         load_df("mouse_region_exp_fig.csv"),
@@ -446,21 +493,6 @@ def main():
     plot_pmf_accuracy(load_df("MOp_to_SSP-ll_pmf_final_1_79.csv"), "pmf_mouse_acc.pdf")
     plot_exp_accuracy(
         load_df("total_b_exp_fig.csv"), "exp_total_b.pdf", prop=True, split=False
-    )
-
-    # Example plots - HC/SUB
-    plot_pmf(load_df("tetrode_man.csv"), "tetrode_pmf.pdf")
-    plot_pmf(load_df("npix_man.csv"), "npix_pmf.pdf")
-    plot_exp_comp(
-        load_df("connection_samples_hc_high.csv"),
-        load_df("connection_samples_hc_low.csv"),
-        "samples_hc_both.pdf",
-        prop=True,
-    )
-    plot_pmf_comp(
-        load_df("tetrode_sub_high.csv"),
-        load_df("tetrode_sub_low.csv"),
-        "ca1_sub_tet_comp.pdf",
     )
 
     # Explanation figures - mostly done in other function
