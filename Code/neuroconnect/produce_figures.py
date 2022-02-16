@@ -309,6 +309,7 @@ def do_examples(do_exp=True, do_pmf=True, do_types=True):
             df_names,
             "samples_hc_both.pdf",
             prop=True,
+            depth=True
         )
         store_sub_results()
         dfs = [
@@ -524,6 +525,7 @@ def do_hippocampus(ca1_ca3: bool = True, ca1_sub: bool = True):
             df_names,
             "samples_hc_both.pdf",
             prop=True,
+            depth=True
         )
         store_sub_results()
         dfs = [
