@@ -2,7 +2,12 @@
 import mpmath
 from collections import OrderedDict
 
-from .connect_math import hypergeometric_pmf, get_dist_mean, marginal_prob
+from .connect_math import (
+    hypergeometric_pmf,
+    get_dist_mean,
+    marginal_prob,
+    combine_dists,
+)
 
 
 class CombProb:
@@ -42,7 +47,7 @@ class CombProb:
         neurons_B,
         recorded_B,
         delta_fn,
-        cache=True,
+        compute_delta=False,
         subsample_rate=None,
         approx_hypergeo=False,
         **delta_params
@@ -57,11 +62,10 @@ class CombProb:
         self.delta_params = delta_params
         self.delta_params["max"] = self.delta_params.get("max", self.M)
         self.verbose = False
-        self.cache = cache
         self.stored = OrderedDict()
         self.each_dist = None
         self.a_to_b_dist = None
-        if (self.delta_params["max_depth"] > 1) and self.delta_params.get(
+        if (self.delta_params.get("max_depth", 1) > 1) and self.delta_params.get(
             "use_mean", True
         ):
             self.subsample_rate = None
@@ -74,15 +78,23 @@ class CombProb:
         self.plot = False
         self.true_plot = False
 
-        if self.cache:
-            self.each_dist, self.a_to_b_dist = self.delta_fn(**delta_params)
-            self.stored = self.final_distribution()
+        if compute_delta:
+            prob_a_senders = self.calculate_distribution_n_senders()
+            self.delta_params["total_samples"] = recorded_A
+            self.each_dist = self.delta_fn(**self.delta_params)
+            self.a_to_b_dist = combine_dists(
+                range(neurons_B + 1), self.each_dist, prob_a_senders, sub=None
+            )
 
-            total = mpmath.nsum(self._prob, [0, self.m], verbose=self.verbose)
-            if not mpmath.almosteq(total, 1.0, rel_eps=0.001):
-                raise RuntimeError(
-                    "Total probability does not sum to 1, got {}".format(total)
-                )
+        else:
+            self.each_dist, self.a_to_b_dist = self.delta_fn(**delta_params)
+        self.stored = self.final_distribution()
+
+        total = mpmath.nsum(self._prob, [0, self.m], verbose=self.verbose)
+        if not mpmath.almosteq(total, 1.0, rel_eps=0.001):
+            raise RuntimeError(
+                "Total probability does not sum to 1, got {}".format(total)
+            )
 
     def calculate_distribution_n_senders(self):
         """
@@ -224,8 +236,6 @@ class CombProb:
 
     def get_all_prob(self):
         """Return cached probabilities to speed up operations."""
-        if not self.cache:
-            raise ValueError("Set cache to true to store all probabilities")
         return self.stored
 
     def expected_total(self, k):
@@ -239,42 +249,9 @@ class CombProb:
         return self._get_val(x)
 
     def _get_val(self, x):
-        if self.cache:
-            if int(x) not in self.stored:
-                res = self.connection_prob(x)
-                self.stored[int(x)] = res
-            else:
-                res = self.stored[int(x)]
-        else:
+        if int(x) not in self.stored:
             res = self.connection_prob(x)
+            self.stored[int(x)] = res
+        else:
+            res = self.stored[int(x)]
         return res
-
-
-if __name__ == "__main__":
-    from connect_math import expected_unique
-
-    # def delta_fn(k, **delta_params):
-    #     max_val = delta_params.get("max", 10000)
-    #     return min(mpmath.mpf(k) * 10, mpmath.mpf(max_val))
-    # def delta_fn(k, **delta_params):
-    #     N = delta_params.get("N")
-    #     K = delta_params.get("K")
-    #     n = delta_params.get("n")
-    #     exp = 0
-    #     for i in range(n):
-    #         exp += i * hypergeometric_pmf(10, 2, k, i)
-    #     print(k, (2 * k) - exp)
-    #     return (2 * k) - exp
-
-    def delta_fn(k, **delta_params):
-        N = delta_params.get("N")
-        connections = delta_params.get("connections")
-        return expected_unique(N, k * connections)
-
-    cp = CombProb(10, 2, 10, 10, 2, delta_fn, N=10, connections=2)
-    # cp = CombProb(
-    #     10000, 10, 1000, 10000, 10, delta_fn,
-    #     N=10000, connections=100)
-    cp.set_verbose(True)
-    print(cp.run(1))
-    # print(cp.run(100))
