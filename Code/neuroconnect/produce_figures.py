@@ -38,6 +38,7 @@ from .plot import (
     plot_visp_visl_shift,
 )
 from .stats_convergence_rate import (
+    test_hyper_convergence_rate,
     test_network_convergence,
     test_config_convergence,
     test_rand_network_convergence,
@@ -257,7 +258,8 @@ def do_accuracy(
         )
 
     if do_growth:
-        print("Not yet implemented growth plot")
+        test_hyper_convergence_rate()
+        test_network_convergence()
 
 
 @app.command()
@@ -602,6 +604,4 @@ def do_all(
 
 
 if __name__ == "__main__":
-    # app()
-    do_mouse_regions(True)
-    
+    app()
