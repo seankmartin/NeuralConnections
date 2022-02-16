@@ -803,8 +803,6 @@ def place_probes_at_com(
     brainrender.settings.SCREENSHOT_SCALE = 2
     screenshots_folder = os.path.join(here, "..", "figures", "brainrender")
     scene = brainrender.Scene(screenshots_folder=screenshots_folder, inset=False)
-    scene.close()
-    scene = brainrender.Scene(screenshots_folder=screenshots_folder, inset=False)
 
     if probe_kwargs is None:
         probe_kwargs = {}
@@ -854,14 +852,14 @@ def place_probes_at_com(
             centre_top = c2
             centre_bottom = c1
 
-        scene.add(
-            brainrender.actors.Points(
-                np.array([centre_top, centre_bottom]),
-                name="",
-                colors=["b", "k"],
-                radius=50,
-            )
-        )
+        # scene.add(
+        #     brainrender.actors.Points(
+        #         np.array([centre_top, centre_bottom]),
+        #         name="",
+        #         colors=["b", "k"],
+        #         radius=50,
+        #     )
+        # )
 
     for i in range(len(coms) // 2):
         region_color = next(iter_color)
@@ -913,11 +911,11 @@ def place_probes_at_com(
             )
             scene.add(inside_cyl)
 
-            scene.add(
-                brainrender.actors.Points(
-                    np.array([top, bottom]), name="", colors=["r", "g"], radius=50
-                )
-            )
+            # scene.add(
+            #     brainrender.actors.Points(
+            #         np.array([top, bottom]), name="", colors=["r", "g"], radius=50
+            #     )
+            # )
 
     th = scene.add_brain_region(
         "TH", alpha=0.3, silhouette=False, color=myterial.blue_grey_dark
@@ -972,37 +970,63 @@ if __name__ == "__main__":
     # place_probes_at_com(["ILA", "PL"])
     # place_probes_at_com(["MOp", "SSp-ll"], join=True)
     interactive = True
-    
+    f1 = False
+    f2 = True
+    f3 = False
+    f4 = False
 
-    probe_kwargs = [
-        {},
-        dict(top_scale=0.8, angles_top=[0, 0, 5], angles_bottom=[0, 0, -5]),
-    ]
+    if f1:
+        probe_kwargs = [
+            {},
+            dict(top_scale=0.8, angles_top=[0, 0, 5], angles_bottom=[0, 0, -5]),
+            dict(top_scale=0.9, angles_top=[0, 0, 3], angles_bottom=[0, 0, -2]),
+        ]
 
-    place_probes_at_com(
-        ["MOp", "SSp-ll"],
-        probe_kwargs=probe_kwargs,
-        hemisphere="right",
-        interactive=interactive,
-    )
+        place_probes_at_com(
+            ["MOp", "SSp-ll"],
+            probe_kwargs=probe_kwargs,
+            hemisphere="right",
+            interactive=interactive,
+        )
 
-    probe_kwargs = [
-        {},
-        dict(top_scale=0.8, angles_top=[0, 0, 5], angles_bottom=[0, 0, -5]),
-    ]
+    if f2:
+        probe_kwargs = [
+            {},
+            dict(top_scale=0.4, angles_top=[0, 0, 10], angles_bottom=[0, 0, -5]),
+            dict(top_scale=0.4, angles_top=[1, 0, 5], angles_bottom=[1, 0, -2]),
+        ]
 
-    place_probes_at_com(
-        ["SSp-ll", "MOp"],
-        probe_kwargs=probe_kwargs,
-        hemisphere="right",
-        interactive=interactive,
-    )
+        place_probes_at_com(
+            ("VISp", "VISl"),
+            probe_kwargs=probe_kwargs,
+            hemisphere="right",
+            interactive=interactive,
+        )
 
-    place_probes_at_com(
-        ["SSp-ll", "MOp"],
-        probe_kwargs=probe_kwargs,
-        hemisphere="right",
-        interactive=interactive,
-    )
+    if f3:
+        probe_kwargs = [
+            {},
+            dict(top_scale=0.8, angles_top=[0, 0, 5], angles_bottom=[0, 0, -5]),
+            dict(top_scale=0.83, angles_top=[0, 0, 3], angles_bottom=[0, 0, -2]),
+        ]
 
-    # vis_steinmetz_with_regions(["ILA", "CA1"])
+        place_probes_at_com(
+            ("AUDp", "AUDpo"),
+            probe_kwargs=probe_kwargs,
+            hemisphere="right",
+            interactive=interactive,
+        )
+
+    if f4:
+        probe_kwargs = [
+            {},
+            dict(top_scale=0.5, angles_top=[0, 0, 10], angles_bottom=[0, 0, -5]),
+            dict(top_scale=0.83, angles_top=[0, 0, 3], angles_bottom=[0, 0, -2]),
+        ]
+
+        place_probes_at_com(
+            ("ILA", "PL"),
+            probe_kwargs=probe_kwargs,
+            hemisphere="right",
+            interactive=interactive,
+        )
