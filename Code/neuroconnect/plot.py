@@ -49,6 +49,7 @@ def set_m():
         rc={"lines.linewidth": 1.8},
     )
 
+
 def plot_visp_visl_shift():
     df = load_df("sub_VISp_VISl_depth_1.csv")
     nshifted = df[df["Shifted"] == "original"]
@@ -63,11 +64,12 @@ def plot_visp_visl_shift():
     df = load_df("sub_VISp_VISl_stats_all_ds.csv")
     nshifted = df[df["Shifted"] == "original"]
     shifted = df[df["Shifted"] == "shifted"]
-    
+
     o_name = "original-visp-visl-sub-all-depths.pdf"
     plot_pmf_depth(nshifted, o_name)
     o_name = "shifted-visp-visl-sub-all-depths.pdf"
     plot_pmf_depth(shifted, o_name)
+
 
 def save(fig, out_name):
     """Save the figure to figures/out_name."""
@@ -216,7 +218,7 @@ def plot_pmf_accuracy(df, out_name):
 
 
 def plot_pmf_comp(dfs, names, out_name):
-    """Plot the rate of convergence of the dataframe."""
+    """Plot the comparison of pmfs in the dataframe."""
     df = None
     for df_i, name_i in zip(dfs, names):
         df_i["Connectivity"] = [name_i for _ in range(len(df_i))]
@@ -232,6 +234,26 @@ def plot_pmf_comp(dfs, names, out_name):
         hue="Connectivity",
         style="Connectivity",
         data=df,
+        ax=ax,
+    )
+    ax.xaxis.set_major_locator(MaxNLocator(nbins=11, integer=True, min_n_ticks=10))
+    plt.xlabel("Number of sampled connected neurons", fontsize=LABELSIZE)
+    plt.ylabel("Probability", fontsize=LABELSIZE)
+    despine()
+    save(fig, out_name)
+
+
+def plot_pmf_converge(df, out_name):
+    """Plot the comparison of pmfs in the dataframe."""
+    fig, ax = plt.subplots()
+    set_p()
+    sns.lineplot(
+        x="Number of sampled connected neurons",
+        y="Probability",
+        hue="Calculation",
+        style="Calculation",
+        data=df,
+        ax=ax,
     )
     ax.xaxis.set_major_locator(MaxNLocator(nbins=11, integer=True, min_n_ticks=10))
     plt.xlabel("Number of sampled connected neurons", fontsize=LABELSIZE)
@@ -438,13 +460,11 @@ def main():
         load_df("mouse_region_exp_probes.csv"),
         "mouse_region_exp.pdf",
         x_name="Regions",
-        scale=(12, 5)
+        scale=(12, 5),
     )
 
     # Figure 4
-    plot_samples_v_prop(
-            load_df("samples_depth_ca3_ca1.csv"), "ca3_ca1_samps_depth.pdf"
-        )
+    plot_samples_v_prop(load_df("samples_depth_ca3_ca1.csv"), "ca3_ca1_samps_depth.pdf")
     plot_pmf(load_df("npix_man.csv"), "npix_pmf.pdf")
     df_list = [
         load_df("connection_samples_hc_vhigh.csv"),
@@ -511,6 +531,12 @@ def main():
             "b_each_eg.pdf",
             "b_fin_eg.pdf",
         ],
+    )
+
+    # Convergence rate
+    plot_pmf_converge(load_df("convergence_pmf.csv"), "stats_converge.pdf")
+    plot_pmf_converge(
+        load_df("stats_convergence_fixed.csv"), "stats_fixed_converge.pdf"
     )
 
 
