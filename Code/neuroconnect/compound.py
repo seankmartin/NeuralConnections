@@ -721,10 +721,6 @@ def mouse_region_exp_probes(
         print("Saved dataframe results to {}".format(fname))
         df_to_file(df, fname, index=False)
 
-    # Combine and save expected
-    if vis_only:
-        return
-
     l = []
     for r in regions:
         max_depth = simulation_kwargs["max_depth"]
@@ -732,7 +728,7 @@ def mouse_region_exp_probes(
         fname = os.path.join(here, "..", "results", fname)
         df = df_from_file(fname)
 
-        for calculation in ["Stats", "MC"]:
+        for calculation in ["Monte Carlo simulation", "Statistical estimation"]:
             df_stats = df[df[cols[2]] == calculation]
             expected = (df_stats[cols[0]] * df_stats[cols[1]]).sum()
             if num_sampled[1] == 0:
