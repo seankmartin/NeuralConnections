@@ -79,12 +79,17 @@ def test_hyper_convergence_rate(N, K, n, num_iters=1000, num_cpus=1):
 def test_network_convergence(num_cpus=1):
     """Test how fast the simulated networks converge to stability."""
 
-    def delta_fn(k, **delta_params):
+    def delta_fn(**delta_params):
         N = delta_params.get("N")
         connections = delta_params.get("connections")
-        return expected_unique(N, k * connections)
+        total_samples = delta_params.get("total_samples")
+        odict = OrderedDict()
+        for i in range(total_samples + 1):
+            odict[i] = OrderedDict()
+            odict[i][int(expected_unique(N, i * connections))] = 1.0
+        return odict
 
-    cp = CombProb(1000, 50, 100, 1000, 50, delta_fn, connections=20, N=1000)
+    cp = CombProb(1000, 50, 100, 1000, 50, delta_fn, True, connections=20, N=1000)
 
     vals = []
     result = {
@@ -364,8 +369,3 @@ def main(N, K, n, num_iters):
     print("Writing graph convergence to file in results directory")
     control_main(cfg, args)
     return res1
-
-
-if __name__ == "__main__":
-    np.random.seed(42)
-    main(100, 10, 10, 1000)
