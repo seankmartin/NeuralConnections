@@ -107,10 +107,6 @@ def mo_to_ss_acc():
     )
 
 
-# TODO extract each of these to separate functions and add commands.
-# Then can install completion to make it quite fast to use.
-
-
 @app.command()
 def do_mouse(do_mat_vis=True, do_comp=True, do_exp=True):
     """Produce figures related to blue brain data."""
@@ -439,14 +435,21 @@ def do_mouse_regions(vis_only: bool = True):
     # The second angle moves left (+), right (-)
     # The third angle moves up (+), down (-)
     probe_kwargs = [
-        dict(top_scale=1.0, angles_top=[0, 0, 10], angles_bottom=[0, 0, -10])
+        dict(top_scale=0.95, angles_top=[0, 0, 3], angles_bottom=[0, 0, -2]),
+        dict(top_scale=0.95, angles_top=[0, 0, 3], angles_bottom=[0, 0, -2]),
+        dict(top_scale=0.35, angles_top=[0, 0, 10], angles_bottom=[0, 0, -5]),
+        dict(top_scale=0.35, angles_top=[0, 0, 10], angles_bottom=[0, 0, -5]),
+        dict(top_scale=0.3, angles_top=[0, 0, 0], angles_bottom=[0, 0, 0]),
+        dict(top_scale=0.3, angles_top=[0, 0, 0], angles_bottom=[0, 0, 0]),
+        dict(top_scale=0.5, angles_top=[0, 0, 10], angles_bottom=[0, 0, -5]),
+        dict(top_scale=0.5, angles_top=[0, 0, 10], angles_bottom=[0, 0, -5]),
     ]
     
     probe_kwargs = probe_kwargs + [None] * 7
     colors = [myterial.blue_dark, myterial.pink_darker, myterial.deep_purple_darker]
 
     num_samples = [79, 79]
-    interactive = True # TODO TEMP CHANGE
+    interactive = False
     block_size_sub = 10
     simulation_kwargs = dict(max_depth=1, num_iters=10000, num_cpus=1)
     mouse_region_exp_probes(
@@ -463,6 +466,7 @@ def do_mouse_regions(vis_only: bool = True):
         load_df("mouse_region_exp_probes.csv"),
         "mouse_region_exp.pdf",
         x_name="Regions",
+        scale=(12, 5)
     )
 
 
