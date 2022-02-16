@@ -122,7 +122,38 @@ Note use of regular expressions below:
 #### Outputs
 
 1. `figures\brainrender\{Region1}_to_{Region2}_render.png` for all brain region pairs.
-2. `figures\`
+2. `figures\{Region1}_to_{Region2}_matrix_subbed.pdf` for all brain region pairs.
+3. `results\sub_regions_{Region1}_{Region2}_depth_1.csv` for all brain region pairs.
+4. `results\mouse_region_exp_probes.csv`
+5. `figures\mouse_region_exp.pdf`
+
+### Figure 4
+
+#### Inputs
+
+1. `configs\tetrode_ca3_ca1_full.cfg`
+2. `configs\ca3_ca1.cfg`
+3. `configs\ca1_sub_high.cfg`
+4. `configs\ca1_sub_high_out.cfg`
+5. `configs\ca1_sub_low.cfg`
+6. `configs\ca1_sub_vhigh.cfg`
+
+#### Outputs
+
+1. `results\samples_depth_ca3_ca1.csv`
+2. `figures\ca3_ca1_samps_depth.pdf`
+3. `results\npix_man.csv`
+4. `figures\npix_pmf.pdf`
+5. `results\connection_samples_hc_vhigh.csv`
+6. `results\connection_samples_hc_high.csv`
+7. `results\Connection_samples_hc_high_out.csv`
+8. `results\connection_samples_hc_low.csv`
+9. `figures\samples_hc_both.pdf`
+10. `results\20_sub_vhigh.csv`
+11. `results\20_sub_high.csv`
+12. `results\20_sub_out.csv`
+13. `results\20_sub_low.csv`
+14. `figures\ca1_sub_tet_comp.pdf`
 
 ### Profiling the code
 
