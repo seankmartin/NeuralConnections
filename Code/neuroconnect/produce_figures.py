@@ -271,7 +271,7 @@ def do_examples(do_exp=True, do_pmf=True, do_types=True):
         store_tetrode_results()
         plot_pmf(load_df("tetrode_man.csv"), "tetrode_pmf.pdf")
         store_npix_results()
-        plot_pmf(load_df("npix_man.csv"), "npix_pmf.pdf")
+        plot_pmf(load_df("npix_probe_ca3_ca1.csv"), "npix_pmf.pdf")
     if do_types:
         kwargs = {
             "num_iters": 1000,
@@ -311,7 +311,7 @@ def do_examples(do_exp=True, do_pmf=True, do_types=True):
             df_names,
             "samples_hc_both.pdf",
             prop=True,
-            depth=True
+            depth=False
         )
         store_sub_results()
         dfs = [
@@ -485,7 +485,7 @@ def do_hippocampus(ca1_ca3: bool = True, ca1_sub: bool = True):
         )
 
         store_npix_results()
-        plot_pmf(load_df("npix_man.csv"), "npix_pmf.pdf")
+        plot_pmf(load_df("npix_probe_ca3_ca1.csv"), "npix_pmf.pdf")
 
     # CA1 SUB figures
     if ca1_sub:
@@ -496,42 +496,36 @@ def do_hippocampus(ca1_ca3: bool = True, ca1_sub: bool = True):
             "num_graphs": 0,
             "sr": 0.01,
             "clt_start": 10,
-            "fin_depth": 3,
+            "fin_depth": 1,
         }
         connections_dependent_on_samples(
-            parse_cfg("ca1_sub_high.cfg"), "hc_high", **kwargs
+            parse_cfg("probe_ca1_sub_full_high.cfg"), "hc_high", **kwargs
         )
         connections_dependent_on_samples(
-            parse_cfg("ca1_sub_high_out.cfg"), "hc_high_out", **kwargs
+            parse_cfg("probe_ca1_sub_full_med.cfg"), "hc_med", **kwargs
         )
         connections_dependent_on_samples(
-            parse_cfg("ca1_sub_low.cfg"), "hc_low", **kwargs
-        )
-        connections_dependent_on_samples(
-            parse_cfg("ca1_sub_vhigh.cfg"), "hc_vhigh", **kwargs
+            parse_cfg("probe_ca1_sub_full_low.cfg"), "hc_low", **kwargs
         )
         df_list = [
-            load_df("connection_samples_hc_vhigh.csv"),
             load_df("connection_samples_hc_high.csv"),
-            load_df("Connection_samples_hc_high_out.csv"),
+            load_df("Connection_samples_hc_med.csv"),
             load_df("connection_samples_hc_low.csv"),
         ]
         df_names = [
-            "2.8% (90% to 3.1%)",
-            "1.8% (90% to 2%)",
             "1.8% (36% to 5%)",
-            "0.8% (70% to 1%)",
+            "0.5% (10% to 5%)",
+            "0.2% (16% to 1.1%)",
         ]
         plot_exp_comp(
             df_list,
             df_names,
             "samples_hc_both.pdf",
             prop=True,
-            depth=True
+            depth=False
         )
         store_sub_results()
         dfs = [
-            load_df("20_sub_vhigh.csv"),
             load_df("20_sub_high.csv"),
             load_df("20_sub_out.csv"),
             load_df("20_sub_low.csv"),
@@ -554,6 +548,28 @@ def produce_figures(
         figure3()
     if figure_4:
         figure4()
+
+    # TODO TEMP remove this later
+    regions = [
+        ("MOp", "SSp-ll"),
+        ("SSp-ll", "MOp"),
+        ("VISp", "VISl"),
+        ("VISl", "VISp"),
+        ("AUDp", "AUDpo"),
+        ("AUDpo", "AUDp"),
+        ("ILA", "PL"),
+        ("PL", "ILA"),
+    ]
+    depths = [1, 1, 1, 1, 1, 1, 1, 1]
+    num_samples = [79, 79]
+    mouse_region_exp(
+        regions, depths, "fig", num_samples, num_iters=1, do_graph=False
+    )
+    plot_region_vals(
+        load_df("mouse_region_exp_fig.csv"),
+        "mouse_region_exp.pdf",
+        x_name="Regions",
+    )
 
 
 @app.command()

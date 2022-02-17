@@ -87,6 +87,7 @@ def plot_samples_v_prop(df, out_name="depth_plot.pdf"):
     """Plot the number of samples against proportion of connections."""
     fig, ax = plt.subplots()
     set_p()
+    df["Max distance"] = df["Max distance"].astype("category")
     sns.lineplot(
         x="Number of samples",
         y="Proportion of connections",
@@ -130,6 +131,7 @@ def plot_pmf_depth(df, out_name, full=False):
     """Plot the pmf from the given dataframe."""
     fig, ax = plt.subplots()
     set_p()
+    df["Max distance"] = df["Max distance"].astype("category")
     sns.lineplot(
         x="Number of connected neurons",
         y="Probability",
@@ -465,28 +467,25 @@ def main():
 
     # Figure 4
     plot_samples_v_prop(load_df("samples_depth_ca3_ca1.csv"), "ca3_ca1_samps_depth.pdf")
-    plot_pmf(load_df("npix_man.csv"), "npix_pmf.pdf")
+    plot_pmf(load_df("npix_probe_ca3_ca1.csv"), "npix_pmf.pdf")
     df_list = [
-        load_df("connection_samples_hc_vhigh.csv"),
         load_df("connection_samples_hc_high.csv"),
-        load_df("Connection_samples_hc_high_out.csv"),
+        load_df("Connection_samples_hc_med.csv"),
         load_df("connection_samples_hc_low.csv"),
     ]
     df_names = [
-        "2.8% (90% to 3.1%)",
-        "1.8% (90% to 2%)",
         "1.8% (36% to 5%)",
-        "0.8% (70% to 1%)",
+        "0.5% (10% to 5%)",
+        "0.2% (16% to 1.1%)",
     ]
     plot_exp_comp(
         df_list,
         df_names,
         "samples_hc_both.pdf",
         prop=True,
-        depth=True,
+        depth=False,
     )
     dfs = [
-        load_df("20_sub_vhigh.csv"),
         load_df("20_sub_high.csv"),
         load_df("20_sub_out.csv"),
         load_df("20_sub_low.csv"),

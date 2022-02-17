@@ -1,7 +1,8 @@
 # Please place here 
 
 ## 1 - OSF data
-All the files from https://osf.io/u396f/
+
+All the files from [OSF u396f](https://osf.io/u396f/)
 
 ## OR 2 - Raw data from blue brain
 
@@ -20,3 +21,7 @@ All the files from https://osf.io/u396f/
 
     https://portal.bluebrain.epfl.ch/downloads/instance/4/regions/visl/target_hemisphere/left/ - ipsi matrix and indices and local (instance 4)
     https://portal.bluebrain.epfl.ch/downloads/instance/4/regions/visp/target_hemisphere/left/ - ipsi matrix and indices and local (instance 4)
+
+## Additionally Steinmetz et al.
+
+[Figshare steinmetz et al. 9974357](https://figshare.com/articles/dataset/Distributed_coding_of_choice_action_and_engagement_across_the_mouse_brain/9974357)
