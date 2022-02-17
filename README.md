@@ -27,7 +27,7 @@ For example:
 
 ```
 cd Code
-python cli.py -cfg tetrode_ca1_sub.cfg
+python cli.py --cfg tetrode_ca1_sub.cfg
 ```
 
 ### Code documentation

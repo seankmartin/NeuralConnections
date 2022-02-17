@@ -69,10 +69,10 @@ class CodeTimeUI(DesignerUI):
         self.connect_r = self.ui.CustR
         self.connect_a = self.ui.CustA
         self.connect_b = self.ui.CustB
-        self.connect_f.setEnabled(False)
-        self.connect_r.setEnabled(False)
-        self.connect_a.setEnabled(False)
-        self.connect_b.setEnabled(False)
+        self.connect_f.setEnabled(True)
+        self.connect_r.setEnabled(True)
+        self.connect_a.setEnabled(True)
+        self.connect_b.setEnabled(True)
 
         # Parameters
         self.params = {}
@@ -113,7 +113,8 @@ class CodeTimeUI(DesignerUI):
     def fConnect(self):
         self.selectFile()
         try:
-            self.connect_dists["forward"] = self.parse_dist(self.last_loaded)
+            if os.path.isfile(self.last_loaded):
+                self.connect_dists["forward"] = self.parse_dist(self.last_loaded)
         except BaseException:
             tb = traceback.format_exc()
             self.info_text.setText(
@@ -123,7 +124,8 @@ class CodeTimeUI(DesignerUI):
     def rConnect(self):
         self.selectFile()
         try:
-            self.connect_dists["recurrent"] = self.parse_dist(self.last_loaded)
+            if os.path.isfile(self.last_loaded):
+                self.connect_dists["recurrent"] = self.parse_dist(self.last_loaded)
         except BaseException:
             tb = traceback.format_exc()
             self.info_text.setText(
@@ -133,7 +135,8 @@ class CodeTimeUI(DesignerUI):
     def aConnect(self):
         self.selectFile()
         try:
-            self.connect_dists["localA"] = self.parse_dist(self.last_loaded)
+            if os.path.isfile(self.last_loaded):
+                self.connect_dists["localA"] = self.parse_dist(self.last_loaded)
         except BaseException:
             tb = traceback.format_exc()
             self.info_text.setText(
@@ -143,7 +146,8 @@ class CodeTimeUI(DesignerUI):
     def bConnect(self):
         self.selectFile()
         try:
-            self.connect_dists["localB"] = self.parse_dist(self.last_loaded)
+            if os.path.isfile(self.last_loaded):
+                self.connect_dists["localB"] = self.parse_dist(self.last_loaded)
         except BaseException:
             tb = traceback.format_exc()
             self.info_text.setText(
@@ -175,7 +179,10 @@ class CodeTimeUI(DesignerUI):
         self.last_loaded, _filter = self.file_dialog.getOpenFileName(
             self.window, "Distribution to load", default_dir
         )
-        self.info_text.setText("Loaded distribution from {}".format(self.last_loaded))
+        if os.path.isfile(self.last_loaded):
+            self.info_text.setText(
+                "Loaded distribution from {}".format(self.last_loaded)
+            )
 
     def parse_info(self):
         """Parse out the QtWidgets."""
@@ -271,6 +278,9 @@ class CodeTimeUI(DesignerUI):
         cfg["Setup"]["do_only_none"] = False
         cfg["Setup"]["gen_graph_each_iter"] = False
         cfg["Setup"]["save_dir"] = self.file_location
+        cfg["Setup"]["use_full_region"] = True
+        cfg["Stats"] = {}
+        cfg["Stats"]["region_sub_params"] = {}
 
         return cfg, ns
 
