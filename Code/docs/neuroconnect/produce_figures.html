@@ -3,15 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.7.5" />
+<meta name="generator" content="pdoc 0.10.0" />
 <title>neuroconnect.produce_figures API documentation</title>
-<meta name="description" content="Produce all the paper figures." />
-<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
-<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
-<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
-<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<meta name="description" content="Produce all the paper figures …" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
 <style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
 </head>
 <body>
 <main>
@@ -21,19 +23,24 @@
 </header>
 <section id="section-intro">
 <p>Produce all the paper figures.</p>
+<p>See also plot.py</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">&#34;&#34;&#34;Produce all the paper figures.&#34;&#34;&#34;
+<pre><code class="python">&#34;&#34;&#34;
+Produce all the paper figures.
+
+See also plot.py
+&#34;&#34;&#34;
 import os
 from configparser import ConfigParser
 from types import SimpleNamespace
 
-import numpy as np
+import typer
 import pandas as pd
+import myterial
 
-from .matrix import main as mouse_main
 from .compound import (
     connections_dependent_on_samples,
     proportion,
@@ -43,7 +50,9 @@ from .compound import (
     mouse_region_exp,
     out_exp,
     explain_calc,
+    mouse_region_exp_probes,
 )
+from .matrix import main as mouse_main
 from .main import main as ctrl_main
 from .plot import (
     plot_exp_accuracy,
@@ -56,8 +65,10 @@ from .plot import (
     plot_pmf,
     plot_exp_comp,
     plot_pmf_comp,
+    plot_visp_visl_shift,
 )
 from .stats_convergence_rate import (
+    test_hyper_convergence_rate,
     test_network_convergence,
     test_config_convergence,
     test_rand_network_convergence,
@@ -65,11 +76,15 @@ from .stats_convergence_rate import (
 from .stored_results import (
     store_region_results,
     store_tetrode_results,
+    store_tetrode_results_full,
+    store_tetrode_results_depth,
     store_npix_results,
     store_sub_results,
 )
+from .atlas_graph import plot_subset_vis
 
 here = os.path.dirname(os.path.realpath(__file__))
+app = typer.Typer()
 
 
 def parse_cfg(name):
@@ -123,6 +138,7 @@ def mo_to_ss_acc():
     )
 
 
+@app.command()
 def do_mouse(do_mat_vis=True, do_comp=True, do_exp=True):
     &#34;&#34;&#34;Produce figures related to blue brain data.&#34;&#34;&#34;
     if do_mat_vis:
@@ -155,13 +171,14 @@ def do_mouse(do_mat_vis=True, do_comp=True, do_exp=True):
         )
 
 
+@app.command()
 def do_accuracy(
-    do_samples=True,
-    do_pmf=True,
-    do_regions=True,
-    do_mouse_acc=True,
-    do_exp=True,
-    do_growth=True,
+    do_samples: bool = True,
+    do_pmf: bool = True,
+    do_regions: bool = False,
+    do_mouse_acc: bool = False,
+    do_exp: bool = True,
+    do_growth: bool = False,
 ):
     &#34;&#34;&#34;Produce figures related to method accuracy.&#34;&#34;&#34;
     print(&#34;Plotting figures related to accuracy&#34;)
@@ -235,7 +252,11 @@ def do_accuracy(
         ]
         depths = [1, 1, 1, 3, 1]
         distance_dependent_on_regions(
-            cfg_names, r_names, depths, &#34;fig&#34;, num_iters=20000,
+            cfg_names,
+            r_names,
+            depths,
+            &#34;fig&#34;,
+            num_iters=20000,
         )
         plot_region_sim(load_df(&#34;region_bhatt_fig.csv&#34;), &#34;region_acc_bhatt.pdf&#34;)
 
@@ -267,9 +288,11 @@ def do_accuracy(
         )
 
     if do_growth:
-        print(&#34;Not yet implemented growth plot&#34;)
+        test_hyper_convergence_rate()
+        test_network_convergence()
 
 
+@app.command()
 def do_examples(do_exp=True, do_pmf=True, do_types=True):
     &#34;&#34;&#34;Produce figures related to examples.&#34;&#34;&#34;
     if do_exp:
@@ -314,7 +337,11 @@ def do_examples(do_exp=True, do_pmf=True, do_types=True):
             &#34;0.8% (70% to 1%)&#34;,
         ]
         plot_exp_comp(
-            df_list, df_names, &#34;samples_hc_both.pdf&#34;, prop=True,
+            df_list,
+            df_names,
+            &#34;samples_hc_both.pdf&#34;,
+            prop=True,
+            depth=True
         )
         store_sub_results()
         dfs = [
@@ -326,6 +353,7 @@ def do_examples(do_exp=True, do_pmf=True, do_types=True):
         plot_pmf_comp(dfs, df_names, &#34;ca1_sub_tet_comp.pdf&#34;)
 
 
+@app.command()
 def do_explain(do_vis=True, do_pmf=True, do_dist=True):
     &#34;&#34;&#34;Produce figures to explain the problem at hand.&#34;&#34;&#34;
     if do_vis:
@@ -348,10 +376,25 @@ def do_explain(do_vis=True, do_pmf=True, do_dist=True):
             subsample_rate=0.01,
             approx_hypergeo=False,
         )
-        ctrl_main(parse_cfg(&#34;recurrent_fig1.cfg&#34;), args)
+        res = ctrl_main(parse_cfg(&#34;recurrent_fig1.cfg&#34;), args)
+        dist = res[&#34;mpf&#34;][&#34;total&#34;]
+        vals = []
+        for k, v in dist.items():
+            vals.append([k, v])
+
+        cols = [&#34;Number of sampled connected neurons&#34;, &#34;Probability&#34;]
+        df = pd.DataFrame(vals, columns=cols)
+        output_location = os.path.join(here, &#34;..&#34;, &#34;results&#34;, &#34;explain_fig2.csv&#34;)
+        df.to_csv(output_location, index=False)
+
+        df = pd.read_csv(output_location)
+        plot_pmf(df, &#34;explain_fig_pmf.pdf&#34;)
 
     if do_pmf:
-        proportion(parse_cfg(&#34;recurrent_fig1.cfg&#34;), depths=[1,])
+        proportion(
+            parse_cfg(&#34;recurrent_fig1.cfg&#34;),
+            depths=[1],
+        )
 
     if do_dist:
         explain_calc(parse_cfg(&#34;recurrent_fig1.cfg&#34;), out_name=&#34;eg&#34;, sr=0.01)
@@ -370,7 +413,206 @@ def do_explain(do_vis=True, do_pmf=True, do_dist=True):
         plot_dist_explain(dfs, names)
 
 
-def do_all(mouse=True, explain=True, accuracy=True, examples=True):
+@app.command()
+def do_sub(do_full_vis: bool = False, do_probability: bool = True):
+    &#34;&#34;&#34;Subset figures with probes.&#34;&#34;&#34;
+    names = [
+        &#34;full_matrix_vis_VISl_VISp.pdf&#34;,
+        &#34;sub_matrix_vis_VISl_VISp.pdf&#34;,
+        &#34;probe_matrix_vis_visl_VISp.pdf&#34;,
+        &#34;brainrender_visl_visp&#34;,
+    ]
+    colors = [
+        myterial.blue_dark,
+        myterial.pink_darker,
+        myterial.indigo_dark,
+        myterial.salmon_darker,
+    ]
+    # This is for right hemi
+    # region_sizes = [391292, 55816]
+    # This is for left hemi
+    region_sizes = [333055, 49569]
+    num_sampled = [79, 79]
+    block_size = 10
+    simulation_kwargs = dict(max_depth=1, num_cpus=1, num_iters=50000)
+    plot_subset_vis(
+        names,
+        [&#34;VISp&#34;, &#34;VISl&#34;],
+        region_sizes,
+        num_sampled,
+        colors=colors,
+        do_full_vis=do_full_vis,
+        do_probability=do_probability,
+        block_size_sub=block_size,
+        hemisphere=&#34;left&#34;,
+        **simulation_kwargs,
+    )
+    plot_visp_visl_shift()
+
+
+@app.command()
+def do_mouse_regions(vis_only: bool = True):
+    &#34;&#34;&#34;Mouse expected with probes through COM and 79 cells&#34;&#34;&#34;
+    regions = [
+        (&#34;MOp&#34;, &#34;SSp-ll&#34;),
+        (&#34;SSp-ll&#34;, &#34;MOp&#34;),
+        (&#34;VISp&#34;, &#34;VISl&#34;),
+        (&#34;VISl&#34;, &#34;VISp&#34;),
+        (&#34;AUDp&#34;, &#34;AUDpo&#34;),
+        (&#34;AUDpo&#34;, &#34;AUDp&#34;),
+        (&#34;ILA&#34;, &#34;PL&#34;),
+        (&#34;PL&#34;, &#34;ILA&#34;),
+    ]
+    # Rotation order is zyx
+    # This means the first angle moves left (+), right (-)
+    # The second angle moves left (+), right (-)
+    # The third angle moves up (+), down (-)
+    probe_kwargs = [
+        dict(top_scale=0.95, angles_top=[0, 0, 3], angles_bottom=[0, 0, -2]),
+        dict(top_scale=0.95, angles_top=[0, 0, 3], angles_bottom=[0, 0, -2]),
+        dict(top_scale=0.35, angles_top=[0, 0, 10], angles_bottom=[0, 0, -5]),
+        dict(top_scale=0.35, angles_top=[0, 0, 10], angles_bottom=[0, 0, -5]),
+        dict(top_scale=0.3, angles_top=[0, 0, 0], angles_bottom=[0, 0, 0]),
+        dict(top_scale=0.3, angles_top=[0, 0, 0], angles_bottom=[0, 0, 0]),
+        dict(top_scale=0.5, angles_top=[0, 0, 10], angles_bottom=[0, 0, -5]),
+        dict(top_scale=0.5, angles_top=[0, 0, 10], angles_bottom=[0, 0, -5]),
+    ]
+    
+    probe_kwargs = probe_kwargs + [None] * 7
+    colors = [myterial.blue_dark, myterial.pink_darker, myterial.deep_purple_darker]
+
+    num_samples = [79, 79]
+    interactive = False
+    block_size_sub = 10
+    simulation_kwargs = dict(max_depth=1, num_iters=10000, num_cpus=1)
+    mouse_region_exp_probes(
+        regions,
+        num_samples,
+        colors=colors,
+        interactive=interactive,
+        block_size_sub=block_size_sub,
+        vis_only=vis_only,
+        probe_kwargs=probe_kwargs,
+        **simulation_kwargs,
+    )
+    plot_region_vals(
+        load_df(&#34;mouse_region_exp_probes.csv&#34;),
+        &#34;mouse_region_exp.pdf&#34;,
+        x_name=&#34;Regions&#34;,
+        scale=(12, 5)
+    )
+
+
+@app.command()
+def do_hippocampus(ca1_ca3: bool = True, ca1_sub: bool = True):
+    # CA3 CA1 figures
+
+    # Uses tetrode_ca3_ca1_full
+    if ca1_ca3:
+        store_tetrode_results_depth()
+        plot_samples_v_prop(
+            load_df(&#34;samples_depth_ca3_ca1.csv&#34;), &#34;ca3_ca1_samps_depth.pdf&#34;
+        )
+
+        store_npix_results()
+        plot_pmf(load_df(&#34;npix_man.csv&#34;), &#34;npix_pmf.pdf&#34;)
+
+    # CA1 SUB figures
+    if ca1_sub:
+        kwargs = {
+            &#34;num_iters&#34;: 1000,
+            &#34;do_graph&#34;: False,
+            &#34;use_mean&#34;: True,
+            &#34;num_graphs&#34;: 0,
+            &#34;sr&#34;: 0.01,
+            &#34;clt_start&#34;: 10,
+            &#34;fin_depth&#34;: 3,
+        }
+        connections_dependent_on_samples(
+            parse_cfg(&#34;ca1_sub_high.cfg&#34;), &#34;hc_high&#34;, **kwargs
+        )
+        connections_dependent_on_samples(
+            parse_cfg(&#34;ca1_sub_high_out.cfg&#34;), &#34;hc_high_out&#34;, **kwargs
+        )
+        connections_dependent_on_samples(
+            parse_cfg(&#34;ca1_sub_low.cfg&#34;), &#34;hc_low&#34;, **kwargs
+        )
+        connections_dependent_on_samples(
+            parse_cfg(&#34;ca1_sub_vhigh.cfg&#34;), &#34;hc_vhigh&#34;, **kwargs
+        )
+        df_list = [
+            load_df(&#34;connection_samples_hc_vhigh.csv&#34;),
+            load_df(&#34;connection_samples_hc_high.csv&#34;),
+            load_df(&#34;Connection_samples_hc_high_out.csv&#34;),
+            load_df(&#34;connection_samples_hc_low.csv&#34;),
+        ]
+        df_names = [
+            &#34;2.8% (90% to 3.1%)&#34;,
+            &#34;1.8% (90% to 2%)&#34;,
+            &#34;1.8% (36% to 5%)&#34;,
+            &#34;0.8% (70% to 1%)&#34;,
+        ]
+        plot_exp_comp(
+            df_list,
+            df_names,
+            &#34;samples_hc_both.pdf&#34;,
+            prop=True,
+            depth=True
+        )
+        store_sub_results()
+        dfs = [
+            load_df(&#34;20_sub_vhigh.csv&#34;),
+            load_df(&#34;20_sub_high.csv&#34;),
+            load_df(&#34;20_sub_out.csv&#34;),
+            load_df(&#34;20_sub_low.csv&#34;),
+        ]
+        plot_pmf_comp(dfs, df_names, &#34;ca1_sub_tet_comp.pdf&#34;)
+
+
+@app.command()
+def produce_figures(
+    figure_1: bool = True,
+    figure_2: bool = True,
+    figure_3: bool = True,
+    figure_4: bool = True,
+):
+    if figure_1:
+        figure1()
+    if figure_2:
+        figure2()
+    if figure_3:
+        figure3()
+    if figure_4:
+        figure4()
+
+
+@app.command()
+def figure1():
+    do_explain()
+
+
+@app.command()
+def figure2():
+    do_sub(do_full_vis=True)
+
+
+@app.command()
+def figure3():
+    do_mouse_regions(vis_only=False)
+
+
+@app.command()
+def figure4():
+    do_hippocampus()
+
+
+@app.command()
+def do_all(
+    mouse: bool = True,
+    explain: bool = True,
+    accuracy: bool = True,
+    examples: bool = True,
+):
     &#34;&#34;&#34;Produce all figures for the paper.&#34;&#34;&#34;
     print(&#34;Reproducing all figures&#34;)
 
@@ -391,17 +633,28 @@ def do_all(mouse=True, explain=True, accuracy=True, examples=True):
         )
 
 
-def main():
-    &#34;&#34;&#34;Main entry point - seeds numpy before all figures generated.&#34;&#34;&#34;
-    np.random.seed(42)
-    do_all(
-        mouse=True, explain=True, accuracy=True, examples=True,
-    )
-    return
-
-
 if __name__ == &#34;__main__&#34;:
-    main()</code></pre>
+    # app()
+    regions = [
+        (&#34;MOp&#34;, &#34;SSp-ll&#34;),
+        (&#34;SSp-ll&#34;, &#34;MOp&#34;),
+        (&#34;VISp&#34;, &#34;VISl&#34;),
+        (&#34;VISl&#34;, &#34;VISp&#34;),
+        (&#34;AUDp&#34;, &#34;AUDpo&#34;),
+        (&#34;AUDpo&#34;, &#34;AUDp&#34;),
+        (&#34;ILA&#34;, &#34;PL&#34;),
+        (&#34;PL&#34;, &#34;ILA&#34;),
+    ]
+    depths = [1, 1, 1, 1, 1, 1, 1, 1]
+    num_samples = [79, 79]
+    mouse_region_exp(
+        regions, depths, &#34;fig&#34;, num_samples, num_iters=1, do_graph=False
+    )
+    plot_region_vals(
+        load_df(&#34;mouse_region_exp_fig.csv&#34;),
+        &#34;mouse_region_exp.pdf&#34;,
+        x_name=&#34;Regions&#34;,
+    )</code></pre>
 </details>
 </section>
 <section>
@@ -412,21 +665,22 @@ if __name__ == &#34;__main__&#34;:
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="neuroconnect.produce_figures.do_accuracy"><code class="name flex">
-<span>def <span class="ident">do_accuracy</span></span>(<span>do_samples=True, do_pmf=True, do_regions=True, do_mouse_acc=True, do_exp=True, do_growth=True)</span>
+<span>def <span class="ident">do_accuracy</span></span>(<span>do_samples: bool = True, do_pmf: bool = True, do_regions: bool = False, do_mouse_acc: bool = False, do_exp: bool = True, do_growth: bool = False)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Produce figures related to method accuracy.</p></section>
+<div class="desc"><p>Produce figures related to method accuracy.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def do_accuracy(
-    do_samples=True,
-    do_pmf=True,
-    do_regions=True,
-    do_mouse_acc=True,
-    do_exp=True,
-    do_growth=True,
+<pre><code class="python">@app.command()
+def do_accuracy(
+    do_samples: bool = True,
+    do_pmf: bool = True,
+    do_regions: bool = False,
+    do_mouse_acc: bool = False,
+    do_exp: bool = True,
+    do_growth: bool = False,
 ):
     &#34;&#34;&#34;Produce figures related to method accuracy.&#34;&#34;&#34;
     print(&#34;Plotting figures related to accuracy&#34;)
@@ -500,7 +754,11 @@ if __name__ == &#34;__main__&#34;:
         ]
         depths = [1, 1, 1, 3, 1]
         distance_dependent_on_regions(
-            cfg_names, r_names, depths, &#34;fig&#34;, num_iters=20000,
+            cfg_names,
+            r_names,
+            depths,
+            &#34;fig&#34;,
+            num_iters=20000,
         )
         plot_region_sim(load_df(&#34;region_bhatt_fig.csv&#34;), &#34;region_acc_bhatt.pdf&#34;)
 
@@ -532,19 +790,26 @@ if __name__ == &#34;__main__&#34;:
         )
 
     if do_growth:
-        print(&#34;Not yet implemented growth plot&#34;)</code></pre>
+        test_hyper_convergence_rate()
+        test_network_convergence()</code></pre>
 </details>
 </dd>
 <dt id="neuroconnect.produce_figures.do_all"><code class="name flex">
-<span>def <span class="ident">do_all</span></span>(<span>mouse=True, explain=True, accuracy=True, examples=True)</span>
+<span>def <span class="ident">do_all</span></span>(<span>mouse: bool = True, explain: bool = True, accuracy: bool = True, examples: bool = True)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Produce all figures for the paper.</p></section>
+<div class="desc"><p>Produce all figures for the paper.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def do_all(mouse=True, explain=True, accuracy=True, examples=True):
+<pre><code class="python">@app.command()
+def do_all(
+    mouse: bool = True,
+    explain: bool = True,
+    accuracy: bool = True,
+    examples: bool = True,
+):
     &#34;&#34;&#34;Produce all figures for the paper.&#34;&#34;&#34;
     print(&#34;Reproducing all figures&#34;)
 
@@ -569,12 +834,13 @@ if __name__ == &#34;__main__&#34;:
 <span>def <span class="ident">do_examples</span></span>(<span>do_exp=True, do_pmf=True, do_types=True)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Produce figures related to examples.</p></section>
+<div class="desc"><p>Produce figures related to examples.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def do_examples(do_exp=True, do_pmf=True, do_types=True):
+<pre><code class="python">@app.command()
+def do_examples(do_exp=True, do_pmf=True, do_types=True):
     &#34;&#34;&#34;Produce figures related to examples.&#34;&#34;&#34;
     if do_exp:
         print(&#34;Not yet implemented expected number of connected&#34;)
@@ -618,7 +884,11 @@ if __name__ == &#34;__main__&#34;:
             &#34;0.8% (70% to 1%)&#34;,
         ]
         plot_exp_comp(
-            df_list, df_names, &#34;samples_hc_both.pdf&#34;, prop=True,
+            df_list,
+            df_names,
+            &#34;samples_hc_both.pdf&#34;,
+            prop=True,
+            depth=True
         )
         store_sub_results()
         dfs = [
@@ -634,12 +904,13 @@ if __name__ == &#34;__main__&#34;:
 <span>def <span class="ident">do_explain</span></span>(<span>do_vis=True, do_pmf=True, do_dist=True)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Produce figures to explain the problem at hand.</p></section>
+<div class="desc"><p>Produce figures to explain the problem at hand.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def do_explain(do_vis=True, do_pmf=True, do_dist=True):
+<pre><code class="python">@app.command()
+def do_explain(do_vis=True, do_pmf=True, do_dist=True):
     &#34;&#34;&#34;Produce figures to explain the problem at hand.&#34;&#34;&#34;
     if do_vis:
         print(&#34;Plotting figures for explaining the problem&#34;)
@@ -661,10 +932,25 @@ if __name__ == &#34;__main__&#34;:
             subsample_rate=0.01,
             approx_hypergeo=False,
         )
-        ctrl_main(parse_cfg(&#34;recurrent_fig1.cfg&#34;), args)
+        res = ctrl_main(parse_cfg(&#34;recurrent_fig1.cfg&#34;), args)
+        dist = res[&#34;mpf&#34;][&#34;total&#34;]
+        vals = []
+        for k, v in dist.items():
+            vals.append([k, v])
+
+        cols = [&#34;Number of sampled connected neurons&#34;, &#34;Probability&#34;]
+        df = pd.DataFrame(vals, columns=cols)
+        output_location = os.path.join(here, &#34;..&#34;, &#34;results&#34;, &#34;explain_fig2.csv&#34;)
+        df.to_csv(output_location, index=False)
+
+        df = pd.read_csv(output_location)
+        plot_pmf(df, &#34;explain_fig_pmf.pdf&#34;)
 
     if do_pmf:
-        proportion(parse_cfg(&#34;recurrent_fig1.cfg&#34;), depths=[1,])
+        proportion(
+            parse_cfg(&#34;recurrent_fig1.cfg&#34;),
+            depths=[1],
+        )
 
     if do_dist:
         explain_calc(parse_cfg(&#34;recurrent_fig1.cfg&#34;), out_name=&#34;eg&#34;, sr=0.01)
@@ -683,16 +969,92 @@ if __name__ == &#34;__main__&#34;:
         plot_dist_explain(dfs, names)</code></pre>
 </details>
 </dd>
-<dt id="neuroconnect.produce_figures.do_mouse"><code class="name flex">
-<span>def <span class="ident">do_mouse</span></span>(<span>do_mat_vis=True, do_comp=True, do_exp=True)</span>
+<dt id="neuroconnect.produce_figures.do_hippocampus"><code class="name flex">
+<span>def <span class="ident">do_hippocampus</span></span>(<span>ca1_ca3: bool = True, ca1_sub: bool = True)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Produce figures related to blue brain data.</p></section>
+<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def do_mouse(do_mat_vis=True, do_comp=True, do_exp=True):
+<pre><code class="python">@app.command()
+def do_hippocampus(ca1_ca3: bool = True, ca1_sub: bool = True):
+    # CA3 CA1 figures
+
+    # Uses tetrode_ca3_ca1_full
+    if ca1_ca3:
+        store_tetrode_results_depth()
+        plot_samples_v_prop(
+            load_df(&#34;samples_depth_ca3_ca1.csv&#34;), &#34;ca3_ca1_samps_depth.pdf&#34;
+        )
+
+        store_npix_results()
+        plot_pmf(load_df(&#34;npix_man.csv&#34;), &#34;npix_pmf.pdf&#34;)
+
+    # CA1 SUB figures
+    if ca1_sub:
+        kwargs = {
+            &#34;num_iters&#34;: 1000,
+            &#34;do_graph&#34;: False,
+            &#34;use_mean&#34;: True,
+            &#34;num_graphs&#34;: 0,
+            &#34;sr&#34;: 0.01,
+            &#34;clt_start&#34;: 10,
+            &#34;fin_depth&#34;: 3,
+        }
+        connections_dependent_on_samples(
+            parse_cfg(&#34;ca1_sub_high.cfg&#34;), &#34;hc_high&#34;, **kwargs
+        )
+        connections_dependent_on_samples(
+            parse_cfg(&#34;ca1_sub_high_out.cfg&#34;), &#34;hc_high_out&#34;, **kwargs
+        )
+        connections_dependent_on_samples(
+            parse_cfg(&#34;ca1_sub_low.cfg&#34;), &#34;hc_low&#34;, **kwargs
+        )
+        connections_dependent_on_samples(
+            parse_cfg(&#34;ca1_sub_vhigh.cfg&#34;), &#34;hc_vhigh&#34;, **kwargs
+        )
+        df_list = [
+            load_df(&#34;connection_samples_hc_vhigh.csv&#34;),
+            load_df(&#34;connection_samples_hc_high.csv&#34;),
+            load_df(&#34;Connection_samples_hc_high_out.csv&#34;),
+            load_df(&#34;connection_samples_hc_low.csv&#34;),
+        ]
+        df_names = [
+            &#34;2.8% (90% to 3.1%)&#34;,
+            &#34;1.8% (90% to 2%)&#34;,
+            &#34;1.8% (36% to 5%)&#34;,
+            &#34;0.8% (70% to 1%)&#34;,
+        ]
+        plot_exp_comp(
+            df_list,
+            df_names,
+            &#34;samples_hc_both.pdf&#34;,
+            prop=True,
+            depth=True
+        )
+        store_sub_results()
+        dfs = [
+            load_df(&#34;20_sub_vhigh.csv&#34;),
+            load_df(&#34;20_sub_high.csv&#34;),
+            load_df(&#34;20_sub_out.csv&#34;),
+            load_df(&#34;20_sub_low.csv&#34;),
+        ]
+        plot_pmf_comp(dfs, df_names, &#34;ca1_sub_tet_comp.pdf&#34;)</code></pre>
+</details>
+</dd>
+<dt id="neuroconnect.produce_figures.do_mouse"><code class="name flex">
+<span>def <span class="ident">do_mouse</span></span>(<span>do_mat_vis=True, do_comp=True, do_exp=True)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Produce figures related to blue brain data.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@app.command()
+def do_mouse(do_mat_vis=True, do_comp=True, do_exp=True):
     &#34;&#34;&#34;Produce figures related to blue brain data.&#34;&#34;&#34;
     if do_mat_vis:
         mo_to_ss_vis()
@@ -724,29 +1086,175 @@ if __name__ == &#34;__main__&#34;:
         )</code></pre>
 </details>
 </dd>
-<dt id="neuroconnect.produce_figures.main"><code class="name flex">
-<span>def <span class="ident">main</span></span>(<span>)</span>
+<dt id="neuroconnect.produce_figures.do_mouse_regions"><code class="name flex">
+<span>def <span class="ident">do_mouse_regions</span></span>(<span>vis_only: bool = True)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Main entry point - seeds numpy before all figures generated.</p></section>
+<div class="desc"><p>Mouse expected with probes through COM and 79 cells</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def main():
-    &#34;&#34;&#34;Main entry point - seeds numpy before all figures generated.&#34;&#34;&#34;
-    np.random.seed(42)
-    do_all(
-        mouse=True, explain=True, accuracy=True, examples=True,
+<pre><code class="python">@app.command()
+def do_mouse_regions(vis_only: bool = True):
+    &#34;&#34;&#34;Mouse expected with probes through COM and 79 cells&#34;&#34;&#34;
+    regions = [
+        (&#34;MOp&#34;, &#34;SSp-ll&#34;),
+        (&#34;SSp-ll&#34;, &#34;MOp&#34;),
+        (&#34;VISp&#34;, &#34;VISl&#34;),
+        (&#34;VISl&#34;, &#34;VISp&#34;),
+        (&#34;AUDp&#34;, &#34;AUDpo&#34;),
+        (&#34;AUDpo&#34;, &#34;AUDp&#34;),
+        (&#34;ILA&#34;, &#34;PL&#34;),
+        (&#34;PL&#34;, &#34;ILA&#34;),
+    ]
+    # Rotation order is zyx
+    # This means the first angle moves left (+), right (-)
+    # The second angle moves left (+), right (-)
+    # The third angle moves up (+), down (-)
+    probe_kwargs = [
+        dict(top_scale=0.95, angles_top=[0, 0, 3], angles_bottom=[0, 0, -2]),
+        dict(top_scale=0.95, angles_top=[0, 0, 3], angles_bottom=[0, 0, -2]),
+        dict(top_scale=0.35, angles_top=[0, 0, 10], angles_bottom=[0, 0, -5]),
+        dict(top_scale=0.35, angles_top=[0, 0, 10], angles_bottom=[0, 0, -5]),
+        dict(top_scale=0.3, angles_top=[0, 0, 0], angles_bottom=[0, 0, 0]),
+        dict(top_scale=0.3, angles_top=[0, 0, 0], angles_bottom=[0, 0, 0]),
+        dict(top_scale=0.5, angles_top=[0, 0, 10], angles_bottom=[0, 0, -5]),
+        dict(top_scale=0.5, angles_top=[0, 0, 10], angles_bottom=[0, 0, -5]),
+    ]
+    
+    probe_kwargs = probe_kwargs + [None] * 7
+    colors = [myterial.blue_dark, myterial.pink_darker, myterial.deep_purple_darker]
+
+    num_samples = [79, 79]
+    interactive = False
+    block_size_sub = 10
+    simulation_kwargs = dict(max_depth=1, num_iters=10000, num_cpus=1)
+    mouse_region_exp_probes(
+        regions,
+        num_samples,
+        colors=colors,
+        interactive=interactive,
+        block_size_sub=block_size_sub,
+        vis_only=vis_only,
+        probe_kwargs=probe_kwargs,
+        **simulation_kwargs,
     )
-    return</code></pre>
+    plot_region_vals(
+        load_df(&#34;mouse_region_exp_probes.csv&#34;),
+        &#34;mouse_region_exp.pdf&#34;,
+        x_name=&#34;Regions&#34;,
+        scale=(12, 5)
+    )</code></pre>
+</details>
+</dd>
+<dt id="neuroconnect.produce_figures.do_sub"><code class="name flex">
+<span>def <span class="ident">do_sub</span></span>(<span>do_full_vis: bool = False, do_probability: bool = True)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Subset figures with probes.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@app.command()
+def do_sub(do_full_vis: bool = False, do_probability: bool = True):
+    &#34;&#34;&#34;Subset figures with probes.&#34;&#34;&#34;
+    names = [
+        &#34;full_matrix_vis_VISl_VISp.pdf&#34;,
+        &#34;sub_matrix_vis_VISl_VISp.pdf&#34;,
+        &#34;probe_matrix_vis_visl_VISp.pdf&#34;,
+        &#34;brainrender_visl_visp&#34;,
+    ]
+    colors = [
+        myterial.blue_dark,
+        myterial.pink_darker,
+        myterial.indigo_dark,
+        myterial.salmon_darker,
+    ]
+    # This is for right hemi
+    # region_sizes = [391292, 55816]
+    # This is for left hemi
+    region_sizes = [333055, 49569]
+    num_sampled = [79, 79]
+    block_size = 10
+    simulation_kwargs = dict(max_depth=1, num_cpus=1, num_iters=50000)
+    plot_subset_vis(
+        names,
+        [&#34;VISp&#34;, &#34;VISl&#34;],
+        region_sizes,
+        num_sampled,
+        colors=colors,
+        do_full_vis=do_full_vis,
+        do_probability=do_probability,
+        block_size_sub=block_size,
+        hemisphere=&#34;left&#34;,
+        **simulation_kwargs,
+    )
+    plot_visp_visl_shift()</code></pre>
+</details>
+</dd>
+<dt id="neuroconnect.produce_figures.figure1"><code class="name flex">
+<span>def <span class="ident">figure1</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@app.command()
+def figure1():
+    do_explain()</code></pre>
+</details>
+</dd>
+<dt id="neuroconnect.produce_figures.figure2"><code class="name flex">
+<span>def <span class="ident">figure2</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@app.command()
+def figure2():
+    do_sub(do_full_vis=True)</code></pre>
+</details>
+</dd>
+<dt id="neuroconnect.produce_figures.figure3"><code class="name flex">
+<span>def <span class="ident">figure3</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@app.command()
+def figure3():
+    do_mouse_regions(vis_only=False)</code></pre>
+</details>
+</dd>
+<dt id="neuroconnect.produce_figures.figure4"><code class="name flex">
+<span>def <span class="ident">figure4</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@app.command()
+def figure4():
+    do_hippocampus()</code></pre>
 </details>
 </dd>
 <dt id="neuroconnect.produce_figures.mo_to_ss_acc"><code class="name flex">
 <span>def <span class="ident">mo_to_ss_acc</span></span>(<span>)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Accuracy of MOp to SSp.</p></section>
+<div class="desc"><p>Accuracy of MOp to SSp.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -771,7 +1279,7 @@ if __name__ == &#34;__main__&#34;:
 <span>def <span class="ident">mo_to_ss_vis</span></span>(<span>)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Visualise MoP to SSp.</p></section>
+<div class="desc"><p>Visualise MoP to SSp.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -793,7 +1301,7 @@ if __name__ == &#34;__main__&#34;:
 <span>def <span class="ident">parse_cfg</span></span>(<span>name)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Parse the configs at configs/name.</p></section>
+<div class="desc"><p>Parse the configs at configs/name.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -807,11 +1315,37 @@ if __name__ == &#34;__main__&#34;:
     return cfg</code></pre>
 </details>
 </dd>
+<dt id="neuroconnect.produce_figures.produce_figures"><code class="name flex">
+<span>def <span class="ident">produce_figures</span></span>(<span>figure_1: bool = True, figure_2: bool = True, figure_3: bool = True, figure_4: bool = True)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@app.command()
+def produce_figures(
+    figure_1: bool = True,
+    figure_2: bool = True,
+    figure_3: bool = True,
+    figure_4: bool = True,
+):
+    if figure_1:
+        figure1()
+    if figure_2:
+        figure2()
+    if figure_3:
+        figure3()
+    if figure_4:
+        figure4()</code></pre>
+</details>
+</dd>
 <dt id="neuroconnect.produce_figures.vis_to_vis_vis"><code class="name flex">
 <span>def <span class="ident">vis_to_vis_vis</span></span>(<span>)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Visualise VISp to VISl.</p></section>
+<div class="desc"><p>Visualise VISp to VISl.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -851,11 +1385,18 @@ if __name__ == &#34;__main__&#34;:
 <li><code><a title="neuroconnect.produce_figures.do_all" href="#neuroconnect.produce_figures.do_all">do_all</a></code></li>
 <li><code><a title="neuroconnect.produce_figures.do_examples" href="#neuroconnect.produce_figures.do_examples">do_examples</a></code></li>
 <li><code><a title="neuroconnect.produce_figures.do_explain" href="#neuroconnect.produce_figures.do_explain">do_explain</a></code></li>
+<li><code><a title="neuroconnect.produce_figures.do_hippocampus" href="#neuroconnect.produce_figures.do_hippocampus">do_hippocampus</a></code></li>
 <li><code><a title="neuroconnect.produce_figures.do_mouse" href="#neuroconnect.produce_figures.do_mouse">do_mouse</a></code></li>
-<li><code><a title="neuroconnect.produce_figures.main" href="#neuroconnect.produce_figures.main">main</a></code></li>
+<li><code><a title="neuroconnect.produce_figures.do_mouse_regions" href="#neuroconnect.produce_figures.do_mouse_regions">do_mouse_regions</a></code></li>
+<li><code><a title="neuroconnect.produce_figures.do_sub" href="#neuroconnect.produce_figures.do_sub">do_sub</a></code></li>
+<li><code><a title="neuroconnect.produce_figures.figure1" href="#neuroconnect.produce_figures.figure1">figure1</a></code></li>
+<li><code><a title="neuroconnect.produce_figures.figure2" href="#neuroconnect.produce_figures.figure2">figure2</a></code></li>
+<li><code><a title="neuroconnect.produce_figures.figure3" href="#neuroconnect.produce_figures.figure3">figure3</a></code></li>
+<li><code><a title="neuroconnect.produce_figures.figure4" href="#neuroconnect.produce_figures.figure4">figure4</a></code></li>
 <li><code><a title="neuroconnect.produce_figures.mo_to_ss_acc" href="#neuroconnect.produce_figures.mo_to_ss_acc">mo_to_ss_acc</a></code></li>
 <li><code><a title="neuroconnect.produce_figures.mo_to_ss_vis" href="#neuroconnect.produce_figures.mo_to_ss_vis">mo_to_ss_vis</a></code></li>
 <li><code><a title="neuroconnect.produce_figures.parse_cfg" href="#neuroconnect.produce_figures.parse_cfg">parse_cfg</a></code></li>
+<li><code><a title="neuroconnect.produce_figures.produce_figures" href="#neuroconnect.produce_figures.produce_figures">produce_figures</a></code></li>
 <li><code><a title="neuroconnect.produce_figures.vis_to_vis_vis" href="#neuroconnect.produce_figures.vis_to_vis_vis">vis_to_vis_vis</a></code></li>
 </ul>
 </li>
@@ -863,9 +1404,7 @@ if __name__ == &#34;__main__&#34;:
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.5</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
 </footer>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
-<script>hljs.initHighlightingOnLoad()</script>
 </body>
 </html>

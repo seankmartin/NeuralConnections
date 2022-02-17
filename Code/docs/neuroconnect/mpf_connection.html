@@ -3,15 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.7.5" />
+<meta name="generator" content="pdoc 0.10.0" />
 <title>neuroconnect.mpf_connection API documentation</title>
 <meta name="description" content="Connection stats using the mpmath package." />
-<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
-<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
-<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
-<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
 <style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
 </head>
 <body>
 <main>
@@ -29,7 +31,12 @@
 import mpmath
 from collections import OrderedDict
 
-from .connect_math import hypergeometric_pmf, get_dist_mean, marginal_prob
+from .connect_math import (
+    hypergeometric_pmf,
+    get_dist_mean,
+    marginal_prob,
+    combine_dists,
+)
 
 
 class CombProb:
@@ -54,7 +61,7 @@ class CombProb:
         which are connected to neurons in B.
         Represents the number of neurons in B which
         receive connections from the recorded neurons in A.
-        Must return an distribution over the number of neurons,
+        Must return a distribution over the number of neurons,
         represented as an ordered dictionary.
     delta_params : dict
         keyword arguments to pass into delta_fn
@@ -69,7 +76,7 @@ class CombProb:
         neurons_B,
         recorded_B,
         delta_fn,
-        cache=True,
+        compute_delta=False,
         subsample_rate=None,
         approx_hypergeo=False,
         **delta_params
@@ -84,11 +91,10 @@ class CombProb:
         self.delta_params = delta_params
         self.delta_params[&#34;max&#34;] = self.delta_params.get(&#34;max&#34;, self.M)
         self.verbose = False
-        self.cache = cache
         self.stored = OrderedDict()
         self.each_dist = None
         self.a_to_b_dist = None
-        if (self.delta_params[&#34;max_depth&#34;] &gt; 1) and self.delta_params.get(
+        if (self.delta_params.get(&#34;max_depth&#34;, 1) &gt; 1) and self.delta_params.get(
             &#34;use_mean&#34;, True
         ):
             self.subsample_rate = None
@@ -101,15 +107,23 @@ class CombProb:
         self.plot = False
         self.true_plot = False
 
-        if self.cache:
-            self.each_dist, self.a_to_b_dist = self.delta_fn(**delta_params)
-            self.stored = self.final_distribution()
+        if compute_delta:
+            prob_a_senders = self.calculate_distribution_n_senders()
+            self.delta_params[&#34;total_samples&#34;] = recorded_A
+            self.each_dist = self.delta_fn(**self.delta_params)
+            self.a_to_b_dist = combine_dists(
+                range(neurons_B + 1), self.each_dist, prob_a_senders, sub=None
+            )
 
-            total = mpmath.nsum(self._prob, [0, self.m], verbose=self.verbose)
-            if not mpmath.almosteq(total, 1.0, rel_eps=0.001):
-                raise RuntimeError(
-                    &#34;Total probability does not sum to 1, got {}&#34;.format(total)
-                )
+        else:
+            self.each_dist, self.a_to_b_dist = self.delta_fn(**delta_params)
+        self.stored = self.final_distribution()
+
+        total = mpmath.nsum(self._prob, [0, self.m], verbose=self.verbose)
+        if not mpmath.almosteq(total, 1.0, rel_eps=0.001):
+            raise RuntimeError(
+                &#34;Total probability does not sum to 1, got {}&#34;.format(total)
+            )
 
     def calculate_distribution_n_senders(self):
         &#34;&#34;&#34;
@@ -251,8 +265,6 @@ class CombProb:
 
     def get_all_prob(self):
         &#34;&#34;&#34;Return cached probabilities to speed up operations.&#34;&#34;&#34;
-        if not self.cache:
-            raise ValueError(&#34;Set cache to true to store all probabilities&#34;)
         return self.stored
 
     def expected_total(self, k):
@@ -266,45 +278,12 @@ class CombProb:
         return self._get_val(x)
 
     def _get_val(self, x):
-        if self.cache:
-            if int(x) not in self.stored:
-                res = self.connection_prob(x)
-                self.stored[int(x)] = res
-            else:
-                res = self.stored[int(x)]
-        else:
+        if int(x) not in self.stored:
             res = self.connection_prob(x)
-        return res
-
-
-if __name__ == &#34;__main__&#34;:
-    from connect_math import expected_unique
-
-    # def delta_fn(k, **delta_params):
-    #     max_val = delta_params.get(&#34;max&#34;, 10000)
-    #     return min(mpmath.mpf(k) * 10, mpmath.mpf(max_val))
-    # def delta_fn(k, **delta_params):
-    #     N = delta_params.get(&#34;N&#34;)
-    #     K = delta_params.get(&#34;K&#34;)
-    #     n = delta_params.get(&#34;n&#34;)
-    #     exp = 0
-    #     for i in range(n):
-    #         exp += i * hypergeometric_pmf(10, 2, k, i)
-    #     print(k, (2 * k) - exp)
-    #     return (2 * k) - exp
-
-    def delta_fn(k, **delta_params):
-        N = delta_params.get(&#34;N&#34;)
-        connections = delta_params.get(&#34;connections&#34;)
-        return expected_unique(N, k * connections)
-
-    cp = CombProb(10, 2, 10, 10, 2, delta_fn, N=10, connections=2)
-    # cp = CombProb(
-    #     10000, 10, 1000, 10000, 10, delta_fn,
-    #     N=10000, connections=100)
-    cp.set_verbose(True)
-    print(cp.run(1))
-    # print(cp.run(100))</code></pre>
+            self.stored[int(x)] = res
+        else:
+            res = self.stored[int(x)]
+        return res</code></pre>
 </details>
 </section>
 <section>
@@ -318,10 +297,10 @@ if __name__ == &#34;__main__&#34;:
 <dl>
 <dt id="neuroconnect.mpf_connection.CombProb"><code class="flex name class">
 <span>class <span class="ident">CombProb</span></span>
-<span>(</span><span>neurons_A, recorded_A, connected_A, neurons_B, recorded_B, delta_fn, cache=True, subsample_rate=None, approx_hypergeo=False, **delta_params)</span>
+<span>(</span><span>neurons_A, recorded_A, connected_A, neurons_B, recorded_B, delta_fn, compute_delta=False, subsample_rate=None, approx_hypergeo=False, **delta_params)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Handle computations with brain region connectivity probabilities.</p>
+<div class="desc"><p>Handle computations with brain region connectivity probabilities.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>neurons_A</code></strong> :&ensp;<code>int</code></dt>
@@ -340,12 +319,12 @@ directly connected to neurons in B.</dd>
 which are connected to neurons in B.
 Represents the number of neurons in B which
 receive connections from the recorded neurons in A.
-Must return an distribution over the number of neurons,
+Must return a distribution over the number of neurons,
 represented as an ordered dictionary.</dd>
 <dt><strong><code>delta_params</code></strong> :&ensp;<code>dict</code></dt>
 <dd>keyword arguments to pass into delta_fn</dd>
 </dl>
-<p>Please see help(CombProb) for more info.</p></section>
+<p>Please see help(CombProb) for more info.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -372,7 +351,7 @@ represented as an ordered dictionary.</dd>
         which are connected to neurons in B.
         Represents the number of neurons in B which
         receive connections from the recorded neurons in A.
-        Must return an distribution over the number of neurons,
+        Must return a distribution over the number of neurons,
         represented as an ordered dictionary.
     delta_params : dict
         keyword arguments to pass into delta_fn
@@ -387,7 +366,7 @@ represented as an ordered dictionary.</dd>
         neurons_B,
         recorded_B,
         delta_fn,
-        cache=True,
+        compute_delta=False,
         subsample_rate=None,
         approx_hypergeo=False,
         **delta_params
@@ -402,11 +381,10 @@ represented as an ordered dictionary.</dd>
         self.delta_params = delta_params
         self.delta_params[&#34;max&#34;] = self.delta_params.get(&#34;max&#34;, self.M)
         self.verbose = False
-        self.cache = cache
         self.stored = OrderedDict()
         self.each_dist = None
         self.a_to_b_dist = None
-        if (self.delta_params[&#34;max_depth&#34;] &gt; 1) and self.delta_params.get(
+        if (self.delta_params.get(&#34;max_depth&#34;, 1) &gt; 1) and self.delta_params.get(
             &#34;use_mean&#34;, True
         ):
             self.subsample_rate = None
@@ -419,15 +397,23 @@ represented as an ordered dictionary.</dd>
         self.plot = False
         self.true_plot = False
 
-        if self.cache:
-            self.each_dist, self.a_to_b_dist = self.delta_fn(**delta_params)
-            self.stored = self.final_distribution()
+        if compute_delta:
+            prob_a_senders = self.calculate_distribution_n_senders()
+            self.delta_params[&#34;total_samples&#34;] = recorded_A
+            self.each_dist = self.delta_fn(**self.delta_params)
+            self.a_to_b_dist = combine_dists(
+                range(neurons_B + 1), self.each_dist, prob_a_senders, sub=None
+            )
 
-            total = mpmath.nsum(self._prob, [0, self.m], verbose=self.verbose)
-            if not mpmath.almosteq(total, 1.0, rel_eps=0.001):
-                raise RuntimeError(
-                    &#34;Total probability does not sum to 1, got {}&#34;.format(total)
-                )
+        else:
+            self.each_dist, self.a_to_b_dist = self.delta_fn(**delta_params)
+        self.stored = self.final_distribution()
+
+        total = mpmath.nsum(self._prob, [0, self.m], verbose=self.verbose)
+        if not mpmath.almosteq(total, 1.0, rel_eps=0.001):
+            raise RuntimeError(
+                &#34;Total probability does not sum to 1, got {}&#34;.format(total)
+            )
 
     def calculate_distribution_n_senders(self):
         &#34;&#34;&#34;
@@ -569,8 +555,6 @@ represented as an ordered dictionary.</dd>
 
     def get_all_prob(self):
         &#34;&#34;&#34;Return cached probabilities to speed up operations.&#34;&#34;&#34;
-        if not self.cache:
-            raise ValueError(&#34;Set cache to true to store all probabilities&#34;)
         return self.stored
 
     def expected_total(self, k):
@@ -584,14 +568,11 @@ represented as an ordered dictionary.</dd>
         return self._get_val(x)
 
     def _get_val(self, x):
-        if self.cache:
-            if int(x) not in self.stored:
-                res = self.connection_prob(x)
-                self.stored[int(x)] = res
-            else:
-                res = self.stored[int(x)]
-        else:
+        if int(x) not in self.stored:
             res = self.connection_prob(x)
+            self.stored[int(x)] = res
+        else:
+            res = self.stored[int(x)]
         return res</code></pre>
 </details>
 <h3>Methods</h3>
@@ -600,7 +581,7 @@ represented as an ordered dictionary.</dd>
 <span>def <span class="ident">calculate_distribution_n_senders</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Use the hypergeometric distribution to calculate distribution of senders.</p>
+<div class="desc"><p>Use the hypergeometric distribution to calculate distribution of senders.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>None</code></strong></dt>
@@ -610,7 +591,7 @@ represented as an ordered dictionary.</dd>
 <dl>
 <dt><code>OrderedDict</code></dt>
 <dd>The full distribution of the number of senders sampled.</dd>
-</dl></section>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -639,7 +620,7 @@ represented as an ordered dictionary.</dd>
 <span>def <span class="ident">connection_prob</span></span>(<span>self, x)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Calculate the probability of observing x
+<div class="desc"><p>Calculate the probability of observing x
 connections between brain regions A and B.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
@@ -650,7 +631,7 @@ connections between brain regions A and B.</p>
 <dl>
 <dt><code>mpmath.mpf</code></dt>
 <dd>The probability of observing x connections.</dd>
-</dl></section>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -677,12 +658,12 @@ connections between brain regions A and B.</p>
 <span>def <span class="ident">expected_connections</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Calculate expected number of connections between A and B.</p>
+<div class="desc"><p>Calculate expected number of connections between A and B.</p>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>mpmath.mpf</code></dt>
 <dd>The expected number of connections between A and B.</dd>
-</dl></section>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -704,7 +685,7 @@ connections between brain regions A and B.</p>
 <span>def <span class="ident">expected_total</span></span>(<span>self, k)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Return the expected total in B with k sender samples.</p></section>
+<div class="desc"><p>Return the expected total in B with k sender samples.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -718,7 +699,7 @@ connections between brain regions A and B.</p>
 <span>def <span class="ident">final_distribution</span></span>(<span>self, x=None, keep_all=False)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Calculate P(X=x) as sum P(A_B = k) * P(X=x|k).</p>
+<div class="desc"><p>Calculate P(X=x) as sum P(A_B = k) * P(X=x|k).</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>x</code></strong> :&ensp;<code>int</code>, optional</dt>
@@ -728,7 +709,7 @@ connections between brain regions A and B.</p>
 <dl>
 <dt><code>OrderedDict</code> or <code>float</code></dt>
 <dd>The full distribution or a single value, depending on x.</dd>
-</dl></section>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -783,7 +764,7 @@ connections between brain regions A and B.</p>
 <span>def <span class="ident">geq_connection_prob</span></span>(<span>self, x)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Calculate the probability of observing &gt;=x
+<div class="desc"><p>Calculate the probability of observing &gt;=x
 connections between brain regions A and B.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
@@ -794,7 +775,7 @@ connections between brain regions A and B.</p>
 <dl>
 <dt><code>mpmath.mpf</code></dt>
 <dd>The probability of observing &gt;=x connections.</dd>
-</dl></section>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -821,15 +802,13 @@ connections between brain regions A and B.</p>
 <span>def <span class="ident">get_all_prob</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Return cached probabilities to speed up operations.</p></section>
+<div class="desc"><p>Return cached probabilities to speed up operations.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_all_prob(self):
     &#34;&#34;&#34;Return cached probabilities to speed up operations.&#34;&#34;&#34;
-    if not self.cache:
-        raise ValueError(&#34;Set cache to true to store all probabilities&#34;)
     return self.stored</code></pre>
 </details>
 </dd>
@@ -837,7 +816,7 @@ connections between brain regions A and B.</p>
 <span>def <span class="ident">run</span></span>(<span>self, x)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Helper function to run useful methods for given x.</p>
+<div class="desc"><p>Helper function to run useful methods for given x.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>x</code></strong> :&ensp;<code>int</code></dt>
@@ -850,7 +829,7 @@ connections between brain regions A and B.</p>
 "prob" - connection_prob(x)
 "prob_geq" - geq_connection_prob(x)
 "expected" - expected_connections()</dd>
-</dl></section>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -884,7 +863,7 @@ connections between brain regions A and B.</p>
 <span>def <span class="ident">set_verbose</span></span>(<span>self, vb)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Set whether to print more information.</p></section>
+<div class="desc"><p>Set whether to print more information.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -932,9 +911,7 @@ connections between brain regions A and B.</p>
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.5</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
 </footer>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
-<script>hljs.initHighlightingOnLoad()</script>
 </body>
 </html>
