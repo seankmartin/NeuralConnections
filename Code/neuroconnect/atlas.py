@@ -500,9 +500,9 @@ def get_bounding_probes(region_names, session_id=None, shift=False):
             points = locs[j * 374 : (j + 1) * 374]
 
             if shift:
-                points["ccf_lr"] = points["ccf_lr"] - (points["ccf_lr"] / 10)
-                points["ccf_ap"] = points["ccf_ap"] + (points["ccf_ap"] / 15)
-                points["ccf_dv"] = points["ccf_dv"] + (points["ccf_dv"] / 4)
+                points["ccf_lr"] = points["ccf_lr"] - (points["ccf_lr"] / 8)
+                points["ccf_ap"] = points["ccf_ap"] + (points["ccf_ap"] / 10)
+                points["ccf_dv"] = points["ccf_dv"] + (points["ccf_dv"] / 2)
 
             brain_regions = points["allen_ontology"].values
             cont = True
@@ -969,64 +969,80 @@ if __name__ == "__main__":
     #### Visualise COMs
     # place_probes_at_com(["ILA", "PL"])
     # place_probes_at_com(["MOp", "SSp-ll"], join=True)
-    interactive = True
-    f1 = False
-    f2 = True
-    f3 = False
-    f4 = False
+    # interactive = True
+    # f1 = False
+    # f2 = True
+    # f3 = False
+    # f4 = False
 
-    if f1:
-        probe_kwargs = [
-            {},
-            dict(top_scale=0.8, angles_top=[0, 0, 5], angles_bottom=[0, 0, -5]),
-            dict(top_scale=0.9, angles_top=[0, 0, 3], angles_bottom=[0, 0, -2]),
-        ]
+    # if f1:
+    #     probe_kwargs = [
+    #         {},
+    #         dict(top_scale=0.8, angles_top=[0, 0, 5], angles_bottom=[0, 0, -5]),
+    #         dict(top_scale=0.9, angles_top=[0, 0, 3], angles_bottom=[0, 0, -2]),
+    #     ]
 
-        place_probes_at_com(
-            ["MOp", "SSp-ll"],
-            probe_kwargs=probe_kwargs,
-            hemisphere="right",
-            interactive=interactive,
-        )
+    #     place_probes_at_com(
+    #         ["MOp", "SSp-ll"],
+    #         probe_kwargs=probe_kwargs,
+    #         hemisphere="right",
+    #         interactive=interactive,
+    #     )
 
-    if f2:
-        probe_kwargs = [
-            {},
-            dict(top_scale=0.4, angles_top=[0, 0, 10], angles_bottom=[0, 0, -5]),
-            dict(top_scale=0.4, angles_top=[1, 0, 5], angles_bottom=[1, 0, -2]),
-        ]
+    # if f2:
+    #     probe_kwargs = [
+    #         {},
+    #         dict(top_scale=0.4, angles_top=[0, 0, 10], angles_bottom=[0, 0, -5]),
+    #         dict(top_scale=0.4, angles_top=[1, 0, 5], angles_bottom=[1, 0, -2]),
+    #     ]
 
-        place_probes_at_com(
-            ("VISp", "VISl"),
-            probe_kwargs=probe_kwargs,
-            hemisphere="right",
-            interactive=interactive,
-        )
+    #     place_probes_at_com(
+    #         ("VISp", "VISl"),
+    #         probe_kwargs=probe_kwargs,
+    #         hemisphere="right",
+    #         interactive=interactive,
+    #     )
 
-    if f3:
-        probe_kwargs = [
-            {},
-            dict(top_scale=0.8, angles_top=[0, 0, 5], angles_bottom=[0, 0, -5]),
-            dict(top_scale=0.83, angles_top=[0, 0, 3], angles_bottom=[0, 0, -2]),
-        ]
+    # if f3:
+    #     probe_kwargs = [
+    #         {},
+    #         dict(top_scale=0.8, angles_top=[0, 0, 5], angles_bottom=[0, 0, -5]),
+    #         dict(top_scale=0.83, angles_top=[0, 0, 3], angles_bottom=[0, 0, -2]),
+    #     ]
 
-        place_probes_at_com(
-            ("AUDp", "AUDpo"),
-            probe_kwargs=probe_kwargs,
-            hemisphere="right",
-            interactive=interactive,
-        )
+    #     place_probes_at_com(
+    #         ("AUDp", "AUDpo"),
+    #         probe_kwargs=probe_kwargs,
+    #         hemisphere="right",
+    #         interactive=interactive,
+    #     )
 
-    if f4:
-        probe_kwargs = [
-            {},
-            dict(top_scale=0.5, angles_top=[0, 0, 10], angles_bottom=[0, 0, -5]),
-            dict(top_scale=0.83, angles_top=[0, 0, 3], angles_bottom=[0, 0, -2]),
-        ]
+    # if f4:
+    #     probe_kwargs = [
+    #         {},
+    #         dict(top_scale=0.5, angles_top=[0, 0, 10], angles_bottom=[0, 0, -5]),
+    #         dict(top_scale=0.83, angles_top=[0, 0, 3], angles_bottom=[0, 0, -2]),
+    #     ]
 
-        place_probes_at_com(
-            ("ILA", "PL"),
-            probe_kwargs=probe_kwargs,
-            hemisphere="right",
-            interactive=interactive,
-        )
+    #     place_probes_at_com(
+    #         ("ILA", "PL"),
+    #         probe_kwargs=probe_kwargs,
+    #         hemisphere="right",
+    #         interactive=interactive,
+    #     )
+
+    visualise_probe_cells(
+        ["VISp", "VISl"],
+        [333055, 49569],
+        hemisphere="left",
+        colors=[
+            myterial.blue_dark,
+            myterial.pink_darker,
+            myterial.indigo_dark,
+            myterial.salmon_darker,
+        ],
+        style="cartoon",
+        interactive=False,
+        screenshot_name="brainrender_visl_visp_test",
+        shift=True,
+    )

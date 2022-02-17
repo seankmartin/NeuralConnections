@@ -9,7 +9,7 @@ from skm_pyutils.py_table import list_to_df, df_to_file
 import numpy as np
 from .atlas import gen_graph_for_regions, visualise_probe_cells
 from .simple_graph import reverse, find_connected_limited, vis_graph, matrix_vis
-from .nx_graph import nx_vis_force, nx_create_graph
+from .nx_graph import nx_create_graph
 from .connectivity_patterns import MatrixConnectivity
 from .matrix import (
     convert_mouse_data,
@@ -21,7 +21,6 @@ from .matrix import (
     gen_random_matrix,
 )
 from .nx_graph import nx_find_connected_limited, nx_create_graph
-from .mpf_connection import CombProb
 
 here = os.path.dirname(os.path.abspath(__file__))
 
