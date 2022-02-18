@@ -117,7 +117,7 @@ def store_tetrode_results_full():
 
 def store_tetrode_results_depth():
     np.random.seed(42)
-    num_samples_range = np.arange(10)
+    num_samples_range = np.arange(11)
     res_list = []
     headers = ["Number of samples", "Proportion of connections", "Max distance"]
     for depth in (1, 2, 3):
