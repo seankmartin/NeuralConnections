@@ -447,8 +447,7 @@ def do_mouse_regions(vis_only: bool = True):
         dict(top_scale=0.5, angles_top=[0, 0, 10], angles_bottom=[0, 0, -5]),
         dict(top_scale=0.5, angles_top=[0, 0, 10], angles_bottom=[0, 0, -5]),
     ]
-    
-    probe_kwargs = probe_kwargs + [None] * 7
+
     colors = [myterial.blue_dark, myterial.pink_darker, myterial.deep_purple_darker]
 
     num_samples = [79, 79]
