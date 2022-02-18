@@ -458,9 +458,17 @@ def main():
     plot_visp_visl_shift()
 
     # Figure 3
+    df = load_df("mouse_region_exp_probes.csv")
     plot_region_vals(
-        load_df("mouse_region_exp_probes.csv"),
-        "mouse_region_exp.pdf",
+        df,
+        "mouse_region_exp_probes.pdf",
+        x_name="Regions",
+        scale=(12, 5),
+    )
+    df = df[df["Calculation"] == "Monte Carlo simulation"]
+    plot_region_vals(
+        df,
+        "mouse_region_exp_probes_graph.pdf",
         x_name="Regions",
         scale=(12, 5),
     )
