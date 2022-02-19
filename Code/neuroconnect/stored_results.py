@@ -191,7 +191,7 @@ def store_sub_results():
             approx_hypergeo=False,
         )
         cfg = parse_cfg(cfg_name)
-        cfg["default"]["num_samples"] = "[20, 20]"
+        cfg["default"]["num_samples"] = "[79, 79]"
         result = ctrl_main(cfg, args)
         df = df_from_dict(
             result["mpf"]["total"],
