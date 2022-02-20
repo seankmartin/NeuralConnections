@@ -126,6 +126,7 @@ Note use of regular expressions below:
 3. `results\sub_regions_{Region1}_{Region2}_depth_1.csv` for all brain region pairs.
 4. `results\mouse_region_exp_probes.csv`
 5. `figures\mouse_region_exp.pdf`
+6. `figures\bhattacharyya_mouse.pdf`
 
 ### Figure 4
 

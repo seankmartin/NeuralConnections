@@ -36,6 +36,7 @@ from .plot import (
     plot_exp_comp,
     plot_pmf_comp,
     plot_visp_visl_shift,
+    plot_bhattacharyya,
 )
 from .stats_convergence_rate import (
     test_hyper_convergence_rate,
@@ -470,6 +471,7 @@ def do_mouse_regions(vis_only: bool = True):
         x_name="Regions",
         scale=(12, 5)
     )
+    plot_bhattacharyya(regions, "bhattacharyya_mouse.pdf")
 
 
 @app.command()

@@ -4,6 +4,7 @@ import os
 import seaborn as sns
 import matplotlib.pyplot as plt
 import pandas as pd
+from dictances.bhattacharyya import bhattacharyya
 from matplotlib.ticker import MaxNLocator
 
 here = os.path.dirname(os.path.realpath(__file__))
@@ -343,6 +344,32 @@ def plot_region_vals(df, out_name, x_name="Connectivity", scale=(10, 4)):
     save(fig=None, out_name=out_name)
 
 
+def plot_bhattacharyya(regions, out_name, max_depth=1):
+    res = []
+    for i, r in enumerate(regions):
+        fname = f"sub_regions_{r[0]}_{r[1]}_depth_{max_depth}.csv"
+        df = load_df(fname)
+        mc = df[df["Calculation"] == "Monte Carlo simulation"]
+        mc_dict = {}
+        for row in mc.itertuples():
+            mc_dict[row._1] = row.Probability
+
+        stats = df[df["Calculation"] == "Statistical estimation"]
+        stats_dict = {}
+        for row in stats.itertuples():
+            stats_dict[row._1] = row.Probability
+        distance = bhattacharyya(mc_dict, stats_dict)
+        res.append([distance, df["Regions"][0]])
+
+    df = pd.DataFrame(res, columns=["Bhattacharyya distance", "Regions"])
+    df.to_csv(os.path.join(here, "..", "results", "bhattacharyya.csv"), index=False)
+
+    fig, ax = plt.subplots()
+    set_p()
+    sns.barplot(y="Bhattacharyya distance", x="Regions", data=df, ax=ax)
+    despine()
+    save(fig=None, out_name=out_name)
+
 def plot_region_sim(df, out_name, x_name="Connectivity", scale=(10, 4)):
     """Plot region specific values from the dataframe."""
     fig, ax = plt.subplots(figsize=scale)
@@ -547,6 +574,19 @@ def main():
     plot_pmf_converge(
         load_df("stats_convergence_fixed.csv"), "stats_fixed_converge.pdf"
     )
+
+    # Bhattacharyya
+    regions = [
+        ("MOp", "SSp-ll"),
+        ("SSp-ll", "MOp"),
+        ("VISp", "VISl"),
+        ("VISl", "VISp"),
+        ("AUDp", "AUDpo"),
+        ("AUDpo", "AUDp"),
+        ("ILA", "PL"),
+        ("PL", "ILA"),
+    ]
+    plot_bhattacharyya(regions, "bhattacharyya_mouse.pdf")
 
 
 if __name__ == "__main__":
