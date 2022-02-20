@@ -55,9 +55,11 @@ def plot_visp_visl_shift():
     nshifted = df[df["Shifted"] == "original"]
     shifted = df[df["Shifted"] == "shifted"]
 
+    nshifted = nshifted[nshifted["Number of connected neurons"] <= 25]
     o_name = "original-visp-visl-stats.pdf"
     plot_pmf_accuracy(nshifted, o_name)
-
+    
+    shifted = shifted[shifted["Number of connected neurons"] <= 25]
     o_name = "shifted-visp-visl-stats.pdf"
     plot_pmf_accuracy(shifted, o_name)
 
