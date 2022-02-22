@@ -698,6 +698,7 @@ def prob_confidence():
         v = row.Probability
         d1[k] = v
 
+    print("CA3--CA1")
     print(100 * get_dist_mean(d1))
 
     c1_1 = get_dist_ci_alt(d1)
@@ -722,6 +723,7 @@ def prob_confidence():
         v = row.Probability
         d2[k] = v
 
+    print("VISp--VISl")
     print(100 * get_dist_mean(d1), 100 * get_dist_mean(d2))
 
     c1_1 = get_dist_ci(d1)
