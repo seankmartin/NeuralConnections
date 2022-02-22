@@ -21,6 +21,7 @@ from .compound import (
     out_exp,
     explain_calc,
     mouse_region_exp_probes,
+    mouse_region_depths,
 )
 from .matrix import main as mouse_main
 from .main import main as ctrl_main
@@ -307,13 +308,7 @@ def do_examples(do_exp=True, do_pmf=True, do_types=True):
             "1.8% (36% to 5%)",
             "0.8% (70% to 1%)",
         ]
-        plot_exp_comp(
-            df_list,
-            df_names,
-            "samples_hc_both.pdf",
-            prop=True,
-            depth=False
-        )
+        plot_exp_comp(df_list, df_names, "samples_hc_both.pdf", prop=True, depth=False)
         store_sub_results()
         dfs = [
             load_df("20_sub_vhigh.csv"),
@@ -469,9 +464,20 @@ def do_mouse_regions(vis_only: bool = True):
         load_df("mouse_region_exp_probes.csv"),
         "mouse_region_exp.pdf",
         x_name="Regions",
-        scale=(12, 5)
+        scale=(12, 5),
     )
     plot_bhattacharyya(regions, "bhattacharyya_mouse.pdf")
+
+    mouse_region_depths(
+        [("MOp", "SSp-ll")],
+        79,
+        probe_kwargs=[
+            dict(top_scale=0.95, angles_top=[0, 0, 3], angles_bottom=[0, 0, -2])
+        ],
+    )
+    plot_samples_v_prop(
+        load_df("sub_regions_MOp_SSp-ll_all_depth.csv"), "MOp-SSp-depth.pdf"
+    )
 
 
 @app.command()
@@ -484,6 +490,9 @@ def do_hippocampus(ca1_ca3: bool = True, ca1_sub: bool = True):
         plot_samples_v_prop(
             load_df("samples_depth_ca3_ca1.csv"), "ca3_ca1_samps_depth.pdf"
         )
+        
+        store_tetrode_results_full()
+        plot_pmf("tetrode_full.csv", "ca3_ca1_tetrode_pmf.pdf")
 
         store_npix_results()
         plot_pmf(load_df("npix_probe_ca3_ca1.csv"), "npix_pmf.pdf")
@@ -518,13 +527,7 @@ def do_hippocampus(ca1_ca3: bool = True, ca1_sub: bool = True):
             "0.5% (10% to 5%)",
             "0.2% (16% to 1.1%)",
         ]
-        plot_exp_comp(
-            df_list,
-            df_names,
-            "samples_hc_both.pdf",
-            prop=True,
-            depth=False
-        )
+        plot_exp_comp(df_list, df_names, "samples_hc_both.pdf", prop=True, depth=False)
         store_sub_results()
         dfs = [
             load_df("20_sub_high.csv"),
@@ -549,28 +552,6 @@ def produce_figures(
         figure3()
     if figure_4:
         figure4()
-
-    # TODO TEMP remove this later
-    regions = [
-        ("MOp", "SSp-ll"),
-        ("SSp-ll", "MOp"),
-        ("VISp", "VISl"),
-        ("VISl", "VISp"),
-        ("AUDp", "AUDpo"),
-        ("AUDpo", "AUDp"),
-        ("ILA", "PL"),
-        ("PL", "ILA"),
-    ]
-    depths = [1, 1, 1, 1, 1, 1, 1, 1]
-    num_samples = [79, 79]
-    mouse_region_exp(
-        regions, depths, "fig", num_samples, num_iters=1, do_graph=False
-    )
-    plot_region_vals(
-        load_df("mouse_region_exp_fig.csv"),
-        "mouse_region_exp.pdf",
-        x_name="Regions",
-    )
 
 
 @app.command()

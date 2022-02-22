@@ -98,6 +98,7 @@ def plot_samples_v_prop(df, out_name="depth_plot.pdf"):
         style="Max distance",
         hue="Max distance",
         ax=ax,
+        ci=None
     )
     ax.set_xlabel("Number of samples", fontsize=LABELSIZE)
     ax.set_ylabel("Expected proportion connected", fontsize=LABELSIZE)
@@ -587,6 +588,12 @@ def main():
         ("PL", "ILA"),
     ]
     plot_bhattacharyya(regions, "bhattacharyya_mouse.pdf")
+
+    print(load_df("sub_regions_MOp_SSp-ll_all_depth.csv"))
+    plot_samples_v_prop(
+        load_df("sub_regions_MOp_SSp-ll_all_depth.csv"), "MOp-SSp-depth.pdf"
+    )
+    plot_pmf(load_df("tetrode_full.csv"), "ca3_ca1_tetrode_pmf.pdf")
 
 
 if __name__ == "__main__":

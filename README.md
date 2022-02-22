@@ -143,18 +143,20 @@ Note use of regular expressions below:
 
 1. `results\samples_depth_ca3_ca1.csv`
 2. `figures\ca3_ca1_samps_depth.pdf`
-3. `results\npix_man.csv`
-4. `figures\npix_pmf.pdf`
-5. `results\connection_samples_hc_vhigh.csv`
-6. `results\connection_samples_hc_high.csv`
-7. `results\Connection_samples_hc_high_out.csv`
-8. `results\connection_samples_hc_low.csv`
-9. `figures\samples_hc_both.pdf`
-10. `results\20_sub_vhigh.csv`
-11. `results\20_sub_high.csv`
-12. `results\20_sub_out.csv`
-13. `results\20_sub_low.csv`
-14. `figures\ca1_sub_tet_comp.pdf`
+3. `results\tetrode_full.csv`
+4. `figures\ca3_ca1_tetrode_pmf.pdf`
+5. `results\npix_man.csv`
+6. `figures\npix_pmf.pdf`
+7. `results\connection_samples_hc_vhigh.csv`
+8. `results\connection_samples_hc_high.csv`
+9. `results\Connection_samples_hc_high_out.csv`
+10. `results\connection_samples_hc_low.csv`
+11. `figures\samples_hc_both.pdf`
+12. `results\20_sub_vhigh.csv`
+13. `results\20_sub_high.csv`
+14. `results\20_sub_out.csv`
+15. `results\20_sub_low.csv`
+16. `figures\ca1_sub_tet_comp.pdf`
 
 ### Profiling the code
 

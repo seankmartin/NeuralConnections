@@ -753,6 +753,95 @@ def mouse_region_exp_probes(
     return new_df
 
 
+def mouse_region_depths(
+    regions,
+    num_sampled,
+    colors=None,
+    style="cartoon",
+    interactive=False,
+    hemisphere="right",
+    vis_only=False,
+    probe_kwargs=None,
+    **simulation_kwargs,
+):
+    np.random.seed(42)
+
+    cols = [
+        "Proportion of connections",
+        "Regions",
+        "Max distance",
+        "Number of samples",
+    ]
+
+    if probe_kwargs is None:
+        probe_kwargs = [None] * len(regions)
+
+    for r, pk in zip(regions, probe_kwargs):
+        final_res_list = []
+
+        name = f"{r[0]}_to_{r[1]}_render"
+        cylinder = place_probes_at_com(
+            r,
+            hemisphere=hemisphere,
+            colors=colors,
+            style=style,
+            interactive=interactive,
+            screenshot_name=name,
+            probe_kwargs=pk,
+        )
+        if vis_only:
+            continue
+
+        # Load mouse data
+        A_name, B_name = r
+        convert_mouse_data(A_name, B_name)
+        to_use = [True, True, True, True]
+        mc, full_stats = load_matrix_data(to_use, A_name, B_name, hemisphere=hemisphere)
+        print("{} - {}, {} - {}".format(A_name, B_name, mc.num_a, mc.num_b))
+        region_sizes = [mc.num_a, mc.num_b]
+
+        # Find intersections of probes and cells
+        brain_region_meshes = get_brain_region_meshes(r, None, hemisphere=hemisphere)
+
+        region_pts = []
+        for region_mesh, region_size in zip(brain_region_meshes, region_sizes):
+            pts = get_n_random_points_in_region(region_mesh, region_size, sort_=True)
+            meshes = [cylinder]
+            pts_idxs = np.sort(get_idx_of_points_in_meshes(pts, meshes))
+            pts = pts[pts_idxs]
+            region_pts.append((pts, pts_idxs))
+
+        a_indices = region_pts[0][1]
+        b_indices = region_pts[1][1]
+
+        # Probability calculation
+
+        for ns in range(num_sampled + 1):
+            for depth in range(1, 4):
+                simulation_kwargs["max_depth"] = depth
+                res = prob_connect_probe(
+                    mc,
+                    [ns, ns],
+                    a_indices,
+                    b_indices,
+                    full_stats,
+                    do_graph=False,
+                    **simulation_kwargs,
+                )
+                r_str = f"{r[0]}_{r[1]}"
+                exp = res[1]["expected"]
+                if ns != 0:
+                    final_res_list.append([exp / ns, r_str, depth, ns])
+                else:
+                    final_res_list.append([exp, r_str, depth, ns])
+
+        df = list_to_df(final_res_list, headers=cols)
+        fname = f"sub_regions_{r[0]}_{r[1]}_all_depth.csv"
+        fname = os.path.join(here, "..", "results", fname)
+        print("Saved dataframe results to {}".format(fname))
+        df_to_file(df, fname, index=False)
+
+
 def out_exp(config, out_name, depth, num_iters=1000):
     """The expected number of receiving neurons in region 2."""
     np.random.seed(42)
