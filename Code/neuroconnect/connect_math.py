@@ -641,3 +641,20 @@ def get_dist_ci(dist):
     upper = mean + 1.96 * sqrt(var)
 
     return lower, upper
+
+def get_dist_ci_alt(dist, ci=False):
+    val = 0
+    lower = "NA"
+    upper = "NA"
+    min_k = min(sorted(list(dist.keys())[1:]))
+    for key, value in dist.items():
+        val = val + (100 * value)
+        if (val >= 2.5) and (lower == "NA"):
+            lower = key
+        if val >= 97.5 and (upper == "NA"):
+            upper = key
+    
+    if ci:
+        return lower - min_k, upper - min_k
+    else:
+        return lower, upper

@@ -8,7 +8,6 @@ python -m neuroconnect.playground
 
 import os
 from collections import OrderedDict
-from cv2 import mean
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -685,9 +684,89 @@ def test_depth_2():
     pprint(full_res)
 
 
+def prob_confidence():
+    from skm_pyutils.py_table import df_from_file
+    from .connect_math import get_dist_ci, get_dist_ci_alt, get_dist_mean
+
+    here = os.path.dirname(os.path.abspath(__file__))
+    fpath1 = os.path.join(here, "..", "results", "npix_probe_ca3_ca1.csv")
+    df = df_from_file(fpath1)
+
+    d1 = {}
+    for row in df.itertuples():
+        k = row._1 / 79
+        v = row.Probability
+        d1[k] = v
+
+    print(100 * get_dist_mean(d1))
+
+    c1_1 = get_dist_ci_alt(d1)
+    print(100 * c1_1[0], 100 * c1_1[1])
+
+    here = os.path.dirname(os.path.abspath(__file__))
+    fpath1 = os.path.join(here, "..", "results", "sub_VISp_VISl_depth_1.csv")
+    df = df_from_file(fpath1)
+
+    shifted = df[df["Shifted"] == "shifted"]
+    nshifted = df[df["Shifted"] != "shifted"]
+
+    d1 = {}
+    for row in shifted.itertuples():
+        k = row._1 / 79
+        v = row.Probability
+        d1[k] = v
+
+    d2 = {}
+    for row in nshifted.itertuples():
+        k = row._1 / 79
+        v = row.Probability
+        d2[k] = v
+
+    print(100 * get_dist_mean(d1), 100 * get_dist_mean(d2))
+
+    c1_1 = get_dist_ci(d1)
+    c1_2 = get_dist_ci(d2)
+
+    print(c1_1, c1_2)
+
+    s1 = 0
+    for k, v in d1.items():
+        if (k >= c1_1[0]) and (k <= c1_1[1]):
+            s1 = s1 + (100 * v)
+
+    s2 = 0
+    for k, v in d2.items():
+        if (k >= c1_2[0]) and (k <= c1_2[1]):
+            s2 = s2 + (100 * v)
+
+    print(s1, s2)
+
+    c1_1 = get_dist_ci_alt(d1)
+    c1_2 = get_dist_ci_alt(d2)
+
+    print(100 * c1_1[0], 100 * c1_1[1])
+    print(100 * c1_2[0], 100 * c1_2[1])
+    
+    s1 = 0
+    for k, v in d1.items():
+        if (k >= c1_1[0]) and (k <= c1_1[1]):
+            s1 = s1 + (100 * v)
+
+    s2 = 0
+    for k, v in d2.items():
+        if (k >= c1_2[0]) and (k <= c1_2[1]):
+            s2 = s2 + (100 * v)
+
+    print(s1, s2)
+
+
 if __name__ == "__main__":
     # Hypergeometric again right?
     # connect_prob_large_matrix()
+
+    prob_confidence()
+    exit(-1)
+
     test_depth_2()
     exit(-1)
 
