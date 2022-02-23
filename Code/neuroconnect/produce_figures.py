@@ -492,7 +492,7 @@ def do_hippocampus(ca1_ca3: bool = True, ca1_sub: bool = True):
         )
         
         store_tetrode_results_full()
-        plot_pmf("tetrode_full.csv", "ca3_ca1_tetrode_pmf.pdf")
+        plot_pmf(load_df("tetrode_full.csv"), "ca3_ca1_tetrode_pmf.pdf")
 
         store_npix_results()
         plot_pmf(load_df("npix_probe_ca3_ca1.csv"), "npix_pmf.pdf")
