@@ -39,7 +39,6 @@ python -m neuroconnect.playground
 
 import os
 from collections import OrderedDict
-from cv2 import mean
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -716,9 +715,91 @@ def test_depth_2():
     pprint(full_res)
 
 
+def prob_confidence():
+    from skm_pyutils.py_table import df_from_file
+    from .connect_math import get_dist_ci, get_dist_ci_alt, get_dist_mean
+
+    here = os.path.dirname(os.path.abspath(__file__))
+    fpath1 = os.path.join(here, &#34;..&#34;, &#34;results&#34;, &#34;npix_probe_ca3_ca1.csv&#34;)
+    df = df_from_file(fpath1)
+
+    d1 = {}
+    for row in df.itertuples():
+        k = row._1 / 79
+        v = row.Probability
+        d1[k] = v
+
+    print(&#34;CA3--CA1&#34;)
+    print(100 * get_dist_mean(d1))
+
+    c1_1 = get_dist_ci_alt(d1)
+    print(100 * c1_1[0], 100 * c1_1[1])
+
+    here = os.path.dirname(os.path.abspath(__file__))
+    fpath1 = os.path.join(here, &#34;..&#34;, &#34;results&#34;, &#34;sub_VISp_VISl_depth_1.csv&#34;)
+    df = df_from_file(fpath1)
+
+    shifted = df[df[&#34;Shifted&#34;] == &#34;shifted&#34;]
+    nshifted = df[df[&#34;Shifted&#34;] != &#34;shifted&#34;]
+
+    d1 = {}
+    for row in shifted.itertuples():
+        k = row._1 / 79
+        v = row.Probability
+        d1[k] = v
+
+    d2 = {}
+    for row in nshifted.itertuples():
+        k = row._1 / 79
+        v = row.Probability
+        d2[k] = v
+
+    print(&#34;VISp--VISl&#34;)
+    print(100 * get_dist_mean(d1), 100 * get_dist_mean(d2))
+
+    c1_1 = get_dist_ci(d1)
+    c1_2 = get_dist_ci(d2)
+
+    print(c1_1, c1_2)
+
+    s1 = 0
+    for k, v in d1.items():
+        if (k &gt;= c1_1[0]) and (k &lt;= c1_1[1]):
+            s1 = s1 + (100 * v)
+
+    s2 = 0
+    for k, v in d2.items():
+        if (k &gt;= c1_2[0]) and (k &lt;= c1_2[1]):
+            s2 = s2 + (100 * v)
+
+    print(s1, s2)
+
+    c1_1 = get_dist_ci_alt(d1)
+    c1_2 = get_dist_ci_alt(d2)
+
+    print(100 * c1_1[0], 100 * c1_1[1])
+    print(100 * c1_2[0], 100 * c1_2[1])
+    
+    s1 = 0
+    for k, v in d1.items():
+        if (k &gt;= c1_1[0]) and (k &lt;= c1_1[1]):
+            s1 = s1 + (100 * v)
+
+    s2 = 0
+    for k, v in d2.items():
+        if (k &gt;= c1_2[0]) and (k &lt;= c1_2[1]):
+            s2 = s2 + (100 * v)
+
+    print(s1, s2)
+
+
 if __name__ == &#34;__main__&#34;:
     # Hypergeometric again right?
     # connect_prob_large_matrix()
+
+    prob_confidence()
+    exit(-1)
+
     test_depth_2()
     exit(-1)
 
@@ -1003,34 +1084,6 @@ if __name__ == &#34;__main__&#34;:
         plot_pmf_accuracy(df_from_file(to_load), &#34;test_pmf.pdf&#34;)</code></pre>
 </details>
 </dd>
-<dt id="neuroconnect.playground.mean"><code class="name flex">
-<span>def <span class="ident">mean</span></span>(<span>src, mask)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>mean(src[, mask]) -&gt; retval
-.
-@brief Calculates an average (mean) of array elements.
-. <br>
-.
-The function cv::mean calculates the mean value M of array elements,
-.
-independently for each channel, and return it:
-.
-\f[\begin{array}{l} N =
-\sum <em I: _="\;" _texttt_mask="\texttt{mask">{I: \; \texttt{mask} (I) \ne 0} 1 \ M_c =
-\left ( \sum </em> (I) \ne 0}{ \texttt{mtx} (I)<em>c} \right )/N \end{array}\f]
-.
-When all the mask elements are 0's, the function returns Scalar::all(0)
-.
-@param src input array that should have from 1 to 4 channels so that the result can be stored in
-.
-Scalar</em> .
-.
-@param mask optional operation mask.
-.
-@sa
-countNonZero, meanStdDev, norm, minMaxLoc</p></div>
-</dd>
 <dt id="neuroconnect.playground.plot_expected"><code class="name flex">
 <span>def <span class="ident">plot_expected</span></span>(<span>input_file)</span>
 </code></dt>
@@ -1057,6 +1110,93 @@ countNonZero, meanStdDev, norm, minMaxLoc</p></div>
     plt.plot(x, y, c=&#34;k&#34;)
     plt.plot(x, y2, c=&#34;b&#34;)
     plt.savefig(&#34;test.png&#34;)</code></pre>
+</details>
+</dd>
+<dt id="neuroconnect.playground.prob_confidence"><code class="name flex">
+<span>def <span class="ident">prob_confidence</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def prob_confidence():
+    from skm_pyutils.py_table import df_from_file
+    from .connect_math import get_dist_ci, get_dist_ci_alt, get_dist_mean
+
+    here = os.path.dirname(os.path.abspath(__file__))
+    fpath1 = os.path.join(here, &#34;..&#34;, &#34;results&#34;, &#34;npix_probe_ca3_ca1.csv&#34;)
+    df = df_from_file(fpath1)
+
+    d1 = {}
+    for row in df.itertuples():
+        k = row._1 / 79
+        v = row.Probability
+        d1[k] = v
+
+    print(&#34;CA3--CA1&#34;)
+    print(100 * get_dist_mean(d1))
+
+    c1_1 = get_dist_ci_alt(d1)
+    print(100 * c1_1[0], 100 * c1_1[1])
+
+    here = os.path.dirname(os.path.abspath(__file__))
+    fpath1 = os.path.join(here, &#34;..&#34;, &#34;results&#34;, &#34;sub_VISp_VISl_depth_1.csv&#34;)
+    df = df_from_file(fpath1)
+
+    shifted = df[df[&#34;Shifted&#34;] == &#34;shifted&#34;]
+    nshifted = df[df[&#34;Shifted&#34;] != &#34;shifted&#34;]
+
+    d1 = {}
+    for row in shifted.itertuples():
+        k = row._1 / 79
+        v = row.Probability
+        d1[k] = v
+
+    d2 = {}
+    for row in nshifted.itertuples():
+        k = row._1 / 79
+        v = row.Probability
+        d2[k] = v
+
+    print(&#34;VISp--VISl&#34;)
+    print(100 * get_dist_mean(d1), 100 * get_dist_mean(d2))
+
+    c1_1 = get_dist_ci(d1)
+    c1_2 = get_dist_ci(d2)
+
+    print(c1_1, c1_2)
+
+    s1 = 0
+    for k, v in d1.items():
+        if (k &gt;= c1_1[0]) and (k &lt;= c1_1[1]):
+            s1 = s1 + (100 * v)
+
+    s2 = 0
+    for k, v in d2.items():
+        if (k &gt;= c1_2[0]) and (k &lt;= c1_2[1]):
+            s2 = s2 + (100 * v)
+
+    print(s1, s2)
+
+    c1_1 = get_dist_ci_alt(d1)
+    c1_2 = get_dist_ci_alt(d2)
+
+    print(100 * c1_1[0], 100 * c1_1[1])
+    print(100 * c1_2[0], 100 * c1_2[1])
+    
+    s1 = 0
+    for k, v in d1.items():
+        if (k &gt;= c1_1[0]) and (k &lt;= c1_1[1]):
+            s1 = s1 + (100 * v)
+
+    s2 = 0
+    for k, v in d2.items():
+        if (k &gt;= c1_2[0]) and (k &lt;= c1_2[1]):
+            s2 = s2 + (100 * v)
+
+    print(s1, s2)</code></pre>
 </details>
 </dd>
 <dt id="neuroconnect.playground.sample_graph_exp"><code class="name flex">
@@ -1638,8 +1778,8 @@ countNonZero, meanStdDev, norm, minMaxLoc</p></div>
 <ul class="">
 <li><code><a title="neuroconnect.playground.check_subsample" href="#neuroconnect.playground.check_subsample">check_subsample</a></code></li>
 <li><code><a title="neuroconnect.playground.connect_prob_large_matrix" href="#neuroconnect.playground.connect_prob_large_matrix">connect_prob_large_matrix</a></code></li>
-<li><code><a title="neuroconnect.playground.mean" href="#neuroconnect.playground.mean">mean</a></code></li>
 <li><code><a title="neuroconnect.playground.plot_expected" href="#neuroconnect.playground.plot_expected">plot_expected</a></code></li>
+<li><code><a title="neuroconnect.playground.prob_confidence" href="#neuroconnect.playground.prob_confidence">prob_confidence</a></code></li>
 <li><code><a title="neuroconnect.playground.sample_graph_exp" href="#neuroconnect.playground.sample_graph_exp">sample_graph_exp</a></code></li>
 <li><code><a title="neuroconnect.playground.test_conv_speed" href="#neuroconnect.playground.test_conv_speed">test_conv_speed</a></code></li>
 <li><code><a title="neuroconnect.playground.test_depth_2" href="#neuroconnect.playground.test_depth_2">test_depth_2</a></code></li>

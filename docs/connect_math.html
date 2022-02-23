@@ -669,7 +669,24 @@ def get_dist_ci(dist):
     lower = mean - 1.96 * sqrt(var)
     upper = mean + 1.96 * sqrt(var)
 
-    return lower, upper</code></pre>
+    return lower, upper
+
+def get_dist_ci_alt(dist, ci=False):
+    val = 0
+    lower = &#34;NA&#34;
+    upper = &#34;NA&#34;
+    min_k = min(sorted(list(dist.keys())[1:]))
+    for key, value in dist.items():
+        val = val + (100 * value)
+        if (val &gt;= 2.5) and (lower == &#34;NA&#34;):
+            lower = key
+        if val &gt;= 97.5 and (upper == &#34;NA&#34;):
+            upper = key
+    
+    if ci:
+        return lower - min_k, upper - min_k
+    else:
+        return lower, upper</code></pre>
 </details>
 </section>
 <section>
@@ -1090,6 +1107,33 @@ to_eval should be the x-axis in the final distribution</p>
     upper = mean + 1.96 * sqrt(var)
 
     return lower, upper</code></pre>
+</details>
+</dd>
+<dt id="neuroconnect.connect_math.get_dist_ci_alt"><code class="name flex">
+<span>def <span class="ident">get_dist_ci_alt</span></span>(<span>dist, ci=False)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_dist_ci_alt(dist, ci=False):
+    val = 0
+    lower = &#34;NA&#34;
+    upper = &#34;NA&#34;
+    min_k = min(sorted(list(dist.keys())[1:]))
+    for key, value in dist.items():
+        val = val + (100 * value)
+        if (val &gt;= 2.5) and (lower == &#34;NA&#34;):
+            lower = key
+        if val &gt;= 97.5 and (upper == &#34;NA&#34;):
+            upper = key
+    
+    if ci:
+        return lower - min_k, upper - min_k
+    else:
+        return lower, upper</code></pre>
 </details>
 </dd>
 <dt id="neuroconnect.connect_math.get_dist_mean"><code class="name flex">
@@ -1624,6 +1668,7 @@ to_eval should be the x-axis in the final distribution</p>
 <li><code><a title="neuroconnect.connect_math.expected_overlapping" href="#neuroconnect.connect_math.expected_overlapping">expected_overlapping</a></code></li>
 <li><code><a title="neuroconnect.connect_math.expected_unique" href="#neuroconnect.connect_math.expected_unique">expected_unique</a></code></li>
 <li><code><a title="neuroconnect.connect_math.get_dist_ci" href="#neuroconnect.connect_math.get_dist_ci">get_dist_ci</a></code></li>
+<li><code><a title="neuroconnect.connect_math.get_dist_ci_alt" href="#neuroconnect.connect_math.get_dist_ci_alt">get_dist_ci_alt</a></code></li>
 <li><code><a title="neuroconnect.connect_math.get_dist_mean" href="#neuroconnect.connect_math.get_dist_mean">get_dist_mean</a></code></li>
 <li><code><a title="neuroconnect.connect_math.get_dist_var" href="#neuroconnect.connect_math.get_dist_var">get_dist_var</a></code></li>
 <li><code><a title="neuroconnect.connect_math.get_uniform_moments" href="#neuroconnect.connect_math.get_uniform_moments">get_uniform_moments</a></code></li>

@@ -529,9 +529,9 @@ def get_bounding_probes(region_names, session_id=None, shift=False):
             points = locs[j * 374 : (j + 1) * 374]
 
             if shift:
-                points[&#34;ccf_lr&#34;] = points[&#34;ccf_lr&#34;] - (points[&#34;ccf_lr&#34;] / 10)
-                points[&#34;ccf_ap&#34;] = points[&#34;ccf_ap&#34;] + (points[&#34;ccf_ap&#34;] / 15)
-                points[&#34;ccf_dv&#34;] = points[&#34;ccf_dv&#34;] + (points[&#34;ccf_dv&#34;] / 4)
+                points[&#34;ccf_lr&#34;] = points[&#34;ccf_lr&#34;] - (points[&#34;ccf_lr&#34;] / 8)
+                points[&#34;ccf_ap&#34;] = points[&#34;ccf_ap&#34;] + (points[&#34;ccf_ap&#34;] / 10)
+                points[&#34;ccf_dv&#34;] = points[&#34;ccf_dv&#34;] + (points[&#34;ccf_dv&#34;] / 2)
 
             brain_regions = points[&#34;allen_ontology&#34;].values
             cont = True
@@ -998,67 +998,101 @@ if __name__ == &#34;__main__&#34;:
     #### Visualise COMs
     # place_probes_at_com([&#34;ILA&#34;, &#34;PL&#34;])
     # place_probes_at_com([&#34;MOp&#34;, &#34;SSp-ll&#34;], join=True)
-    interactive = True
-    f1 = False
-    f2 = True
-    f3 = False
-    f4 = False
+    # interactive = True
+    # f1 = False
+    # f2 = True
+    # f3 = False
+    # f4 = False
 
-    if f1:
-        probe_kwargs = [
-            {},
-            dict(top_scale=0.8, angles_top=[0, 0, 5], angles_bottom=[0, 0, -5]),
-            dict(top_scale=0.9, angles_top=[0, 0, 3], angles_bottom=[0, 0, -2]),
-        ]
+    # if f1:
+    #     probe_kwargs = [
+    #         {},
+    #         dict(top_scale=0.8, angles_top=[0, 0, 5], angles_bottom=[0, 0, -5]),
+    #         dict(top_scale=0.9, angles_top=[0, 0, 3], angles_bottom=[0, 0, -2]),
+    #     ]
 
-        place_probes_at_com(
-            [&#34;MOp&#34;, &#34;SSp-ll&#34;],
-            probe_kwargs=probe_kwargs,
-            hemisphere=&#34;right&#34;,
-            interactive=interactive,
-        )
+    #     place_probes_at_com(
+    #         [&#34;MOp&#34;, &#34;SSp-ll&#34;],
+    #         probe_kwargs=probe_kwargs,
+    #         hemisphere=&#34;right&#34;,
+    #         interactive=interactive,
+    #     )
 
-    if f2:
-        probe_kwargs = [
-            {},
-            dict(top_scale=0.4, angles_top=[0, 0, 10], angles_bottom=[0, 0, -5]),
-            dict(top_scale=0.4, angles_top=[1, 0, 5], angles_bottom=[1, 0, -2]),
-        ]
+    # if f2:
+    #     probe_kwargs = [
+    #         {},
+    #         dict(top_scale=0.4, angles_top=[0, 0, 10], angles_bottom=[0, 0, -5]),
+    #         dict(top_scale=0.4, angles_top=[1, 0, 5], angles_bottom=[1, 0, -2]),
+    #     ]
 
-        place_probes_at_com(
-            (&#34;VISp&#34;, &#34;VISl&#34;),
-            probe_kwargs=probe_kwargs,
-            hemisphere=&#34;right&#34;,
-            interactive=interactive,
-        )
+    #     place_probes_at_com(
+    #         (&#34;VISp&#34;, &#34;VISl&#34;),
+    #         probe_kwargs=probe_kwargs,
+    #         hemisphere=&#34;right&#34;,
+    #         interactive=interactive,
+    #     )
 
-    if f3:
-        probe_kwargs = [
-            {},
-            dict(top_scale=0.8, angles_top=[0, 0, 5], angles_bottom=[0, 0, -5]),
-            dict(top_scale=0.83, angles_top=[0, 0, 3], angles_bottom=[0, 0, -2]),
-        ]
+    # if f3:
+    #     probe_kwargs = [
+    #         {},
+    #         dict(top_scale=0.8, angles_top=[0, 0, 5], angles_bottom=[0, 0, -5]),
+    #         dict(top_scale=0.83, angles_top=[0, 0, 3], angles_bottom=[0, 0, -2]),
+    #     ]
 
-        place_probes_at_com(
-            (&#34;AUDp&#34;, &#34;AUDpo&#34;),
-            probe_kwargs=probe_kwargs,
-            hemisphere=&#34;right&#34;,
-            interactive=interactive,
-        )
+    #     place_probes_at_com(
+    #         (&#34;AUDp&#34;, &#34;AUDpo&#34;),
+    #         probe_kwargs=probe_kwargs,
+    #         hemisphere=&#34;right&#34;,
+    #         interactive=interactive,
+    #     )
 
-    if f4:
-        probe_kwargs = [
-            {},
-            dict(top_scale=0.5, angles_top=[0, 0, 10], angles_bottom=[0, 0, -5]),
-            dict(top_scale=0.83, angles_top=[0, 0, 3], angles_bottom=[0, 0, -2]),
-        ]
+    # if f4:
+    #     probe_kwargs = [
+    #         {},
+    #         dict(top_scale=0.5, angles_top=[0, 0, 10], angles_bottom=[0, 0, -5]),
+    #         dict(top_scale=0.83, angles_top=[0, 0, 3], angles_bottom=[0, 0, -2]),
+    #     ]
 
-        place_probes_at_com(
-            (&#34;ILA&#34;, &#34;PL&#34;),
-            probe_kwargs=probe_kwargs,
-            hemisphere=&#34;right&#34;,
-            interactive=interactive,
-        )</code></pre>
+    #     place_probes_at_com(
+    #         (&#34;ILA&#34;, &#34;PL&#34;),
+    #         probe_kwargs=probe_kwargs,
+    #         hemisphere=&#34;right&#34;,
+    #         interactive=interactive,
+    #     )
+
+    # visualise_probe_cells(
+    #     [&#34;VISp&#34;, &#34;VISl&#34;],
+    #     [333055, 49569],
+    #     hemisphere=&#34;left&#34;,
+    #     colors=[
+    #         myterial.blue_dark,
+    #         myterial.pink_darker,
+    #         myterial.indigo_dark,
+    #         myterial.salmon_darker,
+    #     ],
+    #     style=&#34;cartoon&#34;,
+    #     interactive=False,
+    #     screenshot_name=&#34;brainrender_visl_visp_test&#34;,
+    #     shift=True,
+    # )
+
+    probe_kwargs = [
+        {},
+        dict(top_scale=0.5, angles_top=[0, 0, 10], angles_bottom=[0, 0, -5]),
+        dict(top_scale=0.83, angles_top=[0, 0, 3], angles_bottom=[0, 0, -2]),
+    ]
+    place_probes_at_com(
+        (&#34;CA1&#34;, &#34;CA3&#34;),
+        probe_kwargs=probe_kwargs,
+        hemisphere=&#34;right&#34;,
+        interactive=True,
+    )
+    place_probes_at_com(
+        (&#34;CA1&#34;, &#34;SUB&#34;),
+        probe_kwargs=probe_kwargs,
+        hemisphere=&#34;right&#34;,
+        interactive=True,
+    )</code></pre>
 </details>
 </section>
 <section>
@@ -1313,9 +1347,9 @@ mesh is a vedo mesh bounding the probe</dd>
             points = locs[j * 374 : (j + 1) * 374]
 
             if shift:
-                points[&#34;ccf_lr&#34;] = points[&#34;ccf_lr&#34;] - (points[&#34;ccf_lr&#34;] / 10)
-                points[&#34;ccf_ap&#34;] = points[&#34;ccf_ap&#34;] + (points[&#34;ccf_ap&#34;] / 15)
-                points[&#34;ccf_dv&#34;] = points[&#34;ccf_dv&#34;] + (points[&#34;ccf_dv&#34;] / 4)
+                points[&#34;ccf_lr&#34;] = points[&#34;ccf_lr&#34;] - (points[&#34;ccf_lr&#34;] / 8)
+                points[&#34;ccf_ap&#34;] = points[&#34;ccf_ap&#34;] + (points[&#34;ccf_ap&#34;] / 10)
+                points[&#34;ccf_dv&#34;] = points[&#34;ccf_dv&#34;] + (points[&#34;ccf_dv&#34;] / 2)
 
             brain_regions = points[&#34;allen_ontology&#34;].values
             cont = True

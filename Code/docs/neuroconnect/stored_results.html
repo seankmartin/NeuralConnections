@@ -146,7 +146,7 @@ def store_tetrode_results_full():
 
 def store_tetrode_results_depth():
     np.random.seed(42)
-    num_samples_range = np.arange(60)
+    num_samples_range = np.arange(11)
     res_list = []
     headers = [&#34;Number of samples&#34;, &#34;Proportion of connections&#34;, &#34;Max distance&#34;]
     for depth in (1, 2, 3):
@@ -180,19 +180,19 @@ def store_npix_results():
     args = SimpleNamespace(
         max_depth=1,
         num_cpus=1,
-        cfg=&#34;ca3_ca1&#34;,
+        cfg=&#34;ca3_ca1_probe_full&#34;,
         clt_start=10,
         subsample_rate=0.01,
         approx_hypergeo=False,
     )
-    result = ctrl_main(parse_cfg(&#34;ca3_ca1.cfg&#34;), args)
+    result = ctrl_main(parse_cfg(&#34;probe_ca3_ca1_full.cfg&#34;), args)
 
     df = df_from_dict(
         result[&#34;mpf&#34;][&#34;total&#34;],
         cols=[&#34;Number of sampled connected neurons&#34;, &#34;Probability&#34;],
     )
     df.to_csv(
-        os.path.join(here, &#34;..&#34;, &#34;results&#34;, &#34;npix_man.csv&#34;),
+        os.path.join(here, &#34;..&#34;, &#34;results&#34;, &#34;npix_probe_ca3_ca1.csv&#34;),
         index=False,
     )
 
@@ -200,16 +200,14 @@ def store_npix_results():
 def store_sub_results():
     np.random.seed(42)
     configs = [
-        &#34;ca1_sub_high.cfg&#34;,
-        &#34;ca1_sub_high_out.cfg&#34;,
-        &#34;ca1_sub_low.cfg&#34;,
-        &#34;ca1_sub_vhigh.cfg&#34;,
+        &#34;probe_ca1_sub_full_high.cfg&#34;,
+        &#34;probe_ca1_sub_full_med.cfg&#34;,
+        &#34;probe_ca1_sub_full_low.cfg&#34;,
     ]
     out_names = [
         &#34;20_sub_high.csv&#34;,
         &#34;20_sub_out.csv&#34;,
         &#34;20_sub_low.csv&#34;,
-        &#34;20_sub_vhigh.csv&#34;,
     ]
 
     for cfg_name, name in zip(configs, out_names):
@@ -222,7 +220,7 @@ def store_sub_results():
             approx_hypergeo=False,
         )
         cfg = parse_cfg(cfg_name)
-        cfg[&#34;default&#34;][&#34;num_samples&#34;] = &#34;[20, 20]&#34;
+        cfg[&#34;default&#34;][&#34;num_samples&#34;] = &#34;[79, 79]&#34;
         result = ctrl_main(cfg, args)
         df = df_from_dict(
             result[&#34;mpf&#34;][&#34;total&#34;],
@@ -529,19 +527,19 @@ def main():
     args = SimpleNamespace(
         max_depth=1,
         num_cpus=1,
-        cfg=&#34;ca3_ca1&#34;,
+        cfg=&#34;ca3_ca1_probe_full&#34;,
         clt_start=10,
         subsample_rate=0.01,
         approx_hypergeo=False,
     )
-    result = ctrl_main(parse_cfg(&#34;ca3_ca1.cfg&#34;), args)
+    result = ctrl_main(parse_cfg(&#34;probe_ca3_ca1_full.cfg&#34;), args)
 
     df = df_from_dict(
         result[&#34;mpf&#34;][&#34;total&#34;],
         cols=[&#34;Number of sampled connected neurons&#34;, &#34;Probability&#34;],
     )
     df.to_csv(
-        os.path.join(here, &#34;..&#34;, &#34;results&#34;, &#34;npix_man.csv&#34;),
+        os.path.join(here, &#34;..&#34;, &#34;results&#34;, &#34;npix_probe_ca3_ca1.csv&#34;),
         index=False,
     )</code></pre>
 </details>
@@ -603,16 +601,14 @@ def main():
 <pre><code class="python">def store_sub_results():
     np.random.seed(42)
     configs = [
-        &#34;ca1_sub_high.cfg&#34;,
-        &#34;ca1_sub_high_out.cfg&#34;,
-        &#34;ca1_sub_low.cfg&#34;,
-        &#34;ca1_sub_vhigh.cfg&#34;,
+        &#34;probe_ca1_sub_full_high.cfg&#34;,
+        &#34;probe_ca1_sub_full_med.cfg&#34;,
+        &#34;probe_ca1_sub_full_low.cfg&#34;,
     ]
     out_names = [
         &#34;20_sub_high.csv&#34;,
         &#34;20_sub_out.csv&#34;,
         &#34;20_sub_low.csv&#34;,
-        &#34;20_sub_vhigh.csv&#34;,
     ]
 
     for cfg_name, name in zip(configs, out_names):
@@ -625,7 +621,7 @@ def main():
             approx_hypergeo=False,
         )
         cfg = parse_cfg(cfg_name)
-        cfg[&#34;default&#34;][&#34;num_samples&#34;] = &#34;[20, 20]&#34;
+        cfg[&#34;default&#34;][&#34;num_samples&#34;] = &#34;[79, 79]&#34;
         result = ctrl_main(cfg, args)
         df = df_from_dict(
             result[&#34;mpf&#34;][&#34;total&#34;],
@@ -679,7 +675,7 @@ def main():
 </summary>
 <pre><code class="python">def store_tetrode_results_depth():
     np.random.seed(42)
-    num_samples_range = np.arange(60)
+    num_samples_range = np.arange(11)
     res_list = []
     headers = [&#34;Number of samples&#34;, &#34;Proportion of connections&#34;, &#34;Max distance&#34;]
     for depth in (1, 2, 3):

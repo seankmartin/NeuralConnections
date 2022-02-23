@@ -51,6 +51,7 @@ from .compound import (
     out_exp,
     explain_calc,
     mouse_region_exp_probes,
+    mouse_region_depths,
 )
 from .matrix import main as mouse_main
 from .main import main as ctrl_main
@@ -66,6 +67,7 @@ from .plot import (
     plot_exp_comp,
     plot_pmf_comp,
     plot_visp_visl_shift,
+    plot_bhattacharyya,
 )
 from .stats_convergence_rate import (
     test_hyper_convergence_rate,
@@ -301,7 +303,7 @@ def do_examples(do_exp=True, do_pmf=True, do_types=True):
         store_tetrode_results()
         plot_pmf(load_df(&#34;tetrode_man.csv&#34;), &#34;tetrode_pmf.pdf&#34;)
         store_npix_results()
-        plot_pmf(load_df(&#34;npix_man.csv&#34;), &#34;npix_pmf.pdf&#34;)
+        plot_pmf(load_df(&#34;npix_probe_ca3_ca1.csv&#34;), &#34;npix_pmf.pdf&#34;)
     if do_types:
         kwargs = {
             &#34;num_iters&#34;: 1000,
@@ -336,13 +338,7 @@ def do_examples(do_exp=True, do_pmf=True, do_types=True):
             &#34;1.8% (36% to 5%)&#34;,
             &#34;0.8% (70% to 1%)&#34;,
         ]
-        plot_exp_comp(
-            df_list,
-            df_names,
-            &#34;samples_hc_both.pdf&#34;,
-            prop=True,
-            depth=True
-        )
+        plot_exp_comp(df_list, df_names, &#34;samples_hc_both.pdf&#34;, prop=True, depth=False)
         store_sub_results()
         dfs = [
             load_df(&#34;20_sub_vhigh.csv&#34;),
@@ -477,8 +473,7 @@ def do_mouse_regions(vis_only: bool = True):
         dict(top_scale=0.5, angles_top=[0, 0, 10], angles_bottom=[0, 0, -5]),
         dict(top_scale=0.5, angles_top=[0, 0, 10], angles_bottom=[0, 0, -5]),
     ]
-    
-    probe_kwargs = probe_kwargs + [None] * 7
+
     colors = [myterial.blue_dark, myterial.pink_darker, myterial.deep_purple_darker]
 
     num_samples = [79, 79]
@@ -499,7 +494,19 @@ def do_mouse_regions(vis_only: bool = True):
         load_df(&#34;mouse_region_exp_probes.csv&#34;),
         &#34;mouse_region_exp.pdf&#34;,
         x_name=&#34;Regions&#34;,
-        scale=(12, 5)
+        scale=(12, 5),
+    )
+    plot_bhattacharyya(regions, &#34;bhattacharyya_mouse.pdf&#34;)
+
+    mouse_region_depths(
+        [(&#34;MOp&#34;, &#34;SSp-ll&#34;)],
+        79,
+        probe_kwargs=[
+            dict(top_scale=0.95, angles_top=[0, 0, 3], angles_bottom=[0, 0, -2])
+        ],
+    )
+    plot_samples_v_prop(
+        load_df(&#34;sub_regions_MOp_SSp-ll_all_depth.csv&#34;), &#34;MOp-SSp-depth.pdf&#34;
     )
 
 
@@ -513,9 +520,12 @@ def do_hippocampus(ca1_ca3: bool = True, ca1_sub: bool = True):
         plot_samples_v_prop(
             load_df(&#34;samples_depth_ca3_ca1.csv&#34;), &#34;ca3_ca1_samps_depth.pdf&#34;
         )
+        
+        store_tetrode_results_full()
+        plot_pmf(load_df(&#34;tetrode_full.csv&#34;), &#34;ca3_ca1_tetrode_pmf.pdf&#34;)
 
         store_npix_results()
-        plot_pmf(load_df(&#34;npix_man.csv&#34;), &#34;npix_pmf.pdf&#34;)
+        plot_pmf(load_df(&#34;npix_probe_ca3_ca1.csv&#34;), &#34;npix_pmf.pdf&#34;)
 
     # CA1 SUB figures
     if ca1_sub:
@@ -526,42 +536,30 @@ def do_hippocampus(ca1_ca3: bool = True, ca1_sub: bool = True):
             &#34;num_graphs&#34;: 0,
             &#34;sr&#34;: 0.01,
             &#34;clt_start&#34;: 10,
-            &#34;fin_depth&#34;: 3,
+            &#34;fin_depth&#34;: 1,
         }
         connections_dependent_on_samples(
-            parse_cfg(&#34;ca1_sub_high.cfg&#34;), &#34;hc_high&#34;, **kwargs
+            parse_cfg(&#34;probe_ca1_sub_full_high.cfg&#34;), &#34;hc_high&#34;, **kwargs
         )
         connections_dependent_on_samples(
-            parse_cfg(&#34;ca1_sub_high_out.cfg&#34;), &#34;hc_high_out&#34;, **kwargs
+            parse_cfg(&#34;probe_ca1_sub_full_med.cfg&#34;), &#34;hc_med&#34;, **kwargs
         )
         connections_dependent_on_samples(
-            parse_cfg(&#34;ca1_sub_low.cfg&#34;), &#34;hc_low&#34;, **kwargs
-        )
-        connections_dependent_on_samples(
-            parse_cfg(&#34;ca1_sub_vhigh.cfg&#34;), &#34;hc_vhigh&#34;, **kwargs
+            parse_cfg(&#34;probe_ca1_sub_full_low.cfg&#34;), &#34;hc_low&#34;, **kwargs
         )
         df_list = [
-            load_df(&#34;connection_samples_hc_vhigh.csv&#34;),
             load_df(&#34;connection_samples_hc_high.csv&#34;),
-            load_df(&#34;Connection_samples_hc_high_out.csv&#34;),
+            load_df(&#34;Connection_samples_hc_med.csv&#34;),
             load_df(&#34;connection_samples_hc_low.csv&#34;),
         ]
         df_names = [
-            &#34;2.8% (90% to 3.1%)&#34;,
-            &#34;1.8% (90% to 2%)&#34;,
             &#34;1.8% (36% to 5%)&#34;,
-            &#34;0.8% (70% to 1%)&#34;,
+            &#34;0.5% (10% to 5%)&#34;,
+            &#34;0.2% (16% to 1.1%)&#34;,
         ]
-        plot_exp_comp(
-            df_list,
-            df_names,
-            &#34;samples_hc_both.pdf&#34;,
-            prop=True,
-            depth=True
-        )
+        plot_exp_comp(df_list, df_names, &#34;samples_hc_both.pdf&#34;, prop=True, depth=False)
         store_sub_results()
         dfs = [
-            load_df(&#34;20_sub_vhigh.csv&#34;),
             load_df(&#34;20_sub_high.csv&#34;),
             load_df(&#34;20_sub_out.csv&#34;),
             load_df(&#34;20_sub_low.csv&#34;),
@@ -634,27 +632,7 @@ def do_all(
 
 
 if __name__ == &#34;__main__&#34;:
-    # app()
-    regions = [
-        (&#34;MOp&#34;, &#34;SSp-ll&#34;),
-        (&#34;SSp-ll&#34;, &#34;MOp&#34;),
-        (&#34;VISp&#34;, &#34;VISl&#34;),
-        (&#34;VISl&#34;, &#34;VISp&#34;),
-        (&#34;AUDp&#34;, &#34;AUDpo&#34;),
-        (&#34;AUDpo&#34;, &#34;AUDp&#34;),
-        (&#34;ILA&#34;, &#34;PL&#34;),
-        (&#34;PL&#34;, &#34;ILA&#34;),
-    ]
-    depths = [1, 1, 1, 1, 1, 1, 1, 1]
-    num_samples = [79, 79]
-    mouse_region_exp(
-        regions, depths, &#34;fig&#34;, num_samples, num_iters=1, do_graph=False
-    )
-    plot_region_vals(
-        load_df(&#34;mouse_region_exp_fig.csv&#34;),
-        &#34;mouse_region_exp.pdf&#34;,
-        x_name=&#34;Regions&#34;,
-    )</code></pre>
+    app()</code></pre>
 </details>
 </section>
 <section>
@@ -848,7 +826,7 @@ def do_examples(do_exp=True, do_pmf=True, do_types=True):
         store_tetrode_results()
         plot_pmf(load_df(&#34;tetrode_man.csv&#34;), &#34;tetrode_pmf.pdf&#34;)
         store_npix_results()
-        plot_pmf(load_df(&#34;npix_man.csv&#34;), &#34;npix_pmf.pdf&#34;)
+        plot_pmf(load_df(&#34;npix_probe_ca3_ca1.csv&#34;), &#34;npix_pmf.pdf&#34;)
     if do_types:
         kwargs = {
             &#34;num_iters&#34;: 1000,
@@ -883,13 +861,7 @@ def do_examples(do_exp=True, do_pmf=True, do_types=True):
             &#34;1.8% (36% to 5%)&#34;,
             &#34;0.8% (70% to 1%)&#34;,
         ]
-        plot_exp_comp(
-            df_list,
-            df_names,
-            &#34;samples_hc_both.pdf&#34;,
-            prop=True,
-            depth=True
-        )
+        plot_exp_comp(df_list, df_names, &#34;samples_hc_both.pdf&#34;, prop=True, depth=False)
         store_sub_results()
         dfs = [
             load_df(&#34;20_sub_vhigh.csv&#34;),
@@ -988,9 +960,12 @@ def do_hippocampus(ca1_ca3: bool = True, ca1_sub: bool = True):
         plot_samples_v_prop(
             load_df(&#34;samples_depth_ca3_ca1.csv&#34;), &#34;ca3_ca1_samps_depth.pdf&#34;
         )
+        
+        store_tetrode_results_full()
+        plot_pmf(load_df(&#34;tetrode_full.csv&#34;), &#34;ca3_ca1_tetrode_pmf.pdf&#34;)
 
         store_npix_results()
-        plot_pmf(load_df(&#34;npix_man.csv&#34;), &#34;npix_pmf.pdf&#34;)
+        plot_pmf(load_df(&#34;npix_probe_ca3_ca1.csv&#34;), &#34;npix_pmf.pdf&#34;)
 
     # CA1 SUB figures
     if ca1_sub:
@@ -1001,42 +976,30 @@ def do_hippocampus(ca1_ca3: bool = True, ca1_sub: bool = True):
             &#34;num_graphs&#34;: 0,
             &#34;sr&#34;: 0.01,
             &#34;clt_start&#34;: 10,
-            &#34;fin_depth&#34;: 3,
+            &#34;fin_depth&#34;: 1,
         }
         connections_dependent_on_samples(
-            parse_cfg(&#34;ca1_sub_high.cfg&#34;), &#34;hc_high&#34;, **kwargs
+            parse_cfg(&#34;probe_ca1_sub_full_high.cfg&#34;), &#34;hc_high&#34;, **kwargs
         )
         connections_dependent_on_samples(
-            parse_cfg(&#34;ca1_sub_high_out.cfg&#34;), &#34;hc_high_out&#34;, **kwargs
+            parse_cfg(&#34;probe_ca1_sub_full_med.cfg&#34;), &#34;hc_med&#34;, **kwargs
         )
         connections_dependent_on_samples(
-            parse_cfg(&#34;ca1_sub_low.cfg&#34;), &#34;hc_low&#34;, **kwargs
-        )
-        connections_dependent_on_samples(
-            parse_cfg(&#34;ca1_sub_vhigh.cfg&#34;), &#34;hc_vhigh&#34;, **kwargs
+            parse_cfg(&#34;probe_ca1_sub_full_low.cfg&#34;), &#34;hc_low&#34;, **kwargs
         )
         df_list = [
-            load_df(&#34;connection_samples_hc_vhigh.csv&#34;),
             load_df(&#34;connection_samples_hc_high.csv&#34;),
-            load_df(&#34;Connection_samples_hc_high_out.csv&#34;),
+            load_df(&#34;Connection_samples_hc_med.csv&#34;),
             load_df(&#34;connection_samples_hc_low.csv&#34;),
         ]
         df_names = [
-            &#34;2.8% (90% to 3.1%)&#34;,
-            &#34;1.8% (90% to 2%)&#34;,
             &#34;1.8% (36% to 5%)&#34;,
-            &#34;0.8% (70% to 1%)&#34;,
+            &#34;0.5% (10% to 5%)&#34;,
+            &#34;0.2% (16% to 1.1%)&#34;,
         ]
-        plot_exp_comp(
-            df_list,
-            df_names,
-            &#34;samples_hc_both.pdf&#34;,
-            prop=True,
-            depth=True
-        )
+        plot_exp_comp(df_list, df_names, &#34;samples_hc_both.pdf&#34;, prop=True, depth=False)
         store_sub_results()
         dfs = [
-            load_df(&#34;20_sub_vhigh.csv&#34;),
             load_df(&#34;20_sub_high.csv&#34;),
             load_df(&#34;20_sub_out.csv&#34;),
             load_df(&#34;20_sub_low.csv&#34;),
@@ -1122,8 +1085,7 @@ def do_mouse_regions(vis_only: bool = True):
         dict(top_scale=0.5, angles_top=[0, 0, 10], angles_bottom=[0, 0, -5]),
         dict(top_scale=0.5, angles_top=[0, 0, 10], angles_bottom=[0, 0, -5]),
     ]
-    
-    probe_kwargs = probe_kwargs + [None] * 7
+
     colors = [myterial.blue_dark, myterial.pink_darker, myterial.deep_purple_darker]
 
     num_samples = [79, 79]
@@ -1144,7 +1106,19 @@ def do_mouse_regions(vis_only: bool = True):
         load_df(&#34;mouse_region_exp_probes.csv&#34;),
         &#34;mouse_region_exp.pdf&#34;,
         x_name=&#34;Regions&#34;,
-        scale=(12, 5)
+        scale=(12, 5),
+    )
+    plot_bhattacharyya(regions, &#34;bhattacharyya_mouse.pdf&#34;)
+
+    mouse_region_depths(
+        [(&#34;MOp&#34;, &#34;SSp-ll&#34;)],
+        79,
+        probe_kwargs=[
+            dict(top_scale=0.95, angles_top=[0, 0, 3], angles_bottom=[0, 0, -2])
+        ],
+    )
+    plot_samples_v_prop(
+        load_df(&#34;sub_regions_MOp_SSp-ll_all_depth.csv&#34;), &#34;MOp-SSp-depth.pdf&#34;
     )</code></pre>
 </details>
 </dd>
