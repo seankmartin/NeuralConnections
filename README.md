@@ -5,8 +5,8 @@
 ### Installation
 
 ```
-git clone https://github.com/seankmartin/SKMNeuralConnections
-cd SKMNeuralConnections\Code
+git clone https://github.com/seankmartin/NeuralConnections
+cd NeuralConnections\Code
 pip install -r requirements.txt
 ```
 
@@ -32,7 +32,7 @@ python cli.py --cfg tetrode_ca1_sub.cfg
 
 ### Code documentation
 
-Documentation is available at [GitHub Pages](https://seankmartin.github.io/SKMNeuralConnections/)
+Documentation is available at [GitHub Pages](https://seankmartin.github.io/NeuralConnections/)
 
 ### Citation
 
