@@ -1031,18 +1031,36 @@ if __name__ == "__main__":
     #         interactive=interactive,
     #     )
 
-    visualise_probe_cells(
-        ["VISp", "VISl"],
-        [333055, 49569],
-        hemisphere="left",
-        colors=[
-            myterial.blue_dark,
-            myterial.pink_darker,
-            myterial.indigo_dark,
-            myterial.salmon_darker,
-        ],
-        style="cartoon",
-        interactive=False,
-        screenshot_name="brainrender_visl_visp_test",
-        shift=True,
+    # visualise_probe_cells(
+    #     ["VISp", "VISl"],
+    #     [333055, 49569],
+    #     hemisphere="left",
+    #     colors=[
+    #         myterial.blue_dark,
+    #         myterial.pink_darker,
+    #         myterial.indigo_dark,
+    #         myterial.salmon_darker,
+    #     ],
+    #     style="cartoon",
+    #     interactive=False,
+    #     screenshot_name="brainrender_visl_visp_test",
+    #     shift=True,
+    # )
+
+    probe_kwargs = [
+        {},
+        dict(top_scale=0.5, angles_top=[0, 0, 10], angles_bottom=[0, 0, -5]),
+        dict(top_scale=0.83, angles_top=[0, 0, 3], angles_bottom=[0, 0, -2]),
+    ]
+    place_probes_at_com(
+        ("CA1", "CA3"),
+        probe_kwargs=probe_kwargs,
+        hemisphere="right",
+        interactive=True,
+    )
+    place_probes_at_com(
+        ("CA1", "SUB"),
+        probe_kwargs=probe_kwargs,
+        hemisphere="right",
+        interactive=True,
     )
