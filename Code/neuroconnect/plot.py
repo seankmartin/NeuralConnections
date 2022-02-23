@@ -529,7 +529,6 @@ def main():
         load_df("20_sub_low.csv"),
     ]
     plot_pmf_comp(dfs, df_names, "ca1_sub_tet_comp.pdf")
-    plot_samples_v_prop(load_df("samples_depth_ca3_ca1.csv"), "ca3_ca1_samps_depth.pdf")
 
     ## Extra figures
 
