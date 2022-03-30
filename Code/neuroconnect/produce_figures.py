@@ -458,6 +458,7 @@ def do_mouse_regions(vis_only: bool = True):
         block_size_sub=block_size_sub,
         vis_only=vis_only,
         probe_kwargs=probe_kwargs,
+        vis_full=False,
         **simulation_kwargs,
     )
     plot_region_vals(

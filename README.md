@@ -127,6 +127,7 @@ Note use of regular expressions below:
 4. `results\mouse_region_exp_probes.csv`
 5. `figures\mouse_region_exp.pdf`
 6. `figures\bhattacharyya_mouse.pdf`
+7. `figures\mc_mat_vis_MOp_to_SSP-ll.pdf`
 
 ### Figure 4
 
