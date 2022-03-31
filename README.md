@@ -1,5 +1,7 @@
 # Simulating and estimating neural connection probability
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6401535.svg)](https://doi.org/10.5281/zenodo.6401535)
+
 ## General usage
 
 ### Installation
