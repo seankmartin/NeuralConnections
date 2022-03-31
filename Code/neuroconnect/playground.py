@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 import mpmath
 import seaborn as sns
 import pandas as pd
+from icecream import ic
 
 
 def test_hyper_eg(total, bad, draws):
@@ -761,10 +762,37 @@ def prob_confidence():
 
     print(s1, s2)
 
+def compute_hc_vals():
+    r_sizes = np.array([303930, 347100])
+    r_pyr_sub = np.around(r_sizes / 3)
+    probe_vol = 0.1193
+    vols = np.array([12.2, 18.8])
+    vols_sub = vols / 3
+    vol_ratios = probe_vol / (vols / 3)
+    vols_sub_r = vol_ratios
+    
+    cells_in_probe = r_pyr_sub * vols_sub_r
+
+    ic(r_pyr_sub)
+    ic(vols_sub)
+    ic(cells_in_probe)
+    ic(0.05 * r_pyr_sub[1])
+    ic(vols_sub_r)
+    ic(probe_vol / vols)
+    ic((11454 + 115) / 2)
+
+    tetrode_vol = 0.0092
+    tet_vol_ratio = tetrode_vol / vols_sub
+
+    ic(tet_vol_ratio)
+
 
 if __name__ == "__main__":
     # Hypergeometric again right?
     # connect_prob_large_matrix()
+
+    compute_hc_vals()
+    exit(-1)
 
     prob_confidence()
     exit(-1)
