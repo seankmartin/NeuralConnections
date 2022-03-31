@@ -45,6 +45,7 @@ import matplotlib.pyplot as plt
 import mpmath
 import seaborn as sns
 import pandas as pd
+from icecream import ic
 
 
 def test_hyper_eg(total, bad, draws):
@@ -792,10 +793,37 @@ def prob_confidence():
 
     print(s1, s2)
 
+def compute_hc_vals():
+    r_sizes = np.array([303930, 347100])
+    r_pyr_sub = np.around(r_sizes / 3)
+    probe_vol = 0.1193
+    vols = np.array([12.2, 18.8])
+    vols_sub = vols / 3
+    vol_ratios = probe_vol / (vols / 3)
+    vols_sub_r = vol_ratios
+    
+    cells_in_probe = r_pyr_sub * vols_sub_r
+
+    ic(r_pyr_sub)
+    ic(vols_sub)
+    ic(cells_in_probe)
+    ic(0.05 * r_pyr_sub[1])
+    ic(vols_sub_r)
+    ic(probe_vol / vols)
+    ic((11454 + 115) / 2)
+
+    tetrode_vol = 0.0092
+    tet_vol_ratio = tetrode_vol / vols_sub
+
+    ic(tet_vol_ratio)
+
 
 if __name__ == &#34;__main__&#34;:
     # Hypergeometric again right?
     # connect_prob_large_matrix()
+
+    compute_hc_vals()
+    exit(-1)
 
     prob_confidence()
     exit(-1)
@@ -945,6 +973,40 @@ if __name__ == &#34;__main__&#34;:
     ax.plot(x, y, &#34;b&#34;, linestyle=&#34;--&#34;, label=&#34;sample&#34;)
 
     plt.show()</code></pre>
+</details>
+</dd>
+<dt id="neuroconnect.playground.compute_hc_vals"><code class="name flex">
+<span>def <span class="ident">compute_hc_vals</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def compute_hc_vals():
+    r_sizes = np.array([303930, 347100])
+    r_pyr_sub = np.around(r_sizes / 3)
+    probe_vol = 0.1193
+    vols = np.array([12.2, 18.8])
+    vols_sub = vols / 3
+    vol_ratios = probe_vol / (vols / 3)
+    vols_sub_r = vol_ratios
+    
+    cells_in_probe = r_pyr_sub * vols_sub_r
+
+    ic(r_pyr_sub)
+    ic(vols_sub)
+    ic(cells_in_probe)
+    ic(0.05 * r_pyr_sub[1])
+    ic(vols_sub_r)
+    ic(probe_vol / vols)
+    ic((11454 + 115) / 2)
+
+    tetrode_vol = 0.0092
+    tet_vol_ratio = tetrode_vol / vols_sub
+
+    ic(tet_vol_ratio)</code></pre>
 </details>
 </dd>
 <dt id="neuroconnect.playground.connect_prob_large_matrix"><code class="name flex">
@@ -1777,6 +1839,7 @@ if __name__ == &#34;__main__&#34;:
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
 <li><code><a title="neuroconnect.playground.check_subsample" href="#neuroconnect.playground.check_subsample">check_subsample</a></code></li>
+<li><code><a title="neuroconnect.playground.compute_hc_vals" href="#neuroconnect.playground.compute_hc_vals">compute_hc_vals</a></code></li>
 <li><code><a title="neuroconnect.playground.connect_prob_large_matrix" href="#neuroconnect.playground.connect_prob_large_matrix">connect_prob_large_matrix</a></code></li>
 <li><code><a title="neuroconnect.playground.plot_expected" href="#neuroconnect.playground.plot_expected">plot_expected</a></code></li>
 <li><code><a title="neuroconnect.playground.prob_confidence" href="#neuroconnect.playground.prob_confidence">prob_confidence</a></code></li>

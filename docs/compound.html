@@ -661,6 +661,7 @@ def mouse_region_exp_probes(
     vis_only=False,
     block_size_sub=10,
     probe_kwargs=None,
+    vis_full=False,
     **simulation_kwargs,
 ):
     &#34;&#34;&#34;The expected value from different mouse brain regions with probes.&#34;&#34;&#34;
@@ -672,6 +673,7 @@ def mouse_region_exp_probes(
         probe_kwargs = [None] * len(regions)
 
     for r, pk in zip(regions, probe_kwargs):
+        A_name, B_name = r
         final_res_list = []
 
         name = f&#34;{r[0]}_to_{r[1]}_render&#34;
@@ -688,12 +690,16 @@ def mouse_region_exp_probes(
             continue
 
         # Load mouse data
-        A_name, B_name = r
         convert_mouse_data(A_name, B_name)
         to_use = [True, True, True, True]
         mc, full_stats = load_matrix_data(to_use, A_name, B_name, hemisphere=hemisphere)
         print(&#34;{} - {}, {} - {}&#34;.format(A_name, B_name, mc.num_a, mc.num_b))
         region_sizes = [mc.num_a, mc.num_b]
+
+        if (A_name == &#34;MOp&#34; and B_name == &#34;SSp-ll&#34;) or vis_full:
+            o_name = &#34;mc_mat_vis_{}_to_{}.pdf&#34;.format(A_name, B_name)
+            print(&#34;Plotting full matrix vis&#34;)
+            matrix_vis(mc.ab, mc.ba, mc.aa, mc.bb, 150, name=o_name)
 
         t = time.perf_counter()
         print(&#34;Creating graph&#34;)
@@ -1726,7 +1732,7 @@ def main(cfg_name):
 </details>
 </dd>
 <dt id="neuroconnect.compound.mouse_region_exp_probes"><code class="name flex">
-<span>def <span class="ident">mouse_region_exp_probes</span></span>(<span>regions, num_sampled, colors=None, style='cartoon', interactive=False, hemisphere='right', vis_only=False, block_size_sub=10, probe_kwargs=None, **simulation_kwargs)</span>
+<span>def <span class="ident">mouse_region_exp_probes</span></span>(<span>regions, num_sampled, colors=None, style='cartoon', interactive=False, hemisphere='right', vis_only=False, block_size_sub=10, probe_kwargs=None, vis_full=False, **simulation_kwargs)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>The expected value from different mouse brain regions with probes.</p></div>
@@ -1744,6 +1750,7 @@ def main(cfg_name):
     vis_only=False,
     block_size_sub=10,
     probe_kwargs=None,
+    vis_full=False,
     **simulation_kwargs,
 ):
     &#34;&#34;&#34;The expected value from different mouse brain regions with probes.&#34;&#34;&#34;
@@ -1755,6 +1762,7 @@ def main(cfg_name):
         probe_kwargs = [None] * len(regions)
 
     for r, pk in zip(regions, probe_kwargs):
+        A_name, B_name = r
         final_res_list = []
 
         name = f&#34;{r[0]}_to_{r[1]}_render&#34;
@@ -1771,12 +1779,16 @@ def main(cfg_name):
             continue
 
         # Load mouse data
-        A_name, B_name = r
         convert_mouse_data(A_name, B_name)
         to_use = [True, True, True, True]
         mc, full_stats = load_matrix_data(to_use, A_name, B_name, hemisphere=hemisphere)
         print(&#34;{} - {}, {} - {}&#34;.format(A_name, B_name, mc.num_a, mc.num_b))
         region_sizes = [mc.num_a, mc.num_b]
+
+        if (A_name == &#34;MOp&#34; and B_name == &#34;SSp-ll&#34;) or vis_full:
+            o_name = &#34;mc_mat_vis_{}_to_{}.pdf&#34;.format(A_name, B_name)
+            print(&#34;Plotting full matrix vis&#34;)
+            matrix_vis(mc.ab, mc.ba, mc.aa, mc.bb, 150, name=o_name)
 
         t = time.perf_counter()
         print(&#34;Creating graph&#34;)
