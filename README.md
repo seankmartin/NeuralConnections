@@ -2,6 +2,8 @@
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6401535.svg)](https://doi.org/10.5281/zenodo.6401535)
 
+![graphical abstract](abstract.png)
+
 ## General usage
 
 ### Installation
