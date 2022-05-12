@@ -1,6 +1,5 @@
 # Code
 *.pyc
-*.png
 *.db*
 *.npz
 *.npy
