@@ -5,7 +5,7 @@ import argparse
 from configparser import ConfigParser
 from pprint import pprint
 
-from skm_pyutils.py_config import print_cfg
+from skm_pyutils.config import print_cfg
 from .matrix import main as mouse_main
 from .stats_convergence_rate import main as stats_main
 from .main import main

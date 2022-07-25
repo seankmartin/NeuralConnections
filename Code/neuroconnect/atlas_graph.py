@@ -3,8 +3,8 @@
 import os
 import time
 from pprint import pprint
-from skm_pyutils.py_profile import profileit
-from skm_pyutils.py_table import list_to_df, df_to_file
+from skm_pyutils.profile import profileit
+from skm_pyutils.table import list_to_df, df_to_file
 
 import numpy as np
 from .atlas import gen_graph_for_regions, visualise_probe_cells

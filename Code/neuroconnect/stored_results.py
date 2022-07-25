@@ -6,7 +6,7 @@ from types import SimpleNamespace
 
 import pandas as pd
 import numpy as np
-from skm_pyutils.py_table import list_to_df
+from skm_pyutils.table import list_to_df
 
 from dictances.bhattacharyya import bhattacharyya
 

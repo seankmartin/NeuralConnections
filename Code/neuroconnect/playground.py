@@ -493,7 +493,7 @@ def connect_prob_large_matrix():
     from .mpf_connection import CombProb
     from .connectivity_patterns import MatrixConnectivity
     from .plot import plot_pmf_accuracy
-    from skm_pyutils.py_table import list_to_df, df_to_file, df_from_file
+    from skm_pyutils.table import list_to_df, df_to_file, df_from_file
     from pathlib import Path
     import pickle
     import sys
@@ -686,7 +686,7 @@ def test_depth_2():
 
 
 def prob_confidence():
-    from skm_pyutils.py_table import df_from_file
+    from skm_pyutils.table import df_from_file
     from .connect_math import get_dist_ci, get_dist_ci_alt, get_dist_mean
 
     here = os.path.dirname(os.path.abspath(__file__))
