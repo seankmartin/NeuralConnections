@@ -52,10 +52,10 @@ Minimal code documentation is available at Code\docs\neuroconnect.
 They can be rebuilt with the following commands.
 
 ```
-cd Code
-pdoc neuroconnect --html -o ../docs -f
-cd ..
+pdoc neuroconnect --html -o ./docs -f
 ```
+
+Then move the docs from the neuroconnect folder in `docs/neuroconnect`.
 
 ### Blue brain resources
 
@@ -72,6 +72,7 @@ To do so, run the following command after downloading all the blue brain resourc
 
 ```
 cd Code
+python -m neuroconnect.produce_figures --help
 python -m neuroconnect.produce_figures produce-figures
 ```
 
