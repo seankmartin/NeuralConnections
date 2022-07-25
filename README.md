@@ -10,8 +10,7 @@
 
 ```
 git clone https://github.com/seankmartin/NeuralConnections
-cd NeuralConnections\Code
-pip install -r requirements.txt
+pip install .
 ```
 
 ### Graphical user interface
@@ -54,7 +53,7 @@ They can be rebuilt with the following commands.
 
 ```
 cd Code
-pdoc neuroconnect --html -o docs -f
+pdoc neuroconnect --html -o ../docs -f
 cd ..
 ```
 
