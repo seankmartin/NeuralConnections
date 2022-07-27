@@ -3,12 +3,10 @@
 import os
 import gc
 import numpy as np
-from collections import OrderedDict
 from pprint import pprint
 import pickle
 
 from scipy import sparse
-from mpmath import mpf
 import pandas as pd
 
 from .connectivity_patterns import MatrixConnectivity
@@ -79,7 +77,7 @@ def convert_mouse_data(A_name, B_name, hemisphere="right"):
     return
 
 
-def load_matrix_data(to_use, A_name, B_name, hemisphere="right"):
+def load_matrix_data(to_use, A_name, B_name, hemisphere="right", resource_dir=None):
     """
     Load matrix data into a connectivity object.
 
@@ -89,19 +87,22 @@ def load_matrix_data(to_use, A_name, B_name, hemisphere="right"):
         Which matrices to consider, in the order [ab, ba, aa, bb]
 
     """
-    here = os.path.dirname(os.path.realpath(__file__))
+    if resource_dir is None:
+        resource_dir = os.path.dirname(os.path.realpath(__file__))
+        resource_dir = os.path.join(here, "..", "resources")
     if hemisphere == "right":
-        resource_dir = os.path.join(here, "..", "resources", "right_hemisphere")
+        resource_dir = os.path.join(resource_dir, "right_hemisphere")
     elif hemisphere == "left":
-        resource_dir = os.path.join(here, "..", "resources", "left_hemisphere")
+        resource_dir = os.path.join(resource_dir, "left_hemisphere")
 
     mc = MatrixConnectivity(
-        ab=os.path.join(resource_dir, "{}_to_{}.npz".format(A_name, B_name)),
-        ba=os.path.join(resource_dir, "{}_to_{}.npz".format(B_name, A_name)),
-        aa=os.path.join(resource_dir, "{}_local.npz".format(A_name)),
-        bb=os.path.join(resource_dir, "{}_local.npz".format(B_name)),
+        ab=os.path.join(resource_dir, f"{A_name}_to_{B_name}.npz"),
+        ba=os.path.join(resource_dir, f"{B_name}_to_{A_name}.npz"),
+        aa=os.path.join(resource_dir, f"{A_name}_local.npz"),
+        bb=os.path.join(resource_dir, f"{B_name}_local.npz"),
         to_use=to_use,
     )
+
     args_dict = mc.compute_stats()
 
     return mc, args_dict

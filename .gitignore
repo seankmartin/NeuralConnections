@@ -5,6 +5,7 @@
 *.npy
 *.graphml
 /Code/results/*
+*.egg-info*
 
 # Paper
 *.pdf
