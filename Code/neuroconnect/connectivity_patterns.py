@@ -48,6 +48,9 @@ class ConnectionStrategy(ABC):
         Expected to return graph, connections
     2. expected_connections:
         How many connections would be expected between neurons in the regions.
+        Expected to return two ordered dicts.
+        The first is the distribution of Region 1 to Region 2 connections.
+        The second is the weighted version of that distribution.
     3. static_expected_connections:
         An interface into expected_connections that can be statically called.
 
@@ -55,7 +58,6 @@ class ConnectionStrategy(ABC):
 
     def __init__(self, **kwargs):
         super().__init__()
-        pass
 
     @abstractmethod
     def create_connections(self, *args, **kwargs):
@@ -423,7 +425,7 @@ class RecurrentConnectivity(ConnectionStrategy):
             )
             num_choices_Adevice_B = np.random.randint(
                 forwardAprobe_to_B_min,
-                forwardAprobe_to_B_min + 1,
+                forwardAprobe_to_B_max + 1,
                 dtype=np.int32,
                 size=num_senders_A,
             )
