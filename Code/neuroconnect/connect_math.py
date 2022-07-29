@@ -679,9 +679,13 @@ def sample_from_dist(dist, n_samples):
     return np.random.choice(values, n_samples, replace=True, p=probabilities)
 
 
-def discretised_rv(rv, min_, max_):
+def discretised_rv(rv, min_, max_, middle=False):
     """Discretise a continous RV into min max range"""
+    right_shift = 0.5 if middle else 1
+    left_shift = 0.5 if middle else 0
     od = OrderedDict()
     for val in range(min_, max_ + 1):
-        od[val] = rv.cdf(val + 0.5) - rv.cdf(val - 0.5)
+        od[val] = rv.cdf(min(max_, val + right_shift)) - rv.cdf(
+            max(min_, val - left_shift)
+        )
     return od
