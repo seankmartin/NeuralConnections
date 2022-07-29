@@ -483,7 +483,7 @@ def do_mouse_regions(vis_only: bool = True):
 
 @app.command()
 def do_hippocampus(ca1_ca3: bool = True, ca1_sub: bool = True):
-    # CA3 CA1 figures
+    """CA3 CA1 figures"""
 
     # Uses tetrode_ca3_ca1_full
     if ca1_ca3:

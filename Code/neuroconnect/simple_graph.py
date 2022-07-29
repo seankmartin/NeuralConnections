@@ -255,11 +255,7 @@ def iddfs(graph, source, goals, max_depth=1000):
 def dls(graph, source, goals, depth):
     """Depth limited depth-first search."""
     if depth == 0:
-        if source in goals:
-            return (source, True)
-        else:
-            return (None, True)
-
+        return (source, True) if source in goals else (None, True)
     elif depth > 0:
         any_remaining = False
         for child in graph[source]:

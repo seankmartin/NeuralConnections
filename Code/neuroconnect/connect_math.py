@@ -642,6 +642,7 @@ def get_dist_ci(dist):
 
     return lower, upper
 
+
 def get_dist_ci_alt(dist, ci=False):
     val = 0
     lower = "NA"
@@ -653,8 +654,34 @@ def get_dist_ci_alt(dist, ci=False):
             lower = key
         if val >= 97.5 and (upper == "NA"):
             upper = key
-    
+
     if ci:
         return lower - min_k, upper - min_k
     else:
         return lower, upper
+
+
+def sample_from_dist(dist, n_samples):
+    """
+    Get samples from a distribution
+
+    Parameters
+    ----------
+    dist : OrderedDict
+        The distribution to sample from
+    n_samples : int
+        The number of samples to pull from the distribution.
+
+    """
+    values = list(dist.keys())
+    probabilities = list(dist.values())
+
+    return np.random.choice(values, n_samples, replace=True, p=probabilities)
+
+
+def discretised_rv(rv, min_, max_):
+    """Discretise a continous RV into min max range"""
+    od = OrderedDict()
+    for val in range(min_, max_ + 1):
+        od[val] = rv.cdf(val + 0.5) - rv.cdf(val - 0.5)
+    return od
