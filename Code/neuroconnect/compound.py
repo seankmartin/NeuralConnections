@@ -1070,9 +1070,9 @@ def compare_distribution(dist, **kwargs):
     region2_nodes : list
     num_region1_senders : int
     num_samples : int
-    subsample_rate : float 
+    subsample_rate : float
     clt_start : int
-    num_monte_carlo_iters : int 
+    num_monte_carlo_iters : int
     do_matrix_visualisation : bool
     smoothing_win_size : int
     name : string
@@ -1181,7 +1181,7 @@ def compare_distribution(dist, **kwargs):
             v2 = graph_res.get(k, 0)
             dist_list.append([k, v, "Statistical estimation"])
             dist_list.append([k, v2, "Monte Carlo simulation"])
-        
+
         cols = [
             "Number of recorded connected neurons",
             "Probability",
@@ -1189,8 +1189,7 @@ def compare_distribution(dist, **kwargs):
         ]
         df = list_to_df(dist_list, headers=cols)
         os.makedirs(os.path.join(here, "..", "results"), exist_ok=True)
-        df.to_csv(
-            os.path.join(here, "..", "results", f"{name}_accuracy.csv"))
+        df.to_csv(os.path.join(here, "..", "results", f"{name}_accuracy.csv"))
 
     do_mpf()
     do_graph()

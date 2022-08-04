@@ -217,17 +217,16 @@ def mpf_control(
         N = delta_params["num_start_probe"]
     else:
         N = region_sizes[0]
-    
+
     if "num_senders_probe" in delta_params:
         a = delta_params["num_senders_probe"]
     else:
         a = delta_params["num_senders"]
-    
+
     if "num_end_probe" in delta_params:
         M = delta_params["num_end_probe"]
     else:
         M = region_sizes[-1]
-
 
     connection_prob = CombProb(
         N,

@@ -424,6 +424,7 @@ def plot_acc_interp(x_samps, interped_vals, xvals, yvals, out_name, true_y=None)
     plt.ylabel("Weighted probability", fontsize=LABELSIZE)
     save(fig, out_name)
 
+
 def discretised_rv(rv, min_, max_, middle=False):
     """Discretise a continous RV into min max range"""
     right_shift = 0.5 if middle else 1
@@ -437,7 +438,7 @@ def discretised_rv(rv, min_, max_, middle=False):
     if not isclose(sum_, 1.0):
         for k, v in od.items():
             od[k] = v / sum_
-    
+
     sum_ = sum(od.values())
     if not isclose(sum_, 1.0):
         raise ValueError(f"Distribution discrete does not sum to 1.0, got {sum_}")
@@ -639,9 +640,7 @@ def main():
     plot_pmf(load_df("tetrode_full.csv"), "ca3_ca1_tetrode_pmf.pdf")
 
     max_ = 10000
-    exp_dist = discretised_rv(
-        truncexpon(10000, scale=500, loc=0), 0, 6000
-    )
+    exp_dist = discretised_rv(truncexpon(10000, scale=500, loc=0), 0, 6000)
     uniform_dist = discretised_rv(uniform(scale=1000, loc=0), 0, 1000)
     norm_dist = discretised_rv(norm(loc=400, scale=400), 0, 2000)
     skewnorm_dist = discretised_rv(skewnorm(loc=0, scale=600, a=40), 0, 2000)

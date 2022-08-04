@@ -692,7 +692,7 @@ def discretised_rv(rv, min_, max_, middle=False):
     if not isclose(sum_, 1.0):
         for k, v in od.items():
             od[k] = v / sum_
-    
+
     sum_ = sum(od.values())
     if not isclose(sum_, 1.0):
         raise ValueError(f"Distribution discrete does not sum to 1.0, got {sum_}")

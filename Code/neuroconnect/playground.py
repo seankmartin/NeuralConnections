@@ -658,7 +658,7 @@ def test_depth_2():
     full_res = {}
 
     full_res["graph"] = graph_connectome(
-        num_sampled, 
+        num_sampled,
         max_depth,
         num_iters=10000,
         graph=g_graph,
@@ -749,7 +749,7 @@ def prob_confidence():
 
     print(100 * c1_1[0], 100 * c1_1[1])
     print(100 * c1_2[0], 100 * c1_2[1])
-    
+
     s1 = 0
     for k, v in d1.items():
         if (k >= c1_1[0]) and (k <= c1_1[1]):
@@ -762,6 +762,7 @@ def prob_confidence():
 
     print(s1, s2)
 
+
 def compute_hc_vals():
     r_sizes = np.array([303930, 347100])
     r_pyr_sub = np.around(r_sizes / 3)
@@ -770,7 +771,7 @@ def compute_hc_vals():
     vols_sub = vols / 3
     vol_ratios = probe_vol / (vols / 3)
     vols_sub_r = vol_ratios
-    
+
     cells_in_probe = r_pyr_sub * vols_sub_r
 
     ic(r_pyr_sub)

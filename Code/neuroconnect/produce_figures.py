@@ -280,9 +280,7 @@ def do_accuracy(
             do_matrix_visualisation=True,
             smoothing_win_size=20,
         )
-        exp_dist = discretised_rv(
-            truncexpon(10000, scale=500, loc=0), 0, 4000
-        )
+        exp_dist = discretised_rv(truncexpon(10000, scale=500, loc=0), 0, 4000)
         uniform_dist = discretised_rv(uniform(scale=1000, loc=0), 0, 1000)
         norm_dist = discretised_rv(norm(loc=400, scale=400), 0, 2000)
         skewnorm_dist = discretised_rv(skewnorm(loc=0, scale=600, a=40), 0, 4000)

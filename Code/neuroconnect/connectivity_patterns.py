@@ -1586,6 +1586,7 @@ class MatrixConnectivity(ConnectionStrategy):
     def __str__(self):
         return f"AA: {self.aa.shape}, BB: {self.bb.shape}, AB: {self.ab.shape}, BA: {self.ba.shape}"
 
+
 class OutgoingDistributionConnections(ConnectionStrategy):
     """Outgoing connections only that are from a distribution."""
 
@@ -1629,7 +1630,7 @@ class OutgoingDistributionConnections(ConnectionStrategy):
             self.num_senders,
             self.distribution,
             num_samples,
-            **kwargs
+            **kwargs,
         )
 
     @staticmethod
@@ -1641,7 +1642,7 @@ class OutgoingDistributionConnections(ConnectionStrategy):
         total_samples,
         clt_start=30,
         sub=0.01,
-        **kwargs
+        **kwargs,
     ):
         def fn_to_apply(k):
             return expected_unique(num_end, k, do_round=True)
