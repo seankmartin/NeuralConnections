@@ -16,12 +16,11 @@ from .connect_math import (
     hypergeometric_pmf,
     get_dist_mean,
     apply_fn_to_dist,
-    create_uniform,
+    sample_from_dist,
     nfold_conv,
     convolution,
     combine_dists,
     create_normal,
-    get_uniform_moments,
     get_dist_var,
 )
 from .simple_graph import from_matrix
@@ -1586,3 +1585,91 @@ class MatrixConnectivity(ConnectionStrategy):
 
     def __str__(self):
         return f"AA: {self.aa.shape}, BB: {self.bb.shape}, AB: {self.ab.shape}, BA: {self.ba.shape}"
+
+class OutgoingDistributionConnections(ConnectionStrategy):
+    """Outgoing connections only that are from a distribution."""
+
+    def __init__(self, region1_nodes, region2_nodes, distribution, num_senders):
+        self.region1_nodes = region1_nodes
+        self.region2_nodes = region2_nodes
+        self.distribution = distribution
+        self.num_senders = num_senders
+
+    def create_connections(self):
+        graph = []
+
+        # Choose the forward connectors
+        connected = np.random.choice(
+            self.region1_nodes, size=self.num_senders, replace=False
+        )
+        num_choices_for_each_sender = sample_from_dist(
+            self.distribution, self.num_senders
+        )
+
+        f_idx = 0
+        for vert in self.region1_nodes:
+            if vert in connected:
+                forward_connection_subset = np.random.choice(
+                    self.region2_nodes, num_choices_for_each_sender[f_idx], replace=True
+                )
+                if isinstance(forward_connection_subset, np.int32):
+                    graph.append(np.array([forward_connection_subset], dtype=np.int32))
+                else:
+                    graph.append(forward_connection_subset.astype(np.int32))
+                f_idx = f_idx + 1
+            else:
+                graph.append([])
+
+        return graph, connected
+
+    def expected_connections(self, num_samples, **kwargs):
+        return OutgoingDistributionConnections.static_expected_connections(
+            len(self.region1_nodes),
+            len(self.region_nodes),
+            self.num_senders,
+            self.distribution,
+            num_samples,
+            **kwargs
+        )
+
+    @staticmethod
+    def static_expected_connections(
+        num_start,
+        num_end,
+        num_senders,
+        out_connections_dist,
+        total_samples,
+        clt_start=30,
+        sub=0.01,
+        **kwargs
+    ):
+        def fn_to_apply(k):
+            return expected_unique(num_end, k, do_round=True)
+
+        ab_dist = random_draw_dist(
+            total_samples,
+            out_connections_dist,
+            num_end,
+            apply_fn=False,
+            keep_all=True,
+            clt_start=clt_start,
+            sub=sub,
+        )
+
+        ab_un_dist = OrderedDict()
+        for k, v in ab_dist.items():
+            ab_un_dist[k] = apply_fn_to_dist(v, fn_to_apply, sub=sub)
+        final_dist = ab_un_dist
+
+        prob_a_senders = OrderedDict()
+
+        for i in range(total_samples + 1):
+            prob_a_senders[i] = float(
+                hypergeometric_pmf(num_start, num_senders, total_samples, i)
+            )
+
+        weighted_dist = combine_dists(
+            range(num_end + 1), final_dist, prob_a_senders, sub=None
+        )
+
+        return ab_un_dist, weighted_dist

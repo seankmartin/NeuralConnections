@@ -1,11 +1,14 @@
 """Plotting functions."""
+from collections import OrderedDict
 import os
+from math import isclose
 
 import seaborn as sns
 import matplotlib.pyplot as plt
 import pandas as pd
 from dictances.bhattacharyya import bhattacharyya
 from matplotlib.ticker import MaxNLocator
+from scipy.stats import skewnorm, norm, uniform, truncexpon
 
 here = os.path.dirname(os.path.realpath(__file__))
 OUTPUT_DIR = "figures"
@@ -59,7 +62,7 @@ def plot_visp_visl_shift():
     nshifted = nshifted[nshifted["Number of connected neurons"] <= 25]
     o_name = "original-visp-visl-stats.pdf"
     plot_pmf_accuracy(nshifted, o_name)
-    
+
     shifted = shifted[shifted["Number of connected neurons"] <= 25]
     o_name = "shifted-visp-visl-stats.pdf"
     plot_pmf_accuracy(shifted, o_name)
@@ -98,7 +101,7 @@ def plot_samples_v_prop(df, out_name="depth_plot.pdf"):
         style="Max distance",
         hue="Max distance",
         ax=ax,
-        ci=None
+        ci=None,
     )
     ax.set_xlabel("Number of samples", fontsize=LABELSIZE)
     ax.set_ylabel("Expected proportion connected", fontsize=LABELSIZE)
@@ -371,6 +374,7 @@ def plot_bhattacharyya(regions, out_name, max_depth=1):
     despine()
     save(fig=None, out_name=out_name)
 
+
 def plot_region_sim(df, out_name, x_name="Connectivity", scale=(10, 4)):
     """Plot region specific values from the dataframe."""
     fig, ax = plt.subplots(figsize=scale)
@@ -419,6 +423,25 @@ def plot_acc_interp(x_samps, interped_vals, xvals, yvals, out_name, true_y=None)
     plt.xlabel("Number of receivers in B", fontsize=LABELSIZE)
     plt.ylabel("Weighted probability", fontsize=LABELSIZE)
     save(fig, out_name)
+
+def discretised_rv(rv, min_, max_, middle=False):
+    """Discretise a continous RV into min max range"""
+    right_shift = 0.5 if middle else 1
+    left_shift = 0.5 if middle else 0
+    od = OrderedDict()
+    for val in range(min_, max_ + 1):
+        od[val] = rv.cdf(min(max_, val + right_shift)) - rv.cdf(
+            max(min_, val - left_shift)
+        )
+    sum_ = sum(od.values())
+    if not isclose(sum_, 1.0):
+        for k, v in od.items():
+            od[k] = v / sum_
+    
+    sum_ = sum(od.values())
+    if not isclose(sum_, 1.0):
+        raise ValueError(f"Distribution discrete does not sum to 1.0, got {sum_}")
+    return od
 
 
 def plot_dist_explain(dfs, out_names):
@@ -475,6 +498,27 @@ def plot_dist_explain(dfs, out_names):
     ax.xaxis.set_major_locator(MaxNLocator(nbins=11, integer=True, min_n_ticks=10))
     despine()
     save(fig, out_names[3])
+
+
+def plot_dist_accuracy(rv, df, out_name):
+    # fig, ax = plt.subplots(1, 2)
+    # ax[0].plot(list(rv.keys()), list(rv.values()))
+    # ax[0].set_xlabel("Forward connections")
+    # ax[0].set_ylabel("Probability")
+    # despine()
+    fig, ax = plt.subplots()
+
+    sns.lineplot(
+        data=df,
+        ax=ax,
+        x="Number of recorded connected neurons",
+        y="Probability",
+        hue="Calculation",
+        style="Calculation",
+    )
+    despine()
+
+    save(fig, out_name)
 
 
 def main():
@@ -593,6 +637,22 @@ def main():
         load_df("sub_regions_MOp_SSp-ll_all_depth.csv"), "MOp-SSp-depth.pdf"
     )
     plot_pmf(load_df("tetrode_full.csv"), "ca3_ca1_tetrode_pmf.pdf")
+
+    max_ = 10000
+    exp_dist = discretised_rv(
+        truncexpon(10000, scale=500, loc=0), 0, 6000
+    )
+    uniform_dist = discretised_rv(uniform(scale=1000, loc=0), 0, 1000)
+    norm_dist = discretised_rv(norm(loc=400, scale=400), 0, 2000)
+    skewnorm_dist = discretised_rv(skewnorm(loc=0, scale=600, a=40), 0, 2000)
+    dists = [exp_dist, uniform_dist, norm_dist, skewnorm_dist]
+    names = ["exp", "unif", "norm", "skewnorm"]
+
+    for rv, name in zip(dists, names):
+        in_name = f"{name}_accuracy.csv"
+        df = load_df(in_name)
+        out_name = f"{name}_accuracy_dist.pdf"
+        plot_dist_accuracy(rv, df, out_name)
 
 
 if __name__ == "__main__":

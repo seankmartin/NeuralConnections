@@ -6,16 +6,19 @@ See also plot.py
 import os
 from configparser import ConfigParser
 from types import SimpleNamespace
+import numpy as np
 
 import typer
 import pandas as pd
 import myterial
+from scipy.stats import skewnorm, norm, uniform, truncexpon
 
+from .connect_math import discretised_rv
 from .compound import (
+    compare_distribution,
     connections_dependent_on_samples,
     proportion,
     pmf_accuracy,
-    connections_dependent_on_regions,
     distance_dependent_on_regions,
     mouse_region_exp,
     out_exp,
@@ -26,6 +29,7 @@ from .compound import (
 from .matrix import main as mouse_main
 from .main import main as ctrl_main
 from .plot import (
+    plot_dist_accuracy,
     plot_exp_accuracy,
     load_df,
     plot_pmf_accuracy,
@@ -151,6 +155,7 @@ def do_accuracy(
     do_mouse_acc: bool = False,
     do_exp: bool = True,
     do_growth: bool = False,
+    do_distrib: bool = True,
 ):
     """Produce figures related to method accuracy."""
     print("Plotting figures related to accuracy")
@@ -262,6 +267,35 @@ def do_accuracy(
     if do_growth:
         test_hyper_convergence_rate()
         test_network_convergence()
+
+    if do_distrib:
+        kwargs_dict = dict(
+            region1_nodes=np.arange(0, 10000),
+            region2_nodes=np.arange(10000, 21000),
+            num_region1_senders=1500,
+            num_samples=[40, 40],
+            subsample_rate=0.01,
+            clt_start=50,
+            num_monte_carlo_iters=50000,
+            do_matrix_visualisation=True,
+            smoothing_win_size=20,
+        )
+        exp_dist = discretised_rv(
+            truncexpon(10000, scale=500, loc=0), 0, 4000
+        )
+        uniform_dist = discretised_rv(uniform(scale=1000, loc=0), 0, 1000)
+        norm_dist = discretised_rv(norm(loc=400, scale=400), 0, 2000)
+        skewnorm_dist = discretised_rv(skewnorm(loc=0, scale=600, a=40), 0, 4000)
+        dists = [exp_dist, uniform_dist, norm_dist, skewnorm_dist]
+        names = ["exp", "unif", "norm", "skewnorm"]
+        for d, name in zip(dists, names):
+            compare_distribution(d, name=name, **kwargs_dict)
+
+        for rv, name in zip(dists, names):
+            in_name = f"{name}_accuracy.csv"
+            df = load_df(in_name)
+            out_name = f"{name}_accuracy_dist.pdf"
+            plot_dist_accuracy(rv, df, out_name)
 
 
 @app.command()
@@ -491,7 +525,7 @@ def do_hippocampus(ca1_ca3: bool = True, ca1_sub: bool = True):
         plot_samples_v_prop(
             load_df("samples_depth_ca3_ca1.csv"), "ca3_ca1_samps_depth.pdf"
         )
-        
+
         store_tetrode_results_full()
         plot_pmf(load_df("tetrode_full.csv"), "ca3_ca1_tetrode_pmf.pdf")
 

@@ -13,12 +13,18 @@ from skm_pyutils.config import print_cfg
 from skm_pyutils.table import list_to_df, df_to_file, df_from_file
 from dictances.bhattacharyya import bhattacharyya
 
+from .monte_carlo import (
+    get_distribution,
+    monte_carlo,
+    summarise_monte_carlo,
+)
+from .simple_graph import find_connected_limited, reverse, to_matrix
 from .experiment import do_full_experiment
-from .connectivity_patterns import get_by_name
+from .connectivity_patterns import OutgoingDistributionConnections, get_by_name
 from .matrix import main as mouse_main
 from .matrix import convert_mouse_data, load_matrix_data, matrix_vis
 from .mpf_connection import CombProb
-from .connect_math import create_uniform
+from .connect_math import create_uniform, discretised_rv
 from .stored_results import store_mouse_result
 from .atlas import (
     place_probes_at_com,
@@ -1042,6 +1048,153 @@ def explain_calc(config, out_name="explain", sr=0.01):
         os.path.join(here, "..", "results", "b_fin_{}.csv".format(out_name)),
         index=False,
     )
+
+
+def compare_distribution(dist, **kwargs):
+    """
+    Compare the accuracy of stats vs monte carlo on distributions.
+
+    The idea is try multiple distributions for forward connections
+    between two brain areas, and see how well the stats matches the simulations
+    with different kinds of distributions.
+
+    Parameters
+    ----------
+    dist : OrderedDict
+        Discretised distribution
+
+    Keyword arguments
+    -----------------
+    max_outgoing_connections : int
+    region1_nodes : list
+    region2_nodes : list
+    num_region1_senders : int
+    num_samples : int
+    subsample_rate : float 
+    clt_start : int
+    num_monte_carlo_iters : int 
+    do_matrix_visualisation : bool
+    smoothing_win_size : int
+    name : string
+
+    """
+    region1_nodes = kwargs.get("region1_nodes")
+    region2_nodes = kwargs.get("region2_nodes")
+    num_region1_senders = kwargs.get("num_region1_senders")
+    num_samples = kwargs.get("num_samples")
+    subsample_rate = kwargs.get("subsample_rate")
+    clt_start = kwargs.get("clt_start")
+    num_monte_carlo_iters = kwargs.get("num_monte_carlo_iters")
+    do_matrix_visualisation = kwargs.get("do_matrix_visualisation")
+    smoothing_win_size = kwargs.get("smoothing_win_size")
+    name = kwargs.get("name")
+
+    result = {}
+    connection_instance = OutgoingDistributionConnections(
+        region1_nodes, region2_nodes, dist, num_region1_senders
+    )
+
+    def do_mpf():
+        delta_params = dict(
+            num_start=len(region1_nodes),
+            num_end=len(region2_nodes),
+            num_senders=num_region1_senders,
+            out_connections_dist=dist,
+            total_samples=num_samples[0],
+            clt_start=clt_start,
+            sub=subsample_rate,
+        )
+        connection_prob = CombProb(
+            len(region1_nodes),
+            num_samples[0],
+            num_region1_senders,
+            len(region2_nodes),
+            num_samples[1],
+            OutgoingDistributionConnections.static_expected_connections,
+            subsample_rate=subsample_rate,
+            approx_hypergeo=False,
+            **delta_params,
+        )
+        result["mpf"] = {
+            "expected": connection_prob.expected_connections(),
+            "total": connection_prob.get_all_prob(),
+            "each_expected": {
+                k: connection_prob.expected_total(k) for k in range(num_samples[0] + 1)
+            },
+        }
+
+    def do_graph():
+        g_graph, g_connected = connection_instance.create_connections()
+        g_graph.extend([[] for _ in region2_nodes])
+        g_reverse_graph = reverse(g_graph)
+
+        def random_var_gen(iter_val):
+            graph, connected = g_graph, g_connected
+            sources = np.random.choice(region1_nodes, num_samples[0], replace=False)
+            targets = np.random.choice(region2_nodes, num_samples[-1], replace=False)
+
+            return graph, sources, targets
+
+        def fn_to_eval(graph, sources, targets):
+            reverse_graph = g_reverse_graph
+            reachable = find_connected_limited(
+                graph, sources, targets, max_depth=1, reverse_graph=reverse_graph
+            )
+            return (len(reachable),)
+
+        mc_res = monte_carlo(
+            fn_to_eval,
+            random_var_gen,
+            num_monte_carlo_iters,
+            num_cpus=1,
+            headers=["Connections"],
+            save_name="graph_mc.csv",
+            save_every=10000,
+            progress=True,
+        )
+        df = list_to_df(mc_res, ["Connections"])
+        mc_res = summarise_monte_carlo(
+            df, to_plot=["Connections"], plt_outfile="graph_dist.png"
+        )
+        distrib = get_distribution(df, "Connections", num_monte_carlo_iters)
+
+        if do_matrix_visualisation:
+            graph, _, _ = random_var_gen(0)
+            AB, BA, AA, BB = to_matrix(graph, len(region1_nodes), len(region2_nodes))
+            matrix_vis(
+                AB,
+                None,
+                None,
+                None,
+                k_size=smoothing_win_size,
+                name=f"{name}_graph_mat_vis.pdf",
+            )
+
+        result["graph"] = {"full_results": df, "summary_stats": mc_res, "dist": distrib}
+
+    def save_results():
+        dist_list = []
+        mpf_res = result["mpf"]["total"]
+        graph_res = result["graph"]["dist"]
+
+        for k, v in mpf_res.items():
+            v2 = graph_res.get(k, 0)
+            dist_list.append([k, v, "Statistical estimation"])
+            dist_list.append([k, v2, "Monte Carlo simulation"])
+        
+        cols = [
+            "Number of recorded connected neurons",
+            "Probability",
+            "Calculation",
+        ]
+        df = list_to_df(dist_list, headers=cols)
+        os.makedirs(os.path.join(here, "..", "results"), exist_ok=True)
+        df.to_csv(
+            os.path.join(here, "..", "results", f"{name}_accuracy.csv"))
+
+    do_mpf()
+    do_graph()
+    save_results()
 
 
 def main(cfg_name):
