@@ -1647,23 +1647,30 @@ class OutgoingDistributionConnections(ConnectionStrategy):
         def fn_to_apply(k):
             return expected_unique(num_end, k, do_round=True)
 
-        ab_dist = random_draw_dist(
-            total_samples,
-            out_connections_dist,
-            num_end,
-            apply_fn=False,
-            keep_all=True,
-            clt_start=clt_start,
-            sub=sub,
-        )
+        if sub is None:
+            final_dist = OrderedDict()
+            for num_sender_samples in range(total_samples + 1):
+                ab = fn_to_apply(
+                    num_sender_samples * get_dist_mean(out_connections_dist)
+                )
+                final_dist[num_sender_samples] = OrderedDict()
+                final_dist[num_sender_samples][ab] = 1.0
+        else:
+            ab_dist = random_draw_dist(
+                total_samples,
+                out_connections_dist,
+                num_end,
+                apply_fn=False,
+                keep_all=True,
+                clt_start=clt_start,
+                sub=sub,
+            )
 
-        ab_un_dist = OrderedDict()
-        for k, v in ab_dist.items():
-            ab_un_dist[k] = apply_fn_to_dist(v, fn_to_apply, sub=sub)
-        final_dist = ab_un_dist
+            final_dist = OrderedDict()
+            for k, v in ab_dist.items():
+                final_dist[k] = apply_fn_to_dist(v, fn_to_apply, sub=sub)
 
         prob_a_senders = OrderedDict()
-
         for i in range(total_samples + 1):
             prob_a_senders[i] = float(
                 hypergeometric_pmf(num_start, num_senders, total_samples, i)
@@ -1673,4 +1680,4 @@ class OutgoingDistributionConnections(ConnectionStrategy):
             range(num_end + 1), final_dist, prob_a_senders, sub=None
         )
 
-        return ab_un_dist, weighted_dist
+        return final_dist, weighted_dist
