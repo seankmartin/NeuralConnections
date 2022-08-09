@@ -1,5 +1,6 @@
 """Compound operations to perform more complex tasks than control."""
 
+from math import ceil, floor
 import os
 from configparser import ConfigParser
 import json
@@ -24,7 +25,12 @@ from .connectivity_patterns import OutgoingDistributionConnections, get_by_name
 from .matrix import main as mouse_main
 from .matrix import convert_mouse_data, load_matrix_data, matrix_vis
 from .mpf_connection import CombProb
-from .connect_math import create_uniform, discretised_rv
+from .connect_math import (
+    create_uniform,
+    discretised_rv,
+    get_dist_mean,
+    new_dist_upper_bound,
+)
 from .stored_results import store_mouse_result
 from .atlas import (
     place_probes_at_com,
@@ -1195,6 +1201,121 @@ def compare_distribution(dist, **kwargs):
     do_mpf()
     do_graph()
     save_results()
+
+
+def power_law_analysis(sizes):
+    """Check how the distributions scale."""
+    A_name = "MOp"
+    B_name = "SSp-ll"
+    desired_percent = 0.5
+
+    convert_mouse_data(A_name, B_name)
+    to_use = [True] * 4
+    mc, args_dict = load_matrix_data(to_use, A_name, B_name)
+    stats = mc.compute_stats()
+    mc_dist = stats["out_connections_dist"]
+    percent_out = stats["num_senders"] / stats["num_start"]
+
+    def do_mpf(num_samples, size, dist, percent_out, clt_start=30, subsample_rate=0.01):
+        region1_nodes = list(range(size))
+        region2_nodes = list(range(size, 2 * size))
+        num_region1_senders = int(size * percent_out)
+        delta_params = dict(
+            num_start=len(region1_nodes),
+            num_end=len(region2_nodes),
+            num_senders=num_region1_senders,
+            out_connections_dist=dist,
+            total_samples=num_samples[0],
+            clt_start=clt_start,
+            sub=subsample_rate,
+        )
+        connection_prob = CombProb(
+            len(region1_nodes),
+            num_samples[0],
+            num_region1_senders,
+            len(region2_nodes),
+            num_samples[1],
+            OutgoingDistributionConnections.static_expected_connections,
+            subsample_rate=subsample_rate,
+            approx_hypergeo=False,
+            **delta_params,
+        )
+        return {
+            "expected": connection_prob.expected_connections(),
+            "total": connection_prob.get_all_prob(),
+            "each_expected": {
+                k: connection_prob.expected_total(k) for k in range(num_samples[0] + 1)
+            },
+        }
+
+    def function_to_minimize(
+        samples_to_use, full_size, desired, dist, percent_out, subsample_rate
+    ):
+        result = do_mpf(
+            samples_to_use, full_size, dist, percent_out, 30, subsample_rate
+        )
+        expected = result["expected"]
+        return (expected / samples_to_use[1]) - desired
+
+    def find_correct_sample_size(
+        full_size, dist, percent_out, desired, lb, ub, subsample_rate=None
+    ):
+        min_ = 0
+        num_senders = int(percent_out * full_size)
+        max_ = min(num_senders, 2000)
+        start = min(full_size // 100, 80)
+        samples_to_use = [start, start]
+
+        max_iters = 30
+        n = 0
+
+        while min_ != max_ and n < max_iters:
+            result = function_to_minimize(
+                samples_to_use, full_size, desired, dist, percent_out, subsample_rate
+            )
+            n += 1
+            if n == max_iters:
+                raise RuntimeError(
+                    f"Could only get within {result} of desired with {samples_to_use[0]}"
+                )
+            if result > -lb and result < ub:
+                return samples_to_use[0], n
+            if result < 0:
+                if samples_to_use[0] == num_senders:
+                    return 0, n
+                min_ = samples_to_use[0]
+                samples_to_use = [ceil((max_ + min_) / 2), ceil((max_ + min_) / 2)]
+            elif result > 0:
+                if samples_to_use[0] == num_senders:
+                    return 0, n
+                max_ = samples_to_use[0]
+                samples_to_use = [floor((max_ + min_) / 2), floor((max_ + min_) / 2)]
+
+        return samples_to_use[0], n
+
+    l = [[k, v] for k, v in mc_dist.items()]
+    df = list_to_df(l, ["Outgoing connections", "Probability"])
+    fname = os.path.join(here, "..", "results", "matrix_dist.csv")
+    df_to_file(df, fname)
+
+    l = []
+    for s in sizes:
+        new_dist = new_dist_upper_bound(mc_dist, s // 4)
+        bit = find_correct_sample_size(
+            s, new_dist, percent_out, desired_percent, 0.02, 0.02, None
+        )
+        l.append([s, bit[0], "unbounded"])
+        min_ = min(s // 4, 50000)
+        new_dist = new_dist_upper_bound(mc_dist, min_)
+        bit = find_correct_sample_size(
+            s, new_dist, percent_out, desired_percent, 0.02, 0.02, None
+        )
+        l.append([s, bit[0], "bounded"])
+    df = list_to_df(
+        l, ["Size of each brain region", "Number of required samples", "Connections"]
+    )
+    fname = os.path.join(here, "..", "results", "power_law.csv")
+    df_to_file(df, fname)
 
 
 def main(cfg_name):

@@ -29,7 +29,6 @@ pickle_loc = os.path.abspath(os.path.join(here, "..", "resources", "graph.pickle
 
 def convert_mouse_data(A_name, B_name, hemisphere="right"):
     """Convert general blue brain data into smaller data."""
-    here = os.path.dirname(os.path.realpath(__file__))
     if hemisphere == "right":
         resource_dir = os.path.join(here, "..", "resources", "right_hemisphere")
     elif hemisphere == "left":

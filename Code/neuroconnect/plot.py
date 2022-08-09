@@ -411,6 +411,32 @@ def plot_distribution(dist, out_name):
     save(fig, out_name)
 
 
+def plot_large_dist(df, out_name):
+    """Plot pmf for a large distribution"""
+    fig, ax = plt.subplots()
+    set_p()
+
+    sns.lineplot(data=df, x="Outgoing connections", y="Probability", ax=ax)
+    despine()
+    save(fig, out_name)
+
+
+def plot_power_law(df, out_name):
+    """Plot power law"""
+    fig, ax = plt.subplots()
+    set_p()
+
+    sns.scatterplot(
+        data=df,
+        x="Size of each brain region",
+        y="Number of required samples",
+        style="Connections",
+        hue="Connections",
+    )
+    despine()
+    save(fig, out_name)
+
+
 def plot_acc_interp(x_samps, interped_vals, xvals, yvals, out_name, true_y=None):
     """Plot the accuracy of interpolation."""
     fig, ax = plt.subplots()
@@ -652,6 +678,14 @@ def main():
         df = load_df(in_name)
         out_name = f"{name}_accuracy_dist.pdf"
         plot_dist_accuracy(rv, df, out_name)
+
+    df1 = load_df("matrix_dist.csv")
+    df2 = load_df("power_law.csv")
+    name1 = "matrix_dist_plot.pdf"
+    name2 = "power_law_plot.pdf"
+
+    plot_large_dist(df1, name1)
+    plot_power_law(df2, name2)
 
 
 if __name__ == "__main__":

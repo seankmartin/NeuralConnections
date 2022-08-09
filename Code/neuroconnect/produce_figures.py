@@ -17,6 +17,7 @@ from .connect_math import discretised_rv
 from .compound import (
     compare_distribution,
     connections_dependent_on_samples,
+    power_law_analysis,
     proportion,
     pmf_accuracy,
     distance_dependent_on_regions,
@@ -32,7 +33,9 @@ from .plot import (
     plot_dist_accuracy,
     plot_exp_accuracy,
     load_df,
+    plot_large_dist,
     plot_pmf_accuracy,
+    plot_power_law,
     plot_samples_v_prop,
     plot_region_vals,
     plot_region_sim,
@@ -352,7 +355,12 @@ def do_examples(do_exp=True, do_pmf=True, do_types=True):
 
 
 @app.command()
-def do_explain(do_vis=True, do_pmf=True, do_dist=True):
+def do_explain(
+    do_vis: bool = True,
+    do_pmf: bool = True,
+    do_dist: bool = True,
+    do_power: bool = True,
+):
     """Produce figures to explain the problem at hand."""
     if do_vis:
         print("Plotting figures for explaining the problem")
@@ -409,6 +417,18 @@ def do_explain(do_vis=True, do_pmf=True, do_dist=True):
             "b_fin_eg.pdf",
         ]
         plot_dist_explain(dfs, names)
+
+    if do_power:
+        sizes = [100, 1000, 5000, 10000, 50000, 100000, 500000]
+        power_law_analysis(sizes)
+
+        df1 = load_df("matrix_dist.csv")
+        df2 = load_df("power_law.csv")
+        name1 = "matrix_dist_plot.pdf"
+        name2 = "power_law_plot.pdf"
+
+        plot_large_dist(df1, name1)
+        plot_power_law(df2, name2)
 
 
 @app.command()
