@@ -697,3 +697,23 @@ def discretised_rv(rv, min_, max_, middle=False):
     if not isclose(sum_, 1.0):
         raise ValueError(f"Distribution discrete does not sum to 1.0, got {sum_}")
     return od
+
+
+def new_dist_upper_bound(original_dist, upper_bound):
+    dist_samples = np.array(list(original_dist.keys()))
+    max_ = dist_samples.max()
+    dist_samples = upper_bound * dist_samples / max_
+    dist_values = np.array(list(original_dist.values()))
+
+    new_dist = OrderedDict()
+    for i in range(upper_bound + 1):
+        dist_idx = np.where(np.logical_and(dist_samples <= i, dist_samples > (i - 1)))
+        dist_bit = dist_values[dist_idx]
+        new_dist[i] = sum(dist_bit)
+
+    sum_ = sum(new_dist.values())
+    if not isclose(sum_, 1.0):
+        for k, v in new_dist.items():
+            new_dist[k] = v / sum_
+    
+    return new_dist
