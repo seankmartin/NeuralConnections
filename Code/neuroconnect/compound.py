@@ -1078,6 +1078,7 @@ def compare_distribution(dist, **kwargs):
     name : string
 
     """
+    np.random.seed(42)
     region1_nodes = kwargs.get("region1_nodes")
     region2_nodes = kwargs.get("region2_nodes")
     num_region1_senders = kwargs.get("num_region1_senders")
