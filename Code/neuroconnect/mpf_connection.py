@@ -71,7 +71,8 @@ class CombProb:
             self.subsample_rate = None
         else:
             self.subsample_rate = subsample_rate
-        self.delta_params["subsample_rate"] = self.subsample_rate
+        if delta_params.get("pass_through", True):
+            self.delta_params["subsample_rate"] = self.subsample_rate
         self.approx_hypergeo = approx_hypergeo
 
         # Use these to check marginal accuracy

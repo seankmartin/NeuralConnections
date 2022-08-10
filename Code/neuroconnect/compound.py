@@ -1215,8 +1215,10 @@ def power_law_analysis(sizes):
     stats = mc.compute_stats()
     mc_dist = stats["out_connections_dist"]
     percent_out = stats["num_senders"] / stats["num_start"]
+    print(f"Percent senders {percent_out}")
+    print(f"Mean out {get_dist_mean(mc_dist) / mc.num_b}")
 
-    def do_mpf(num_samples, size, dist, percent_out, clt_start=30, subsample_rate=0.01):
+    def do_mpf(num_samples, size, dist, percent_out, clt_start=30):
         region1_nodes = list(range(size))
         region2_nodes = list(range(size, 2 * size))
         num_region1_senders = int(size * percent_out)
@@ -1227,7 +1229,8 @@ def power_law_analysis(sizes):
             out_connections_dist=dist,
             total_samples=num_samples[0],
             clt_start=clt_start,
-            sub=subsample_rate,
+            sub=None,
+            pass_through=False,
         )
         connection_prob = CombProb(
             len(region1_nodes),
@@ -1236,7 +1239,7 @@ def power_law_analysis(sizes):
             len(region2_nodes),
             num_samples[1],
             OutgoingDistributionConnections.static_expected_connections,
-            subsample_rate=subsample_rate,
+            subsample_rate=0.01,
             approx_hypergeo=False,
             **delta_params,
         )
@@ -1248,22 +1251,15 @@ def power_law_analysis(sizes):
             },
         }
 
-    def function_to_minimize(
-        samples_to_use, full_size, desired, dist, percent_out, subsample_rate
-    ):
-        result = do_mpf(
-            samples_to_use, full_size, dist, percent_out, 30, subsample_rate
-        )
+    def function_to_minimize(samples_to_use, full_size, desired, dist, percent_out):
+        result = do_mpf(samples_to_use, full_size, dist, percent_out, 30)
         expected = result["expected"]
         return (expected / samples_to_use[1]) - desired
 
-    def find_correct_sample_size(
-        full_size, dist, percent_out, desired, lb, ub, subsample_rate=None
-    ):
+    def find_correct_sample_size(full_size, dist, percent_out, desired, lb, ub):
         min_ = 0
-        num_senders = int(percent_out * full_size)
-        max_ = min(num_senders, 2000)
-        start = min(full_size // 100, 80)
+        max_ = min(full_size, 10000)
+        start = min(full_size // 5, 1000)
         samples_to_use = [start, start]
 
         max_iters = 30
@@ -1271,9 +1267,10 @@ def power_law_analysis(sizes):
 
         while min_ != max_ and n < max_iters:
             result = function_to_minimize(
-                samples_to_use, full_size, desired, dist, percent_out, subsample_rate
+                samples_to_use, full_size, desired, dist, percent_out
             )
             n += 1
+            print(result, n, samples_to_use[0], min_, max_)
             if n == max_iters:
                 raise RuntimeError(
                     f"Could only get within {result} of desired with {samples_to_use[0]}"
@@ -1281,12 +1278,12 @@ def power_law_analysis(sizes):
             if result > -lb and result < ub:
                 return samples_to_use[0], n
             if result < 0:
-                if samples_to_use[0] == num_senders:
+                if samples_to_use[0] == full_size:
                     return 0, n
                 min_ = samples_to_use[0]
                 samples_to_use = [ceil((max_ + min_) / 2), ceil((max_ + min_) / 2)]
             elif result > 0:
-                if samples_to_use[0] == num_senders:
+                if samples_to_use[0] == full_size:
                     return 0, n
                 max_ = samples_to_use[0]
                 samples_to_use = [floor((max_ + min_) / 2), floor((max_ + min_) / 2)]
@@ -1300,15 +1297,16 @@ def power_law_analysis(sizes):
 
     l = []
     for s in sizes:
-        new_dist = new_dist_upper_bound(mc_dist, s // 4)
+        new_max = int(s * 0.235)
+        new_dist = new_dist_upper_bound(mc_dist, new_max)
         bit = find_correct_sample_size(
-            s, new_dist, percent_out, desired_percent, 0.02, 0.02, None
+            s, new_dist, percent_out, desired_percent, 0.02, 0.02
         )
         l.append([s, bit[0], "unbounded"])
-        min_ = min(s // 4, 50000)
+        min_ = min(new_max, 50000)
         new_dist = new_dist_upper_bound(mc_dist, min_)
         bit = find_correct_sample_size(
-            s, new_dist, percent_out, desired_percent, 0.02, 0.02, None
+            s, new_dist, percent_out, desired_percent, 0.02, 0.02
         )
         l.append([s, bit[0], "bounded"])
     df = list_to_df(

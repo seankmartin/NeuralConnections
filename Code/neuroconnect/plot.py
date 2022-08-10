@@ -426,12 +426,13 @@ def plot_power_law(df, out_name):
     fig, ax = plt.subplots()
     set_p()
 
-    sns.scatterplot(
+    sns.lineplot(
         data=df,
         x="Size of each brain region",
         y="Number of required samples",
         style="Connections",
         hue="Connections",
+        markers=True,
     )
     despine()
     save(fig, out_name)

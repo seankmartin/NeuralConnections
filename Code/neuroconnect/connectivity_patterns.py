@@ -1649,10 +1649,9 @@ class OutgoingDistributionConnections(ConnectionStrategy):
 
         if sub is None:
             final_dist = OrderedDict()
+            mean_ = get_dist_mean(out_connections_dist)
             for num_sender_samples in range(total_samples + 1):
-                ab = fn_to_apply(
-                    num_sender_samples * get_dist_mean(out_connections_dist)
-                )
+                ab = fn_to_apply(num_sender_samples * mean_)
                 final_dist[num_sender_samples] = OrderedDict()
                 final_dist[num_sender_samples][ab] = 1.0
         else:
