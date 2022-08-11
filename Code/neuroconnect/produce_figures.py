@@ -620,6 +620,7 @@ def figure2():
 @app.command()
 def figure3():
     do_mouse_regions(vis_only=False)
+    do_explain(do_vis=False, do_pmf=False, do_dist=False, do_power=True)
 
 
 @app.command()
@@ -638,7 +639,7 @@ def do_all(
     print("Reproducing all figures")
 
     if explain:
-        do_explain(do_vis=True, do_pmf=True, do_dist=True)
+        do_explain(do_vis=True, do_pmf=True, do_dist=True, do_power=True)
     if examples:
         do_examples(do_exp=True, do_pmf=True, do_types=True)
     if mouse:
@@ -651,6 +652,7 @@ def do_all(
             do_mouse_acc=True,
             do_exp=True,
             do_growth=True,
+            do_distrib=True,
         )
 
 

@@ -162,6 +162,8 @@ Note use of regular expressions below:
 14. `results\20_sub_out.csv`
 15. `results\20_sub_low.csv`
 16. `figures\ca1_sub_tet_comp.pdf`
+17. `figures\matrix_dist_plot.pdf`
+18. `figures\power_law_plot.pdf`
 
 ### Profiling the code
 
