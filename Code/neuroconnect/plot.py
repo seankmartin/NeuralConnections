@@ -416,7 +416,8 @@ def plot_large_dist(df, out_name):
     fig, ax = plt.subplots()
     set_p()
 
-    sns.lineplot(data=df, x="Outgoing connections", y="Probability", ax=ax)
+    sns.lineplot(data=df, x="Outgoing connections", y="Probability", ax=ax, lw=2)
+    # ax.set_xscale("log")
     despine()
     save(fig, out_name)
 
@@ -433,7 +434,9 @@ def plot_power_law(df, out_name):
         style="Connections",
         hue="Connections",
         markers=True,
+        ax=ax,
     )
+    ax.set(xscale="log")
     despine()
     save(fig, out_name)
 

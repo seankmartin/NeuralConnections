@@ -419,7 +419,7 @@ def do_explain(
         plot_dist_explain(dfs, names)
 
     if do_power:
-        sizes = [100, 1000, 5000, 10000, 50000, 100000, 500000]
+        sizes = [1000, 10000, 50000, 100000, 250000, 500000, 750000, 1000000]
         power_law_analysis(sizes)
 
         df1 = load_df("matrix_dist.csv")
