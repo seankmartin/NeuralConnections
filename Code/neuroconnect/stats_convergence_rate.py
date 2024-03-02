@@ -8,7 +8,7 @@ from collections import OrderedDict
 
 import numpy as np
 import pandas as pd
-import tqdm
+from mpmath import sqrt
 
 from .connect_math import hypergeometric_pmf, create_uniform
 from .monte_carlo import (
@@ -24,6 +24,7 @@ from .connect_math import expected_unique
 from .connectivity_patterns import get_by_name
 from .experiment import do_full_experiment
 
+
 here = os.path.dirname(os.path.realpath(__file__))
 
 
@@ -31,9 +32,12 @@ def test_hyper_convergence_rate(N, K, n, num_iters=1000, num_cpus=1):
     """Compare simulated hypergeometric_pmf to actual over num_iters."""
     actual_distribution = {}
     expected = 0
+    variance = 0
     for k in range(n + 1):
         actual_distribution[k] = hypergeometric_pmf(N, K, n, k)
         expected += actual_distribution[k] * k
+        variance += actual_distribution[k] * k * k
+    variance = variance - (expected * expected)
 
     total = np.array([i for i in range(N)])
     good = np.random.choice(total, size=K, replace=False)
@@ -72,7 +76,7 @@ def test_hyper_convergence_rate(N, K, n, num_iters=1000, num_cpus=1):
         "simulated": dist,
         "difference": diff,
         "sim_summary": result,
-        "stats_exp": expected,
+        "stats_exp": (expected, sqrt(variance)),
     }
 
 
@@ -221,8 +225,13 @@ def test_rand_network_convergence(num_cpus=1, sr=None):
         "expected": cp.expected_connections(),
         "total": cp.get_all_prob(),
     }
+    expected = mpf_result["expected"]
+    variance = 0
     for k, v in mpf_result["total"].items():
         vals.append([k, float(v), "Statistical estimation"])
+        variance += k * k * v
+    std = sqrt(variance - (expected * expected))
+    print(mpf_result["expected"], std)
 
     rv = get_by_name("mean_connectivity")
     ndelta_fn = rv.static_expected_connections
@@ -258,10 +267,16 @@ def test_rand_network_convergence(num_cpus=1, sr=None):
         ],
     )
 
-    for n in [10000, 20000, 50000]:
+    for n in [1000, 100, 500]:
+        expected = 0
+        variance = 0
         dist = get_distribution(df.head(n), "Connections", n)
         for k, v in dist.items():
             vals.append([k, float(v), "Monte Carlo simulation {}".format(n)])
+            expected += k * v
+            variance += k * k * v
+        std = sqrt(variance - (expected * expected))
+        print(expected, std)
 
     columns = ["Number of sampled connected neurons", "Probability", "Calculation"]
     df = pd.DataFrame(vals, columns=columns)
@@ -369,3 +384,10 @@ def main(N, K, n, num_iters):
     print("Writing graph convergence to file in results directory")
     control_main(cfg, args)
     return res1
+
+
+if __name__ == "__main__":
+    np.random.seed(42)
+    from pprint import pprint
+
+    pprint(test_rand_network_convergence())
